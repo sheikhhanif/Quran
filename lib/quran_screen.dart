@@ -606,29 +606,25 @@ class MushafPageBuilder {
       final lineNumber = sortedLineNumbers[i];
       final lineWords = wordsByLine[lineNumber]!;
 
-      // Sort words by position
+      // Sort words by their original startIndex from the database
       lineWords.sort((a, b) => a.startIndex.compareTo(b.startIndex));
 
       final startIndex = lineWords.first.startIndex;
       final endIndex = lineWords.last.endIndex;
       final segmentText = lineWords.map((w) => w.text).join(' ');
 
-      // Build AyahWord objects for this segment
+      // Build AyahWord objects for this segment, preserving original order
       List<AyahWord> ayahWords = [];
-      int segmentIndex = 0;
 
       for (int j = 0; j < lineWords.length; j++) {
         final word = lineWords[j];
-        if (j > 0) segmentIndex++; // Account for space
 
         ayahWords.add(AyahWord(
           text: word.text,
           wordIndex: globalWordIndex++,
-          startIndex: segmentIndex,
-          endIndex: segmentIndex + word.text.length,
+          startIndex: word.startIndex, // Use original startIndex
+          endIndex: word.endIndex, // Use original endIndex
         ));
-
-        segmentIndex += word.text.length;
       }
 
       segments.add(AyahSegment(
@@ -685,7 +681,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
   PageAyah? _currentPlayingAyah;
 
   // Add this new variable for user selection
-  String? _userSelectedWordId;
+  String? _userSelectedAyahId; // Changed from _userSelectedWordId
 
   // PageView controller
   late PageController _pageController;
@@ -1213,14 +1209,14 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                   child: segments.isNotEmpty
                       ? GestureDetector(
                           onTap: () {
-                            // Handle line tap - you can highlight the first ayah in the line
+                            // Handle line tap - highlight the first ayah in the line
                             if (segments.isNotEmpty) {
                               final firstSegment = segments.first;
                               final ayah = _findAyahForSegment(firstSegment);
                               if (ayah != null) {
                                 setState(() {
-                                  _userSelectedWordId =
-                                      '${ayah.surah}:${ayah.ayah}:1';
+                                  _userSelectedAyahId =
+                                      '${ayah.surah}:${ayah.ayah}'; // Changed to ayah ID
                                 });
                               }
                             }
@@ -1251,58 +1247,87 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     final fontSize =
         _getMaximizedFontSize(line.lineType, isTablet, isLandscape, screenSize);
 
+    // Sort segments by their line number and position in the line
+    segments.sort((a, b) {
+      if (a.lineNumber != b.lineNumber) {
+        return a.lineNumber.compareTo(b.lineNumber);
+      }
+      return a.startIndex.compareTo(b.startIndex);
+    });
+
+    // Group segments by ayah for continuous highlighting
+    Map<String, List<AyahSegment>> segmentsByAyah = {};
+    for (final segment in segments) {
+      final ayah = _findAyahForSegment(segment);
+      if (ayah != null) {
+        final ayahId = '${ayah.surah}:${ayah.ayah}';
+        segmentsByAyah.putIfAbsent(ayahId, () => []).add(segment);
+      }
+    }
+
     // Create a list of text spans with highlighting
     List<InlineSpan> spans = [];
 
-    for (final segment in segments) {
-      final ayah = _findAyahForSegment(segment);
-      if (ayah == null) continue;
+    // Process ayahs to create continuous highlighting
+    for (final entry in segmentsByAyah.entries) {
+      final ayahId = entry.key;
+      final ayahSegments = entry.value;
 
-      // Build word spans with highlighting
-      for (final word in segment.words) {
-        final wordId = '${ayah.surah}:${ayah.ayah}:${word.wordIndex}';
-        final isHighlighted = _highlightedWordId == wordId;
-        final isUserSelected = _userSelectedWordId == wordId;
+      // Sort segments by line number and position
+      ayahSegments.sort((a, b) {
+        if (a.lineNumber != b.lineNumber) {
+          return a.lineNumber.compareTo(b.lineNumber);
+        }
+        return a.startIndex.compareTo(b.startIndex);
+      });
 
-        spans.add(
-          WidgetSpan(
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  // Toggle selection
-                  if (_userSelectedWordId == wordId) {
-                    _userSelectedWordId = null;
-                  } else {
-                    _userSelectedWordId = wordId;
-                  }
-                });
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
-                decoration: BoxDecoration(
-                  color: isUserSelected
-                      ? Colors.blue.withOpacity(0.3)
-                      : isHighlighted
-                          ? Colors.yellow.withOpacity(0.7)
-                          : null,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  word.text,
-                  style: TextStyle(
-                    fontFamily: 'QPCPageFont$page',
-                    fontSize: fontSize,
-                    color: Colors.black,
-                  ),
-                ),
+      final isUserSelected = _userSelectedAyahId == ayahId;
+
+      // Create a single container for the entire ayah
+      List<InlineSpan> ayahSpans = [];
+
+      for (final segment in ayahSegments) {
+        final ayah = _findAyahForSegment(segment);
+        if (ayah == null) continue;
+
+        // Words are already sorted by startIndex in _buildAyah, so use them as-is
+        final sortedWords = segment.words;
+
+        // Build word spans for this segment
+        for (final word in sortedWords) {
+          final wordId = '${ayah.surah}:${ayah.ayah}:${word.wordIndex}';
+          final isAudioHighlighted = _highlightedWordId == wordId;
+
+          ayahSpans.add(
+            TextSpan(
+              text: word.text,
+              style: TextStyle(
+                fontFamily: 'QPCPageFont$page',
+                fontSize: fontSize,
+                color: Colors.black,
+                backgroundColor:
+                    isAudioHighlighted ? Colors.yellow.withOpacity(0.7) : null,
               ),
             ),
-          ),
-        );
+          );
 
-        // Add space between words (except for the last word)
-        if (word != segment.words.last) {
-          spans.add(
+          // Add space between words (except for the last word in the segment)
+          if (word != sortedWords.last) {
+            ayahSpans.add(
+              TextSpan(
+                text: ' ',
+                style: TextStyle(
+                  fontFamily: 'QPCPageFont$page',
+                  fontSize: fontSize,
+                ),
+              ),
+            );
+          }
+        }
+
+        // Add space between segments (except for the last segment)
+        if (segment != ayahSegments.last) {
+          ayahSpans.add(
             TextSpan(
               text: ' ',
               style: TextStyle(
@@ -1314,8 +1339,38 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
         }
       }
 
-      // Add space between segments
-      if (segment != segments.last) {
+      // Wrap the entire ayah in a single highlightable container
+      spans.add(
+        WidgetSpan(
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                // Toggle ayah selection
+                if (_userSelectedAyahId == ayahId) {
+                  _userSelectedAyahId = null;
+                } else {
+                  _userSelectedAyahId = ayahId;
+                }
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              decoration: BoxDecoration(
+                color: isUserSelected ? Colors.blue.withOpacity(0.3) : null,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: RichText(
+                textAlign: TextAlign.right,
+                textDirection: TextDirection.rtl,
+                text: TextSpan(children: ayahSpans),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      // Add space between different ayahs
+      if (entry != segmentsByAyah.entries.last) {
         spans.add(
           TextSpan(
             text: ' ',
@@ -1328,6 +1383,8 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       }
     }
 
+    // Reverse the spans to display right-to-left
+    spans = spans.reversed.toList();
 
     return RichText(
       textAlign: TextAlign.right,
