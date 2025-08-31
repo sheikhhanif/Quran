@@ -16,8 +16,8 @@ dependencies:
   sqflite: ^2.3.0
   path: ^1.8.3
   flutter_svg: ^2.0.10
-  just_audio: ^0.10.4
-  audioplayers: ^6.5.0
+  audioplayers: ^5.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -32,3 +32,4 @@ flutter:
     - assets/quran/fonts/surah-name-v2.ttf
     - assets/quran/svg/
     - assets/quran/svg/surah_name/
+    - assets/quran/audio/ayah-recitation-mahmoud-khalil-al-husary-mujawwad-hafs-956.json

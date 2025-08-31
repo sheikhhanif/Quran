@@ -35,9 +35,10 @@ class AyahSegment {
   final int lineNumber;
   final String text;
   final int startIndex; // Start position in the line
-  final int endIndex;   // End position in the line
-  final bool isStart;   // Is this the start of the ayah?
-  final bool isEnd;     // Is this the end of the ayah?
+  final int endIndex; // End position in the line
+  final bool isStart; // Is this the start of the ayah?
+  final bool isEnd; // Is this the end of the ayah?
+  final List<AyahWord> words; // Words in this segment
 
   AyahSegment({
     required this.lineNumber,
@@ -46,7 +47,74 @@ class AyahSegment {
     required this.endIndex,
     required this.isStart,
     required this.isEnd,
+    required this.words,
   });
+}
+
+// Individual word in an ayah segment
+class AyahWord {
+  final String text;
+  final int wordIndex; // Index within the ayah
+  final int startIndex; // Start position in segment text
+  final int endIndex; // End position in segment text
+
+  AyahWord({
+    required this.text,
+    required this.wordIndex,
+    required this.startIndex,
+    required this.endIndex,
+  });
+}
+
+// Audio segment timing
+class AudioSegment {
+  final int wordIndex;
+  final int startTimeMs;
+  final int endTimeMs;
+
+  AudioSegment({
+    required this.wordIndex,
+    required this.startTimeMs,
+    required this.endTimeMs,
+  });
+}
+
+// Audio data for an ayah
+class AudioData {
+  final int surahNumber;
+  final int ayahNumber;
+  final String audioUrl;
+  final int? duration;
+  final List<AudioSegment> segments;
+
+  AudioData({
+    required this.surahNumber,
+    required this.ayahNumber,
+    required this.audioUrl,
+    this.duration,
+    required this.segments,
+  });
+
+  factory AudioData.fromJson(Map<String, dynamic> json) {
+    final segments = <AudioSegment>[];
+    if (json['segments'] != null) {
+      for (var segment in json['segments']) {
+        segments.add(AudioSegment(
+          wordIndex: segment[0],
+          startTimeMs: segment[1],
+          endTimeMs: segment[2],
+        ));
+      }
+    }
+
+    return AudioData(
+      surahNumber: json['surah_number'],
+      ayahNumber: json['ayah_number'],
+      audioUrl: json['audio_url'],
+      duration: json['duration'],
+      segments: segments,
+    );
+  }
 }
 
 // Simplified Line Model
@@ -117,10 +185,12 @@ class _WordsResult {
   _WordsResult(this.text, this.words);
 }
 
-// View Mode Enum
-enum ViewMode {
-  mushaf,
-  list,
+// Audio playback state
+enum AudioPlaybackState {
+  stopped,
+  playing,
+  paused,
+  loading,
 }
 
 // ===================== HELPER FUNCTIONS =====================
@@ -142,6 +212,191 @@ int _safeParseIntRequired(dynamic value, {int defaultValue = 0}) {
   return parsed ?? defaultValue;
 }
 
+// ===================== AUDIO SERVICE =====================
+
+class AudioService {
+  static final AudioService _instance = AudioService._internal();
+  factory AudioService() => _instance;
+  AudioService._internal();
+
+  final AudioPlayer _audioPlayer = AudioPlayer();
+  Map<String, AudioData>? _allAudioData;
+
+  StreamSubscription<Duration>? _positionSubscription;
+  StreamSubscription<PlayerState>? _playerStateSubscription;
+
+  final StreamController<Duration> _positionController =
+      StreamController<Duration>.broadcast();
+  final StreamController<AudioPlaybackState> _stateController =
+      StreamController<AudioPlaybackState>.broadcast();
+  final StreamController<String?> _highlightController =
+      StreamController<String?>.broadcast();
+  final StreamController<PageAyah?> _currentAyahController =
+      StreamController<PageAyah?>.broadcast();
+
+  Stream<Duration> get positionStream => _positionController.stream;
+  Stream<AudioPlaybackState> get stateStream => _stateController.stream;
+  Stream<String?> get highlightStream => _highlightController.stream;
+  Stream<PageAyah?> get currentAyahStream => _currentAyahController.stream;
+
+  AudioData? _currentAudioData;
+  PageAyah? _currentAyah;
+  List<PageAyah>? _pageAyahs;
+  int _currentAyahIndex = 0;
+
+  Future<void> initialize() async {
+    await _loadAudioData();
+
+    _playerStateSubscription =
+        _audioPlayer.onPlayerStateChanged.listen((state) {
+      switch (state) {
+        case PlayerState.playing:
+          _stateController.add(AudioPlaybackState.playing);
+          break;
+        case PlayerState.paused:
+          _stateController.add(AudioPlaybackState.paused);
+          break;
+        case PlayerState.stopped:
+          _stateController.add(AudioPlaybackState.stopped);
+          _highlightController.add(null);
+          _currentAyahController.add(null);
+          break;
+        case PlayerState.completed:
+          _onAudioCompleted();
+          break;
+        case PlayerState.disposed:
+          break;
+      }
+    });
+
+    _positionSubscription = _audioPlayer.onPositionChanged.listen((position) {
+      _positionController.add(position);
+      _updateWordHighlight(position);
+    });
+  }
+
+  Future<void> _loadAudioData() async {
+    try {
+      final jsonString = await rootBundle.loadString(
+          'assets/quran/audio/ayah-recitation-mahmoud-khalil-al-husary-mujawwad-hafs-956.json');
+      final Map<String, dynamic> jsonData = json.decode(jsonString);
+
+      _allAudioData = {};
+      jsonData.forEach((key, value) {
+        _allAudioData![key] = AudioData.fromJson(value);
+      });
+    } catch (e) {
+      print('Error loading audio data: $e');
+    }
+  }
+
+  AudioData? getAudioData(int surah, int ayah) {
+    final key = '$surah:$ayah';
+    return _allAudioData?[key];
+  }
+
+  Future<void> playPageAyahs(List<PageAyah> ayahs) async {
+    if (ayahs.isEmpty) return;
+
+    _pageAyahs = ayahs;
+    _currentAyahIndex = 0;
+    await _playCurrentAyah();
+  }
+
+  Future<void> _playCurrentAyah() async {
+    if (_pageAyahs == null || _currentAyahIndex >= _pageAyahs!.length) {
+      await stop();
+      return;
+    }
+
+    final ayah = _pageAyahs![_currentAyahIndex];
+    final audioData = getAudioData(ayah.surah, ayah.ayah);
+
+    if (audioData == null) {
+      // Skip to next ayah if no audio data
+      _currentAyahIndex++;
+      await _playCurrentAyah();
+      return;
+    }
+
+    try {
+      _stateController.add(AudioPlaybackState.loading);
+      _currentAudioData = audioData;
+      _currentAyah = ayah;
+      _currentAyahController.add(ayah);
+
+      await _audioPlayer.play(UrlSource(audioData.audioUrl));
+    } catch (e) {
+      print('Error playing ayah ${ayah.surah}:${ayah.ayah} - $e');
+      // Skip to next ayah on error
+      _currentAyahIndex++;
+      await _playCurrentAyah();
+    }
+  }
+
+  Future<void> _onAudioCompleted() async {
+    _currentAyahIndex++;
+
+    // Small delay before playing next ayah
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    if (_currentAyahIndex < (_pageAyahs?.length ?? 0)) {
+      await _playCurrentAyah();
+    } else {
+      // All ayahs completed
+      _stateController.add(AudioPlaybackState.stopped);
+      _highlightController.add(null);
+      _currentAyahController.add(null);
+      _pageAyahs = null;
+    }
+  }
+
+  Future<void> pause() async {
+    await _audioPlayer.pause();
+  }
+
+  Future<void> resume() async {
+    await _audioPlayer.resume();
+  }
+
+  Future<void> stop() async {
+    await _audioPlayer.stop();
+    _highlightController.add(null);
+    _currentAyahController.add(null);
+    _pageAyahs = null;
+    _currentAyahIndex = 0;
+  }
+
+  void _updateWordHighlight(Duration position) {
+    if (_currentAudioData == null || _currentAyah == null) return;
+
+    final positionMs = position.inMilliseconds;
+
+    // Find the current segment being played
+    for (final segment in _currentAudioData!.segments) {
+      if (positionMs >= segment.startTimeMs && positionMs < segment.endTimeMs) {
+        // Generate a unique identifier for the word
+        final wordId =
+            '${_currentAyah!.surah}:${_currentAyah!.ayah}:${segment.wordIndex}';
+        _highlightController.add(wordId);
+        return;
+      }
+    }
+
+    _highlightController.add(null);
+  }
+
+  void dispose() {
+    _positionSubscription?.cancel();
+    _playerStateSubscription?.cancel();
+    _positionController.close();
+    _stateController.close();
+    _highlightController.close();
+    _currentAyahController.close();
+    _audioPlayer.dispose();
+  }
+}
+
 // ===================== PAGE BUILDER =====================
 
 class MushafPageBuilder {
@@ -152,8 +407,7 @@ class MushafPageBuilder {
   }) async {
     final layoutData = await layoutDb.rawQuery(
         "SELECT * FROM pages WHERE page_number = ? ORDER BY line_number ASC",
-        [pageNumber]
-    );
+        [pageNumber]);
 
     List<SimpleMushafLine> lines = [];
     List<PageAyah> ayahs = [];
@@ -209,7 +463,8 @@ class MushafPageBuilder {
     );
   }
 
-  static Future<_LineBuilder> _buildLine(Map<String, dynamic> lineData, Database wordsDb) async {
+  static Future<_LineBuilder> _buildLine(
+      Map<String, dynamic> lineData, Database wordsDb) async {
     final lineNumber = _safeParseIntRequired(lineData['line_number']);
     final lineType = lineData['line_type'] as String? ?? 'ayah';
     final isCentered = _safeParseInt(lineData['is_centered']) == 1;
@@ -230,26 +485,30 @@ class MushafPageBuilder {
 
       case 'basmallah':
         if (firstWordId != null && lastWordId != null) {
-          final result = await _buildWordsFromRange(wordsDb, firstWordId, lastWordId, lineNumber);
+          final result = await _buildWordsFromRange(
+              wordsDb, firstWordId, lastWordId, lineNumber);
           lineText = result.text;
           ayahWords = result.words;
         } else {
           lineText = '﷽';
-          ayahWords = [AyahWordData(
-            surah: lineSurahNumber ?? 1,
-            ayah: 1,
-            text: '﷽',
-            lineNumber: lineNumber,
-            startIndex: 0,
-            endIndex: 1,
-          )];
+          ayahWords = [
+            AyahWordData(
+              surah: lineSurahNumber ?? 1,
+              ayah: 1,
+              text: '﷽',
+              lineNumber: lineNumber,
+              startIndex: 0,
+              endIndex: 1,
+            )
+          ];
         }
         break;
 
       case 'ayah':
       default:
         if (firstWordId != null && lastWordId != null) {
-          final result = await _buildWordsFromRange(wordsDb, firstWordId, lastWordId, lineNumber);
+          final result = await _buildWordsFromRange(
+              wordsDb, firstWordId, lastWordId, lineNumber);
           lineText = result.text;
           ayahWords = result.words;
 
@@ -274,16 +533,15 @@ class MushafPageBuilder {
   }
 
   static Future<_WordsResult> _buildWordsFromRange(
-      Database wordsDb,
-      int firstWordId,
-      int lastWordId,
-      int lineNumber,
-      ) async {
+    Database wordsDb,
+    int firstWordId,
+    int lastWordId,
+    int lineNumber,
+  ) async {
     try {
       final words = await wordsDb.rawQuery(
           "SELECT * FROM words WHERE id >= ? AND id <= ? ORDER BY id ASC",
-          [firstWordId, lastWordId]
-      );
+          [firstWordId, lastWordId]);
 
       if (words.isEmpty) return _WordsResult('', []);
 
@@ -338,9 +596,11 @@ class MushafPageBuilder {
       wordsByLine.putIfAbsent(word.lineNumber, () => []).add(word);
     }
 
-    // Build segments
+    // Build segments with individual words
     List<AyahSegment> segments = [];
     final sortedLineNumbers = wordsByLine.keys.toList()..sort();
+
+    int globalWordIndex = 1;
 
     for (int i = 0; i < sortedLineNumbers.length; i++) {
       final lineNumber = sortedLineNumbers[i];
@@ -353,6 +613,24 @@ class MushafPageBuilder {
       final endIndex = lineWords.last.endIndex;
       final segmentText = lineWords.map((w) => w.text).join(' ');
 
+      // Build AyahWord objects for this segment
+      List<AyahWord> ayahWords = [];
+      int segmentIndex = 0;
+
+      for (int j = 0; j < lineWords.length; j++) {
+        final word = lineWords[j];
+        if (j > 0) segmentIndex++; // Account for space
+
+        ayahWords.add(AyahWord(
+          text: word.text,
+          wordIndex: globalWordIndex++,
+          startIndex: segmentIndex,
+          endIndex: segmentIndex + word.text.length,
+        ));
+
+        segmentIndex += word.text.length;
+      }
+
       segments.add(AyahSegment(
         lineNumber: lineNumber,
         text: segmentText,
@@ -360,6 +638,7 @@ class MushafPageBuilder {
         endIndex: endIndex,
         isStart: i == 0,
         isEnd: i == sortedLineNumbers.length - 1,
+        words: ayahWords,
       ));
     }
 
@@ -399,25 +678,17 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
   String _loadingMessage = 'Initializing...';
   double _preloadProgress = 0.0;
 
-  // View Mode
-  ViewMode _viewMode = ViewMode.mushaf;
+  // Audio service
+  final AudioService _audioService = AudioService();
+  AudioPlaybackState _audioState = AudioPlaybackState.stopped;
+  String? _highlightedWordId;
+  PageAyah? _currentPlayingAyah;
+
+  // Add this new variable for user selection
+  String? _userSelectedWordId;
 
   // PageView controller
   late PageController _pageController;
-
-  // Audio related
-  final AudioPlayer _audioPlayer = AudioPlayer();
-  bool _isPlaying = false;
-  bool _isLoading = false;
-  int _currentAyahIndex = 0;
-  double _audioProgress = 0.0;
-  String _reciterId = '7'; // Default reciter (Abdul Basit)
-
-  // Highlight
-  int? _highlightedAyahIndex;
-
-  // Progress bar interaction
-  bool _isDragging = false;
 
   static final Set<int> _loadedFonts = <int>{};
   static bool _surahNameFontLoaded = false;
@@ -430,28 +701,35 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: 0);
-    _setupAudioPlayer();
     _initDatabases();
+    _initAudio();
   }
 
-  void _setupAudioPlayer() {
-    _audioPlayer.onPlayerStateChanged.listen((PlayerState state) {
-      setState(() {
-        _isPlaying = state == PlayerState.playing;
-        _isLoading = state == PlayerState.playing ? false : _isLoading;
-      });
-    });
+  Future<void> _initAudio() async {
+    await _audioService.initialize();
 
-    _audioPlayer.onPositionChanged.listen((Duration position) {
-      if (!_isDragging && _isPlaying) {
+    _audioService.stateStream.listen((state) {
+      if (mounted) {
         setState(() {
-          _audioProgress = position.inMilliseconds.toDouble();
+          _audioState = state;
         });
       }
     });
 
-    _audioPlayer.onPlayerComplete.listen((_) {
-      _playNextAyah();
+    _audioService.highlightStream.listen((wordId) {
+      if (mounted) {
+        setState(() {
+          _highlightedWordId = wordId;
+        });
+      }
+    });
+
+    _audioService.currentAyahStream.listen((ayah) {
+      if (mounted) {
+        setState(() {
+          _currentPlayingAyah = ayah;
+        });
+      }
     });
   }
 
@@ -469,7 +747,8 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
         setState(() {
           _loadingMessage = 'Copying words database...';
         });
-        final wordsData = await rootBundle.load('assets/quran/scripts/qpc-v2.db');
+        final wordsData =
+            await rootBundle.load('assets/quran/scripts/qpc-v2.db');
         final wordsBytes = wordsData.buffer
             .asUint8List(wordsData.offsetInBytes, wordsData.lengthInBytes);
         await File(wordsDbPath).writeAsBytes(wordsBytes, flush: true);
@@ -481,7 +760,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
           _loadingMessage = 'Copying layout database...';
         });
         final layoutData =
-        await rootBundle.load('assets/quran/layout/qpc-v2-15-lines.db');
+            await rootBundle.load('assets/quran/layout/qpc-v2-15-lines.db');
         final layoutBytes = layoutData.buffer
             .asUint8List(layoutData.offsetInBytes, layoutData.lengthInBytes);
         await File(layoutDbPath).writeAsBytes(layoutBytes, flush: true);
@@ -501,7 +780,6 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
 
       // Start background preloading
       _startBackgroundPreloading();
-
     } catch (e) {
       setState(() {
         _isInitializing = false;
@@ -519,7 +797,9 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     final totalPages = 604;
     int loadedCount = _loadedPages.length;
 
-    for (int batchStart = 1; batchStart <= totalPages; batchStart += BATCH_SIZE) {
+    for (int batchStart = 1;
+        batchStart <= totalPages;
+        batchStart += BATCH_SIZE) {
       final batchEnd = (batchStart + BATCH_SIZE - 1).clamp(1, totalPages);
       final batch = <Future<void>>[];
 
@@ -566,7 +846,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     try {
       final fontLoader = FontLoader('QPCPageFont$page');
       final fontData =
-      await rootBundle.load('assets/quran/fonts/qpc-v2-font/p$page.ttf');
+          await rootBundle.load('assets/quran/fonts/qpc-v2-font/p$page.ttf');
       fontLoader.addFont(Future.value(fontData));
       await fontLoader.load();
       _loadedFonts.add(page);
@@ -580,7 +860,8 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
 
     try {
       final fontLoader = FontLoader('SurahNameFont');
-      final fontData = await rootBundle.load('assets/quran/fonts/surah-name-v2.ttf');
+      final fontData =
+          await rootBundle.load('assets/quran/fonts/surah-name-v2.ttf');
       fontLoader.addFont(Future.value(fontData));
       await fontLoader.load();
       _surahNameFontLoaded = true;
@@ -593,7 +874,6 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     if (_loadedPages.contains(page)) {
       setState(() {
         _currentPage = page;
-        _updateCurrentPageAyahs();
       });
       return;
     }
@@ -601,12 +881,12 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     await _loadPageSilently(page);
     setState(() {
       _currentPage = page;
-      _updateCurrentPageAyahs();
     });
   }
 
   Future<void> _loadPageSilently(int page) async {
-    if (_wordsDb == null || _layoutDb == null || _loadedPages.contains(page)) return;
+    if (_wordsDb == null || _layoutDb == null || _loadedPages.contains(page))
+      return;
 
     try {
       await _loadFontForPage(page);
@@ -619,7 +899,6 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
 
       _allPagesData[page] = mushafPage;
       _loadedPages.add(page);
-
     } catch (e) {
       print('Error loading page $page: $e');
       // Create empty page as fallback
@@ -632,204 +911,65 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     }
   }
 
-  void _updateCurrentPageAyahs() {
-    _stopAudio();
-
-    setState(() {
-      _currentAyahIndex = 0;
-      _audioProgress = 0.0;
-      _highlightedAyahIndex = null;
-    });
-  }
-
-  MushafPage? _getCurrentPage() {
-    return _allPagesData[_currentPage];
-  }
-
-  List<PageAyah> _getCurrentPageAyahs() {
-    return _getCurrentPage()?.ayahs ?? [];
-  }
-
   void _onPageChanged(int index) {
     final page = index + 1;
     _currentPage = page;
-    _updateCurrentPageAyahs();
-
     _loadAroundCurrentPage(page);
-  }
 
-  // Find ayah index by surah and ayah number
-  int? _findAyahIndex(int surahNumber, int ayahNumber) {
-    final ayahs = _getCurrentPageAyahs();
-    for (int i = 0; i < ayahs.length; i++) {
-      if (ayahs[i].surah == surahNumber && ayahs[i].ayah == ayahNumber) {
-        return i;
-      }
-    }
-    return null;
-  }
-
-  // Handle ayah click
-  void _onAyahTap(int surahNumber, int ayahNumber) {
-    final ayahIndex = _findAyahIndex(surahNumber, ayahNumber);
-    if (ayahIndex != null) {
-      setState(() {
-        _currentAyahIndex = ayahIndex;
-        _highlightedAyahIndex = ayahIndex;
-        // Update progress bar position
-        final ayahs = _getCurrentPageAyahs();
-        _audioProgress = ayahs.length > 1
-            ? ayahIndex / (ayahs.length - 1)
-            : 0.0;
-      });
-
-      // If currently playing, play the clicked ayah
-      if (_isPlaying) {
-        _playCurrentAyah();
-      }
+    // Stop audio when page changes
+    if (_audioState != AudioPlaybackState.stopped) {
+      _stopAudio();
     }
   }
 
-  // Toggle between view modes
-  void _toggleViewMode() {
+  Future<void> _playPageAudio() async {
+    final page = _allPagesData[_currentPage];
+    if (page == null || page.ayahs.isEmpty) return;
+
+    // Filter out non-Quranic content and sort ayahs
+    final ayahsToPlay =
+        page.ayahs.where((ayah) => ayah.surah > 0 && ayah.ayah > 0).toList()
+          ..sort((a, b) {
+            if (a.surah != b.surah) return a.surah.compareTo(b.surah);
+            return a.ayah.compareTo(b.ayah);
+          });
+
+    if (ayahsToPlay.isNotEmpty) {
+      await _audioService.playPageAyahs(ayahsToPlay);
+    }
+  }
+
+  Future<void> _toggleAudio() async {
+    switch (_audioState) {
+      case AudioPlaybackState.stopped:
+        await _playPageAudio();
+        break;
+      case AudioPlaybackState.playing:
+        await _audioService.pause();
+        break;
+      case AudioPlaybackState.paused:
+        await _audioService.resume();
+        break;
+      case AudioPlaybackState.loading:
+        // Do nothing while loading
+        break;
+    }
+  }
+
+  Future<void> _stopAudio() async {
+    await _audioService.stop();
     setState(() {
-      _viewMode = _viewMode == ViewMode.mushaf ? ViewMode.list : ViewMode.mushaf;
+      _currentPlayingAyah = null;
+      _highlightedWordId = null;
     });
-  }
-
-  // Handle double tap to toggle view mode
-  void _onDoubleTap() {
-    _toggleViewMode();
-  }
-
-  // Get test translation for ayah
-  String _getTestTranslation(int surahNumber, int ayahNumber) {
-    // This is placeholder translation - replace with actual translation data
-    return "This is a test translation for Surah $surahNumber, Ayah $ayahNumber. In a real implementation, you would load this from a translation database or API.";
-  }
-
-  // Audio Controls
-  void _togglePlayPause() async {
-    final ayahs = _getCurrentPageAyahs();
-    if (ayahs.isEmpty) return;
-
-    if (_isPlaying) {
-      await _audioPlayer.pause();
-    } else {
-      if (_currentAyahIndex < ayahs.length) {
-        await _playCurrentAyah();
-      }
-    }
-  }
-
-  Future<void> _playCurrentAyah() async {
-    final ayahs = _getCurrentPageAyahs();
-    if (_currentAyahIndex >= ayahs.length) return;
-
-    final ayah = ayahs[_currentAyahIndex];
-
-    setState(() {
-      _isLoading = true;
-      _highlightedAyahIndex = _currentAyahIndex;
-    });
-
-    try {
-      // First, get the audio file info from the API
-      final apiUrl = 'https://api.quran.com/api/v4/recitations/$_reciterId/by_ayah/${ayah.surah}:${ayah.ayah}';
-
-      final response = await http.get(Uri.parse(apiUrl));
-
-      if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
-        final audioFiles = jsonData['audio_files'] as List?;
-
-        if (audioFiles != null && audioFiles.isNotEmpty) {
-          final audioUrl = audioFiles[0]['url'] as String?;
-
-          if (audioUrl != null) {
-            // The URL is relative, so we need to prepend the base URL
-            final fullAudioUrl = 'https://verses.quran.com/$audioUrl';
-            await _audioPlayer.play(UrlSource(fullAudioUrl));
-          } else {
-            throw Exception('No audio URL found in response');
-          }
-        } else {
-          throw Exception('No audio files found in response');
-        }
-      } else {
-        throw Exception('Failed to fetch audio info: ${response.statusCode}');
-      }
-
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-        _isPlaying = false;
-      });
-      print('Audio playback error: $e');
-      // Show user-friendly error
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Unable to play audio. Please check your connection.'),
-            backgroundColor: Colors.red[700],
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      }
-    }
-  }
-
-  void _playNextAyah() {
-    final ayahs = _getCurrentPageAyahs();
-    if (_currentAyahIndex < ayahs.length - 1) {
-      setState(() {
-        _currentAyahIndex++;
-        _audioProgress = _currentAyahIndex / ayahs.length;
-      });
-      _playCurrentAyah();
-    } else {
-      setState(() {
-        _isPlaying = false;
-        _highlightedAyahIndex = null;
-        _currentAyahIndex = 0;
-        _audioProgress = 0.0;
-      });
-    }
-  }
-
-  void _stopAudio() async {
-    await _audioPlayer.stop();
-    setState(() {
-      _isPlaying = false;
-      _isLoading = false;
-      _highlightedAyahIndex = null;
-      _currentAyahIndex = 0;
-      _audioProgress = 0.0;
-    });
-  }
-
-  void _onProgressBarChanged(double value) {
-    final ayahs = _getCurrentPageAyahs();
-    if (ayahs.isEmpty) return;
-
-    final newIndex = (value * (ayahs.length - 1)).round();
-    setState(() {
-      _currentAyahIndex = newIndex;
-      _audioProgress = value;
-      _highlightedAyahIndex = newIndex;
-    });
-
-    if (_isPlaying) {
-      _playCurrentAyah();
-    }
   }
 
   @override
   void dispose() {
     _pageController.dispose();
-    _audioPlayer.dispose();
     _wordsDb?.close();
     _layoutDb?.close();
+    _audioService.dispose();
     super.dispose();
   }
 
@@ -843,42 +983,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       appBar: AppBar(
         title: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('Mushaf - Page $_currentPage'),
-                SizedBox(width: 8),
-                GestureDetector(
-                  onTap: _toggleViewMode,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.white30),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          _viewMode == ViewMode.mushaf ? Icons.view_list : Icons.pages,
-                          size: 16,
-                          color: Colors.white,
-                        ),
-                        SizedBox(width: 4),
-                        Text(
-                          _viewMode == ViewMode.mushaf ? 'List' : 'Page',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            Text('Mushaf - Page $_currentPage'),
             if (_isPreloading)
               Container(
                 margin: const EdgeInsets.only(top: 4),
@@ -894,411 +999,114 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
         centerTitle: true,
         backgroundColor: const Color(0xFF8B7355),
         foregroundColor: Colors.white,
-        toolbarHeight: _isPreloading ? (isTablet ? 90 : 76) : (isTablet ? 70 : 56),
+        toolbarHeight:
+            _isPreloading ? (isTablet ? 90 : 76) : (isTablet ? 70 : 56),
         automaticallyImplyLeading: false,
+        actions: [
+          if (_audioState == AudioPlaybackState.playing ||
+              _audioState == AudioPlaybackState.paused)
+            IconButton(
+              icon: const Icon(Icons.stop),
+              onPressed: _stopAudio,
+            ),
+        ],
       ),
       body: _isInitializing
           ? Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(
-              strokeWidth: isTablet ? 6 : 4,
-            ),
-            SizedBox(height: isTablet ? 24 : 16),
-            Text(
-              _loadingMessage,
-              style: TextStyle(
-                  fontSize: isTablet ? 18 : 16,
-                  color: const Color(0xFFD2B48C)),
-            ),
-          ],
-        ),
-      )
-          : PageView.builder(
-        controller: _pageController,
-        itemCount: 604,
-        onPageChanged: _onPageChanged,
-        itemBuilder: (context, index) {
-          final page = index + 1;
-          if (_viewMode == ViewMode.mushaf) {
-            return _buildMushafPage(page);
-          } else {
-            return _buildListPage(page);
-          }
-        },
-      ),
-      bottomNavigationBar: _buildAudioBottomBar(isTablet),
-    );
-  }
-
-  Widget _buildAudioBottomBar(bool isTablet) {
-    final ayahs = _getCurrentPageAyahs();
-
-    return Container(
-      height: isTablet ? 100 : 80,
-      decoration: const BoxDecoration(
-        color: Color(0xFFF0E6D6),
-        border: Border(
-          top: BorderSide(color: Color(0xFFD2B48C), width: 1),
-        ),
-      ),
-      padding: EdgeInsets.only(
-        left: isTablet ? 20 : 16,
-        right: isTablet ? 20 : 16,
-        top: isTablet ? 12 : 10,
-        bottom: isTablet ? 16 : 12,
-      ),
-      child: Row(
-        children: [
-          // Current Ayah Info
-          Container(
-            width: isTablet ? 50 : 45,
-            child: Text(
-              ayahs.isNotEmpty
-                  ? '${_currentAyahIndex + 1}/${ayahs.length}'
-                  : '0/0',
-              style: TextStyle(
-                fontSize: isTablet ? 12 : 10,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xFF8B7355),
-              ),
-            ),
-          ),
-          SizedBox(width: isTablet ? 12 : 10),
-
-          // Single Play/Pause Button
-          GestureDetector(
-            onTap: ayahs.isNotEmpty ? _togglePlayPause : null,
-            child: Container(
-              width: isTablet ? 48 : 44,
-              height: isTablet ? 48 : 44,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: ayahs.isNotEmpty
-                    ? const Color(0xFF8B7355)
-                    : Colors.grey,
-              ),
-              child: _isLoading
-                  ? SizedBox(
-                width: isTablet ? 20 : 18,
-                height: isTablet ? 20 : 18,
-                child: const CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
-              )
-                  : Icon(
-                _isPlaying ? Icons.pause : Icons.play_arrow,
-                size: isTablet ? 26 : 24,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          SizedBox(width: isTablet ? 16 : 12),
-
-          // Progress Slider
-          Expanded(
-            child: SliderTheme(
-              data: SliderTheme.of(context).copyWith(
-                trackHeight: isTablet ? 4 : 3,
-                thumbShape: RoundSliderThumbShape(
-                  enabledThumbRadius: isTablet ? 10 : 8,
-                ),
-                overlayShape: RoundSliderOverlayShape(
-                  overlayRadius: isTablet ? 16 : 14,
-                ),
-                activeTrackColor: const Color(0xFF8B7355),
-                inactiveTrackColor: const Color(0xFFD2B48C),
-                thumbColor: const Color(0xFF8B7355),
-                overlayColor: const Color(0xFF8B7355).withOpacity(0.2),
-              ),
-              child: Slider(
-                value: ayahs.isEmpty ? 0.0 :
-                (_currentAyahIndex / (ayahs.length - 1).clamp(1, double.infinity)),
-                min: 0.0,
-                max: 1.0,
-                divisions: ayahs.length > 1 ? ayahs.length - 1 : 1,
-                onChangeStart: (value) {
-                  setState(() {
-                    _isDragging = true;
-                  });
-                },
-                onChanged: _onProgressBarChanged,
-                onChangeEnd: (value) {
-                  setState(() {
-                    _isDragging = false;
-                  });
-                },
-              ),
-            ),
-          ),
-          SizedBox(width: isTablet ? 16 : 12),
-
-          // Info Section - Right side
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              // Surah:Ayah Info
-              if (ayahs.isNotEmpty && _highlightedAyahIndex != null)
-                Text(
-                  '${ayahs[_highlightedAyahIndex!].surah}:${ayahs[_highlightedAyahIndex!].ayah}',
-                  style: TextStyle(
-                    fontSize: isTablet ? 12 : 10,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF8B7355),
-                  ),
-                ),
-              SizedBox(height: isTablet ? 4 : 3),
-              // Page & Reciter Info
-              Row(
-                mainAxisSize: MainAxisSize.min,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: isTablet ? 8 : 6,
-                      vertical: isTablet ? 3 : 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE6D7C3),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: const Color(0xFFD2B48C), width: 0.5),
-                    ),
-                    child: Text(
-                      '$_currentPage/604',
-                      style: TextStyle(
-                        fontSize: isTablet ? 11 : 9,
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xFF8B7355),
-                      ),
-                    ),
+                  CircularProgressIndicator(
+                    strokeWidth: isTablet ? 6 : 4,
                   ),
-                  SizedBox(width: isTablet ? 6 : 4),
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: isTablet ? 8 : 6,
-                      vertical: isTablet ? 3 : 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE6D7C3),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: const Color(0xFFD2B48C), width: 0.5),
-                    ),
-                    child: Text(
-                      'باسط',
-                      style: TextStyle(
-                        fontSize: isTablet ? 11 : 9,
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xFF8B7355),
-                      ),
-                    ),
+                  SizedBox(height: isTablet ? 24 : 16),
+                  Text(
+                    _loadingMessage,
+                    style: TextStyle(
+                        fontSize: isTablet ? 18 : 16,
+                        color: const Color(0xFFD2B48C)),
                   ),
                 ],
               ),
-            ],
-          ),
-        ],
-      ),
+            )
+          : Stack(
+              children: [
+                PageView.builder(
+                  controller: _pageController,
+                  itemCount: 604,
+                  onPageChanged: _onPageChanged,
+                  itemBuilder: (context, index) {
+                    final page = index + 1;
+                    return _buildMushafPage(page);
+                  },
+                ),
+                // Floating Audio Button
+                Positioned(
+                  right: 16,
+                  bottom: 16,
+                  child: _buildFloatingAudioButton(),
+                ),
+              ],
+            ),
     );
   }
 
-  Widget _buildListPage(int page) {
-    final mushafPage = _allPagesData[page];
-
-    if (mushafPage == null) {
-      if (!_loadedPages.contains(page)) {
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const CircularProgressIndicator(),
-              const SizedBox(height: 16),
-              Text('Loading page $page...',
-                  style: const TextStyle(fontSize: 16)),
-            ],
-          ),
-        );
-      }
-
-      return const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.error_outline, size: 64, color: Color(0xFF8B4513)),
-            SizedBox(height: 16),
-            Text('No content found for this page',
-                style: TextStyle(fontSize: 18)),
-          ],
-        ),
-      );
-    }
-
-    final screenSize = MediaQuery.of(context).size;
-    final isTablet = screenSize.width > 600;
-    final ayahs = mushafPage.ayahs;
-
-    if (ayahs.isEmpty) {
-      return const Center(
-        child: Text(
-          'No ayahs found on this page',
-          style: TextStyle(
-            fontSize: 16,
-            color: Color(0xFF8B7355),
-          ),
-        ),
-      );
-    }
-
+  Widget _buildFloatingAudioButton() {
     return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xFFF0E6D6),
-      ),
-      child: GestureDetector(
-        onDoubleTap: _onDoubleTap,
-        child: ListView.builder(
-          padding: EdgeInsets.all(isTablet ? 16 : 12),
-          itemCount: ayahs.length,
-          itemBuilder: (context, index) {
-            final ayah = ayahs[index];
-            final isHighlighted = _highlightedAyahIndex == index;
-
-            return _buildAyahCard(ayah, index, isHighlighted, isTablet);
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAyahCard(PageAyah ayah, int index, bool isHighlighted, bool isTablet) {
-    final translation = _getTestTranslation(ayah.surah, ayah.ayah);
-
-    return Container(
-      margin: EdgeInsets.only(bottom: isTablet ? 16 : 12),
       decoration: BoxDecoration(
-        color: isHighlighted
-            ? Colors.amber.withOpacity(0.1)
-            : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isHighlighted
-              ? const Color(0xFF8B7355)
-              : const Color(0xFFD2B48C),
-          width: isHighlighted ? 2 : 1,
-        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(0.2),
+            spreadRadius: 2,
             blurRadius: 8,
-            offset: const Offset(0, 2),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: InkWell(
-        onTap: () => _onAyahTap(ayah.surah, ayah.ayah),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: EdgeInsets.all(isTablet ? 20 : 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Ayah Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Ayah Number Badge
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: isTablet ? 12 : 10,
-                      vertical: isTablet ? 6 : 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF8B7355),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      '${ayah.surah}:${ayah.ayah}',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: isTablet ? 14 : 12,
-                      ),
-                    ),
-                  ),
-
-                  // Play button for this ayah
-                  Container(
-                    decoration: BoxDecoration(
-                      color: isHighlighted
-                          ? const Color(0xFF8B7355)
-                          : const Color(0xFFF0E6D6),
-                      shape: BoxShape.circle,
-                    ),
-                    child: IconButton(
-                      icon: Icon(
-                        (_isPlaying && _highlightedAyahIndex == index)
-                            ? Icons.pause
-                            : Icons.play_arrow,
-                        color: isHighlighted ? Colors.white : const Color(0xFF8B7355),
-                        size: isTablet ? 24 : 20,
-                      ),
-                      onPressed: () => _onAyahTap(ayah.surah, ayah.ayah),
-                    ),
-                  ),
-                ],
-              ),
-
-              SizedBox(height: isTablet ? 16 : 12),
-
-              // Arabic Text
-              Container(
-                padding: EdgeInsets.all(isTablet ? 16 : 12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF8F6F0),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: const Color(0xFFE6D7C3),
-                    width: 1,
-                  ),
-                ),
-                child: Text(
-                  ayah.text,
-                  textAlign: TextAlign.right,
-                  textDirection: TextDirection.rtl,
-                  style: TextStyle(
-                    fontFamily: 'QPCPageFont$_currentPage',
-                    fontSize: isTablet ? 24 : 20,
-                    height: 1.8,
-                    color: const Color(0xFF2C2C2C),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: isTablet ? 12 : 8),
-
-              // Translation
-              Container(
-                padding: EdgeInsets.all(isTablet ? 16 : 12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF5F3ED),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  translation,
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    fontSize: isTablet ? 16 : 14,
-                    height: 1.6,
-                    color: const Color(0xFF4A4A4A),
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+      child: FloatingActionButton(
+        onPressed:
+            _audioState == AudioPlaybackState.loading ? null : _toggleAudio,
+        backgroundColor: _getAudioButtonColor(),
+        foregroundColor: Colors.white,
+        elevation: 0,
+        child: _getAudioButtonIcon(),
       ),
     );
+  }
+
+  Color _getAudioButtonColor() {
+    switch (_audioState) {
+      case AudioPlaybackState.playing:
+        return Colors.orange[600]!;
+      case AudioPlaybackState.paused:
+        return Colors.blue[600]!;
+      case AudioPlaybackState.loading:
+        return Colors.grey[600]!;
+      case AudioPlaybackState.stopped:
+      default:
+        return Colors.green[600]!;
+    }
+  }
+
+  Widget _getAudioButtonIcon() {
+    switch (_audioState) {
+      case AudioPlaybackState.playing:
+        return const Icon(Icons.pause, size: 28);
+      case AudioPlaybackState.paused:
+        return const Icon(Icons.play_arrow, size: 28);
+      case AudioPlaybackState.loading:
+        return const SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          ),
+        );
+      case AudioPlaybackState.stopped:
+      default:
+        return const Icon(Icons.play_arrow, size: 28);
+    }
   }
 
   Widget _buildMushafPage(int page) {
@@ -1334,11 +1142,10 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
 
     final screenSize = MediaQuery.of(context).size;
     final isTablet = screenSize.width > 600;
-    final appBarHeight = _isPreloading ? (isTablet ? 90.0 : 76.0) : (isTablet ? 70.0 : 56.0);
-    final bottomNavHeight = isTablet ? 110.0 : 90.0;
+    final appBarHeight =
+        _isPreloading ? (isTablet ? 90.0 : 76.0) : (isTablet ? 70.0 : 56.0);
     final statusBarHeight = MediaQuery.of(context).padding.top;
-    final availableHeight =
-        screenSize.height - appBarHeight - bottomNavHeight - statusBarHeight;
+    final availableHeight = screenSize.height - appBarHeight - statusBarHeight;
 
     return Container(
       width: double.infinity,
@@ -1346,33 +1153,32 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       decoration: const BoxDecoration(
         color: Color(0xFFF0E6D6),
       ),
-      child: GestureDetector(
-        onDoubleTap: _onDoubleTap,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight,
-                ),
-                child: IntrinsicHeight(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: mushafPage.lines
-                        .map((line) => _buildLine(line, constraints, page))
-                        .toList(),
-                  ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: constraints.maxHeight,
+              ),
+              child: IntrinsicHeight(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: mushafPage.lines
+                      .map((line) =>
+                          _buildLine(line, constraints, page, mushafPage))
+                      .toList(),
                 ),
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildLine(SimpleMushafLine line, BoxConstraints constraints, int page) {
+  Widget _buildLine(SimpleMushafLine line, BoxConstraints constraints, int page,
+      MushafPage mushafPage) {
     final screenSize = MediaQuery.of(context).size;
     final isTablet = screenSize.width > 600;
     final isLandscape = screenSize.width > screenSize.height;
@@ -1385,7 +1191,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
           builder: (context) {
             if (line.lineType == 'surah_name') {
               final surahNumber =
-              int.tryParse(line.text.replaceAll('SURAH_BANNER_', ''));
+                  int.tryParse(line.text.replaceAll('SURAH_BANNER_', ''));
               if (surahNumber != null) {
                 return GestureDetector(
                   child: SurahBanner(
@@ -1396,15 +1202,38 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
               }
             }
 
-            return GestureDetector(
-              onTapUp: (details) => _handleLineClick(details, line),
-              child: Center(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 0),
-                    child: _buildHighlightedText(line, isTablet, isLandscape, screenSize, page),
-                  ),
+            // Check if this line has ayah segments for word highlighting
+            final segments = mushafPage.lineToSegments[line.lineNumber] ?? [];
+
+            return Center(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 0),
+                  child: segments.isNotEmpty
+                      ? GestureDetector(
+                          onTap: () {
+                            // Handle line tap - you can highlight the first ayah in the line
+                            if (segments.isNotEmpty) {
+                              final firstSegment = segments.first;
+                              final ayah = _findAyahForSegment(firstSegment);
+                              if (ayah != null) {
+                                setState(() {
+                                  _userSelectedWordId =
+                                      '${ayah.surah}:${ayah.ayah}:1';
+                                });
+                              }
+                            }
+                          },
+                          child: _buildHighlightableText(line, segments, page),
+                        )
+                      : _buildTextWithThickness(
+                          line.text,
+                          _getMaximizedFontSize(
+                              line.lineType, isTablet, isLandscape, screenSize),
+                          line.lineType == 'surah_name'
+                              ? 'SurahNameFont'
+                              : 'QPCPageFont$page'),
                 ),
               ),
             );
@@ -1414,137 +1243,114 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     );
   }
 
-  Widget _buildHighlightedText(SimpleMushafLine line, bool isTablet, bool isLandscape, Size screenSize, int page) {
-    final fontSize = _getMaximizedFontSize(line.lineType, isTablet, isLandscape, screenSize);
-    final fontFamily = line.lineType == 'surah_name'
-        ? 'SurahNameFont'
-        : 'QPCPageFont$page';
+  Widget _buildHighlightableText(
+      SimpleMushafLine line, List<AyahSegment> segments, int page) {
+    final screenSize = MediaQuery.of(context).size;
+    final isTablet = screenSize.width > 600;
+    final isLandscape = screenSize.width > screenSize.height;
+    final fontSize =
+        _getMaximizedFontSize(line.lineType, isTablet, isLandscape, screenSize);
 
-    final mushafPage = _getCurrentPage();
-    if (mushafPage == null) {
-      return _buildTextWithThickness(line.text, fontSize, fontFamily);
-    }
+    // Create a list of text spans with highlighting
+    List<InlineSpan> spans = [];
 
-    // Get segments for this line
-    final segments = mushafPage.lineToSegments[line.lineNumber] ?? [];
+    for (final segment in segments) {
+      final ayah = _findAyahForSegment(segment);
+      if (ayah == null) continue;
 
-    // Check if any segment should be highlighted
-    AyahSegment? highlightedSegment;
-    if (_highlightedAyahIndex != null && _highlightedAyahIndex! < mushafPage.ayahs.length) {
-      final highlightedAyah = mushafPage.ayahs[_highlightedAyahIndex!];
+      // Build word spans with highlighting
+      for (final word in segment.words) {
+        final wordId = '${ayah.surah}:${ayah.ayah}:${word.wordIndex}';
+        final isHighlighted = _highlightedWordId == wordId;
+        final isUserSelected = _userSelectedWordId == wordId;
 
-      // Find if any segment in this line belongs to the highlighted ayah
-      for (var segment in segments) {
-        if (highlightedAyah.segments.contains(segment)) {
-          highlightedSegment = segment;
-          break;
+        spans.add(
+          WidgetSpan(
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  // Toggle selection
+                  if (_userSelectedWordId == wordId) {
+                    _userSelectedWordId = null;
+                  } else {
+                    _userSelectedWordId = wordId;
+                  }
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
+                decoration: BoxDecoration(
+                  color: isUserSelected
+                      ? Colors.blue.withOpacity(0.3)
+                      : isHighlighted
+                          ? Colors.yellow.withOpacity(0.7)
+                          : null,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  word.text,
+                  style: TextStyle(
+                    fontFamily: 'QPCPageFont$page',
+                    fontSize: fontSize,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        // Add space between words (except for the last word)
+        if (word != segment.words.last) {
+          spans.add(
+            TextSpan(
+              text: ' ',
+              style: TextStyle(
+                fontFamily: 'QPCPageFont$page',
+                fontSize: fontSize,
+              ),
+            ),
+          );
         }
       }
-    }
 
-    // If no highlighting needed, return normal clickable text
-    if (highlightedSegment == null) {
-      return _buildTextWithThickness(line.text, fontSize, fontFamily);
-    }
-
-    // Build highlighted text using character-by-character approach
-    return _buildCharacterHighlightedText(
-      text: line.text,
-      startIndex: highlightedSegment.startIndex,
-      endIndex: highlightedSegment.endIndex,
-      fontSize: fontSize,
-      fontFamily: fontFamily,
-    );
-  }
-
-  Widget _buildCharacterHighlightedText({
-    required String text,
-    required int startIndex,
-    required int endIndex,
-    required double fontSize,
-    required String fontFamily,
-  }) {
-    final strokeWidth = fontSize * 0.025;
-    final spans = <TextSpan>[];
-
-    // Build character by character
-    for (int i = 0; i < text.length; i++) {
-      final char = text[i];
-      final isHighlighted = i >= startIndex && i < endIndex;
-
-      spans.add(TextSpan(
-        text: char,
-        style: TextStyle(
-          fontFamily: fontFamily,
-          fontSize: fontSize,
-          foreground: Paint()
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = strokeWidth
-            ..color = isHighlighted ? Colors.red.shade900 : Colors.black,
-          backgroundColor: isHighlighted ? Colors.amber.withOpacity(0.3) : null,
-        ),
-      ));
-    }
-
-    return Stack(
-      children: [
-        // Stroke layer
-        RichText(
-          textAlign: TextAlign.right,
-          textDirection: TextDirection.rtl,
-          maxLines: 1,
-          text: TextSpan(children: spans),
-        ),
-        // Fill layer
-        RichText(
-          textAlign: TextAlign.right,
-          textDirection: TextDirection.rtl,
-          maxLines: 1,
-          text: TextSpan(
-            children: spans.map((span) => TextSpan(
-              text: span.text,
-              style: TextStyle(
-                fontFamily: fontFamily,
-                fontSize: fontSize,
-                color: span.style?.backgroundColor != null
-                    ? const Color(0xFF8B7355)
-                    : Colors.black,
-                backgroundColor: span.style?.backgroundColor,
-              ),
-            )).toList(),
+      // Add space between segments
+      if (segment != segments.last) {
+        spans.add(
+          TextSpan(
+            text: ' ',
+            style: TextStyle(
+              fontFamily: 'QPCPageFont$page',
+              fontSize: fontSize,
+            ),
           ),
-        ),
-      ],
-    );
-  }
-
-  // Handle click on text line to determine which ayah was clicked
-  void _handleLineClick(TapUpDetails details, SimpleMushafLine line) {
-    final mushafPage = _getCurrentPage();
-    if (mushafPage == null) return;
-
-    final segments = mushafPage.lineToSegments[line.lineNumber] ?? [];
-    if (segments.isEmpty) return;
-
-    // For simplicity, if multiple segments on line, use the first one
-    // You could make this more sophisticated by calculating click position
-    final segment = segments.first;
-
-    // Find which ayah this segment belongs to
-    PageAyah? clickedAyah;
-    for (var ayah in mushafPage.ayahs) {
-      if (ayah.segments.contains(segment)) {
-        clickedAyah = ayah;
-        break;
+        );
       }
     }
 
-    if (clickedAyah != null) {
-      _onAyahTap(clickedAyah.surah, clickedAyah.ayah);
-    }
+
+    return RichText(
+      textAlign: TextAlign.right,
+      textDirection: TextDirection.rtl,
+      text: TextSpan(children: spans),
+    );
   }
 
-  Widget _buildTextWithThickness(String text, double fontSize, String fontFamily, {Color? backgroundColor, Color textColor = Colors.black}) {
+  PageAyah? _findAyahForSegment(AyahSegment segment) {
+    final page = _allPagesData[_currentPage];
+    if (page == null) return null;
+
+    for (final ayah in page.ayahs) {
+      if (ayah.segments.contains(segment)) {
+        return ayah;
+      }
+    }
+    return null;
+  }
+
+  Widget _buildTextWithThickness(
+      String text, double fontSize, String fontFamily,
+      {Color? backgroundColor, Color textColor = Colors.black}) {
     final strokeWidth = fontSize * 0.025;
 
     Widget textWidget = Stack(
@@ -1593,7 +1399,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
   double _getMaximizedFontSize(
       String lineType, bool isTablet, bool isLandscape, Size screenSize) {
     final screenMultiplier =
-    isTablet ? (isLandscape ? 1.8 : 1.5) : (isLandscape ? 1.3 : 1.0);
+        isTablet ? (isLandscape ? 1.8 : 1.5) : (isLandscape ? 1.3 : 1.0);
     final widthMultiplier = (screenSize.width / 400).clamp(0.8, 2.5);
     return 20.0 * screenMultiplier * widthMultiplier;
   }
