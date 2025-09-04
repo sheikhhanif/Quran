@@ -242,6 +242,7 @@ class AudioService {
   PageAyah? _currentAyah;
   List<PageAyah>? _pageAyahs;
   int _currentAyahIndex = 0;
+  String? _lastHighlightedWordId;
 
   Future<void> initialize() async {
     await _loadAudioData();
@@ -324,6 +325,10 @@ class AudioService {
       _currentAyah = ayah;
       _currentAyahController.add(ayah);
 
+      // Reset highlighting state for new ayah
+      _lastHighlightedWordId = null;
+      _highlightController.add(null);
+
       await _audioPlayer.play(UrlSource(audioData.audioUrl));
     } catch (e) {
       print('Error playing ayah ${ayah.surah}:${ayah.ayah} - $e');
@@ -372,38 +377,121 @@ class AudioService {
     final positionMs = position.inMilliseconds;
 
     // Find the current segment being played
+    AudioSegment? currentSegment;
     for (final segment in _currentAudioData!.segments) {
       if (positionMs >= segment.startTimeMs && positionMs < segment.endTimeMs) {
-        // Generate a unique identifier for the word
-        final wordId =
-            '${_currentAyah!.surah}:${_currentAyah!.ayah}:${segment.wordIndex}';
-        _highlightController.add(wordId);
-        return;
+        currentSegment = segment;
+        break;
       }
     }
 
-    // If we're between segments, find the closest previous segment
-    // This ensures smooth transitions between words
-    AudioSegment? closestSegment;
-    int smallestGap = 999999;
+    String? newWordId;
 
-    for (final segment in _currentAudioData!.segments) {
-      if (positionMs >= segment.startTimeMs) {
-        final gap = positionMs - segment.endTimeMs;
-        if (gap < smallestGap) {
-          smallestGap = gap;
-          closestSegment = segment;
+    // If we found a current segment, highlight it
+    if (currentSegment != null) {
+      // Use the word index from the segment directly
+      // This correctly handles backward repetition because the wordIndex reflects which word is actually being recited
+      final wordIndex = currentSegment.wordIndex;
+
+      // Get all words from the current ayah
+      final ayahWords = _getAyahWords(_currentAyah!);
+
+      // Map the word index to the actual word in the ayah
+      // Map the audio segment to the correct word in the ayah
+      // The key insight: we need to map based on the segment's position in the audio timeline,
+      // not just the wordIndex, because wordIndex can repeat for backward repetition
+      final segmentPosition =
+          _currentAudioData!.segments.indexOf(currentSegment);
+
+      if (segmentPosition >= 0 && segmentPosition < ayahWords.length) {
+        // Use the segment position to get the corresponding word
+        final uiWordIndex = segmentPosition + 1; // Convert to 1-based indexing
+        newWordId = '${_currentAyah!.surah}:${_currentAyah!.ayah}:$uiWordIndex';
+
+        // Debug output to understand the mapping
+        print(
+            'Audio segment position: $segmentPosition, wordIndex: $wordIndex, UI wordIndex: $uiWordIndex, Generated wordId: $newWordId');
+      } else if (ayahWords.isNotEmpty) {
+        // Fallback: use the word index from the segment if position mapping fails
+        final fallbackWordIndex = wordIndex.clamp(1, ayahWords.length);
+        newWordId =
+            '${_currentAyah!.surah}:${_currentAyah!.ayah}:$fallbackWordIndex';
+        print(
+            'Fallback: wordIndex: $wordIndex, fallbackWordIndex: $fallbackWordIndex, Generated wordId: $newWordId');
+      }
+    } else {
+      // If we're between segments, find the most appropriate segment to highlight
+      // This handles both forward and backward movement properly
+      AudioSegment? bestSegment;
+      int minTimeDiff = 500; // Maximum time difference to consider
+
+      // Find the closest segment (either before or after current position)
+      for (final segment in _currentAudioData!.segments) {
+        int timeDiff;
+
+        if (positionMs < segment.startTimeMs) {
+          // Position is before this segment
+          timeDiff = segment.startTimeMs - positionMs;
+        } else if (positionMs > segment.endTimeMs) {
+          // Position is after this segment
+          timeDiff = positionMs - segment.endTimeMs;
+        } else {
+          // This shouldn't happen since we're in the "else" branch
+          continue;
+        }
+
+        // If this segment is closer than the current best, use it
+        if (timeDiff < minTimeDiff) {
+          minTimeDiff = timeDiff;
+          bestSegment = segment;
+        }
+      }
+
+      // Highlight the closest segment if found
+      if (bestSegment != null) {
+        // Use the same mapping logic as above - map by segment position
+        final segmentPosition =
+            _currentAudioData!.segments.indexOf(bestSegment);
+        final ayahWords = _getAyahWords(_currentAyah!);
+
+        // Apply the same mapping logic as above
+        if (segmentPosition >= 0 && segmentPosition < ayahWords.length) {
+          // Use the segment position to get the corresponding word
+          final uiWordIndex =
+              segmentPosition + 1; // Convert to 1-based indexing
+          newWordId =
+              '${_currentAyah!.surah}:${_currentAyah!.ayah}:$uiWordIndex';
+        } else if (ayahWords.isNotEmpty) {
+          // Fallback: use the word index from the segment if position mapping fails
+          final wordIndex = bestSegment.wordIndex;
+          final fallbackWordIndex = wordIndex.clamp(1, ayahWords.length);
+          newWordId =
+              '${_currentAyah!.surah}:${_currentAyah!.ayah}:$fallbackWordIndex';
         }
       }
     }
 
-    // If we found a close segment (within 200ms), keep highlighting it
-    if (closestSegment != null && smallestGap < 200) {
-      final wordId =
-          '${_currentAyah!.surah}:${_currentAyah!.ayah}:${closestSegment.wordIndex}';
-      _highlightController.add(wordId);
+    // Update highlight if it's different from the last one
+    // For better responsiveness to seeking/scrubbing, we don't throttle updates
+    if (newWordId != null && newWordId != _lastHighlightedWordId) {
+      _highlightController.add(newWordId);
+      _lastHighlightedWordId = newWordId;
+    } else if (newWordId == null && _lastHighlightedWordId != null) {
+      // Clear highlight if no segment should be highlighted
+      _highlightController.add(null);
+      _lastHighlightedWordId = null;
     }
-    // Otherwise, don't change the current highlight
+  }
+
+  // Helper method to get all words from an ayah in order
+  List<AyahWord> _getAyahWords(PageAyah ayah) {
+    List<AyahWord> allWords = [];
+    for (final segment in ayah.segments) {
+      allWords.addAll(segment.words);
+    }
+    // Sort by wordIndex to ensure proper order
+    allWords.sort((a, b) => a.wordIndex.compareTo(b.wordIndex));
+    return allWords;
   }
 
   void dispose() {
@@ -606,6 +694,14 @@ class MushafPageBuilder {
     required int ayahNumber,
     required List<AyahWordData> words,
   }) async {
+    // Sort all words by line number first, then by startIndex to ensure proper order
+    words.sort((a, b) {
+      if (a.lineNumber != b.lineNumber) {
+        return a.lineNumber.compareTo(b.lineNumber);
+      }
+      return a.startIndex.compareTo(b.startIndex);
+    });
+
     // Group words by line
     Map<int, List<AyahWordData>> wordsByLine = {};
     for (var word in words) {
@@ -622,9 +718,7 @@ class MushafPageBuilder {
       final lineNumber = sortedLineNumbers[i];
       final lineWords = wordsByLine[lineNumber]!;
 
-      // Sort words by their original startIndex from the database
-      lineWords.sort((a, b) => a.startIndex.compareTo(b.startIndex));
-
+      // Words are already sorted by startIndex from the initial sort
       final startIndex = lineWords.first.startIndex;
       final endIndex = lineWords.last.endIndex;
       final segmentText = lineWords.map((w) => w.text).join('');
@@ -1028,6 +1122,82 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     }
   }
 
+  void _showPageJumpDialog() {
+    final TextEditingController pageController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Jump to Page'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Enter page number (1-604):'),
+              const SizedBox(height: 16),
+              TextField(
+                controller: pageController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  hintText: 'Page number',
+                  border: OutlineInputBorder(),
+                ),
+                autofocus: true,
+                onSubmitted: (value) {
+                  _jumpToPage(value);
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _jumpToPage(pageController.text);
+                Navigator.of(context).pop();
+              },
+              child: const Text('Go'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _jumpToPage(String pageText) {
+    final pageNumber = int.tryParse(pageText);
+    if (pageNumber != null && pageNumber >= 1 && pageNumber <= 604) {
+      // Stop audio if playing
+      if (_audioState != AudioPlaybackState.stopped) {
+        _stopAudio();
+      }
+
+      // Navigate to the page
+      _pageController.animateToPage(
+        pageNumber - 1, // PageController uses 0-based index
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+
+      // Load the page if not already loaded
+      _loadPage(pageNumber);
+    } else {
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a valid page number between 1 and 604'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   void dispose() {
     _pageController.dispose();
@@ -1066,6 +1236,13 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
         toolbarHeight:
             _isPreloading ? (isTablet ? 90 : 76) : (isTablet ? 70 : 56),
         automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: _showPageJumpDialog,
+            tooltip: 'Jump to Page',
+          ),
+        ],
       ),
       body: _isInitializing
           ? Center(
@@ -1431,7 +1608,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     }
 
     // Special formatting for first few pages (1-2) and last few pages (600-604) - no stretching, keep original
-    if (page <= 2 || page >= 600) {
+    if (page <= 2 || page >= 603) {
       return Center(
         child: segments.isNotEmpty
             ? GestureDetector(
