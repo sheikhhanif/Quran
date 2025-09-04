@@ -876,7 +876,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     try {
       final fontLoader = FontLoader('QPCPageFont$page');
       final fontData =
-          await rootBundle.load('assets/quran/fonts/qpc-v2-font/p$page.ttf');
+          await rootBundle.load('assets/quran/fonts/hafs.ttf');
       fontLoader.addFont(Future.value(fontData));
       await fontLoader.load();
       _loadedFonts.add(page);

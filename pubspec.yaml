@@ -29,6 +29,7 @@ flutter:
     - assets/quran/layout/qpc-v2-15-lines.db
     - assets/quran/scripts/qpc-v2.db
     - assets/quran/fonts/qpc-v2-font/
+    - assets/quran/fonts/hafs.ttf
     - assets/quran/fonts/surah-name-v2.ttf
     - assets/quran/svg/
     - assets/quran/svg/surah_name/
