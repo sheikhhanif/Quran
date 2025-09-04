@@ -397,27 +397,19 @@ class AudioService {
       final ayahWords = _getAyahWords(_currentAyah!);
 
       // Map the word index to the actual word in the ayah
-      // Map the audio segment to the correct word in the ayah
-      // The key insight: we need to map based on the segment's position in the audio timeline,
-      // not just the wordIndex, because wordIndex can repeat for backward repetition
-      final segmentPosition =
-          _currentAudioData!.segments.indexOf(currentSegment);
+      // Use the audio wordIndex directly - the UI should follow what the audio says
+      if (wordIndex > 0 && wordIndex <= ayahWords.length) {
+        newWordId = '${_currentAyah!.surah}:${_currentAyah!.ayah}:$wordIndex';
 
-      if (segmentPosition >= 0 && segmentPosition < ayahWords.length) {
-        // Use the segment position to get the corresponding word
-        final uiWordIndex = segmentPosition + 1; // Convert to 1-based indexing
-        newWordId = '${_currentAyah!.surah}:${_currentAyah!.ayah}:$uiWordIndex';
-
-        // Debug output to understand the mapping
-        print(
-            'Audio segment position: $segmentPosition, wordIndex: $wordIndex, UI wordIndex: $uiWordIndex, Generated wordId: $newWordId');
+        // Debug output to verify the mapping
+        print('Audio wordIndex: $wordIndex -> UI word: $wordIndex');
       } else if (ayahWords.isNotEmpty) {
-        // Fallback: use the word index from the segment if position mapping fails
+        // Fallback: clamp to valid range
         final fallbackWordIndex = wordIndex.clamp(1, ayahWords.length);
         newWordId =
             '${_currentAyah!.surah}:${_currentAyah!.ayah}:$fallbackWordIndex';
         print(
-            'Fallback: wordIndex: $wordIndex, fallbackWordIndex: $fallbackWordIndex, Generated wordId: $newWordId');
+            'Fallback: Audio wordIndex: $wordIndex -> UI word: $fallbackWordIndex');
       }
     } else {
       // If we're between segments, find the most appropriate segment to highlight
@@ -449,21 +441,13 @@ class AudioService {
 
       // Highlight the closest segment if found
       if (bestSegment != null) {
-        // Use the same mapping logic as above - map by segment position
-        final segmentPosition =
-            _currentAudioData!.segments.indexOf(bestSegment);
+        // Apply the same mapping logic as above - use audio wordIndex directly
         final ayahWords = _getAyahWords(_currentAyah!);
-
-        // Apply the same mapping logic as above
-        if (segmentPosition >= 0 && segmentPosition < ayahWords.length) {
-          // Use the segment position to get the corresponding word
-          final uiWordIndex =
-              segmentPosition + 1; // Convert to 1-based indexing
-          newWordId =
-              '${_currentAyah!.surah}:${_currentAyah!.ayah}:$uiWordIndex';
+        final wordIndex = bestSegment.wordIndex;
+        if (wordIndex > 0 && wordIndex <= ayahWords.length) {
+          newWordId = '${_currentAyah!.surah}:${_currentAyah!.ayah}:$wordIndex';
         } else if (ayahWords.isNotEmpty) {
-          // Fallback: use the word index from the segment if position mapping fails
-          final wordIndex = bestSegment.wordIndex;
+          // Fallback: clamp to valid range
           final fallbackWordIndex = wordIndex.clamp(1, ayahWords.length);
           newWordId =
               '${_currentAyah!.surah}:${_currentAyah!.ayah}:$fallbackWordIndex';
