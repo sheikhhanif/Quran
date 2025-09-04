@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as p;
 import 'package:audioplayers/audioplayers.dart';
-import 'package:http/http.dart' as http;
 import 'surah_header_banner.dart';
 
 // ===================== MODELS =====================
@@ -383,7 +382,28 @@ class AudioService {
       }
     }
 
-    _highlightController.add(null);
+    // If we're between segments, find the closest previous segment
+    // This ensures smooth transitions between words
+    AudioSegment? closestSegment;
+    int smallestGap = 999999;
+
+    for (final segment in _currentAudioData!.segments) {
+      if (positionMs >= segment.startTimeMs) {
+        final gap = positionMs - segment.endTimeMs;
+        if (gap < smallestGap) {
+          smallestGap = gap;
+          closestSegment = segment;
+        }
+      }
+    }
+
+    // If we found a close segment (within 200ms), keep highlighting it
+    if (closestSegment != null && smallestGap < 200) {
+      final wordId =
+          '${_currentAyah!.surah}:${_currentAyah!.ayah}:${closestSegment.wordIndex}';
+      _highlightController.add(wordId);
+    }
+    // Otherwise, don't change the current highlight
   }
 
   void dispose() {
@@ -558,9 +578,6 @@ class MushafPageBuilder {
         wordTexts.add(wordText);
 
         if (surahNum != null && ayahNum != null) {
-          // Add space before word if not first
-          if (i > 0) currentIndex++;
-
           ayahWords.add(AyahWordData(
             surah: surahNum,
             ayah: ayahNum,
@@ -573,12 +590,11 @@ class MushafPageBuilder {
           currentIndex += wordText.length;
         } else {
           // Handle words without ayah info
-          if (i > 0) currentIndex++;
           currentIndex += wordText.length;
         }
       }
 
-      return _WordsResult(wordTexts.join(' '), ayahWords);
+      return _WordsResult(wordTexts.join(''), ayahWords);
     } catch (e) {
       print('Error building words from range: $e');
       return _WordsResult('', []);
@@ -611,7 +627,7 @@ class MushafPageBuilder {
 
       final startIndex = lineWords.first.startIndex;
       final endIndex = lineWords.last.endIndex;
-      final segmentText = lineWords.map((w) => w.text).join(' ');
+      final segmentText = lineWords.map((w) => w.text).join('');
 
       // Build AyahWord objects for this segment, preserving original order
       List<AyahWord> ayahWords = [];
@@ -638,7 +654,7 @@ class MushafPageBuilder {
       ));
     }
 
-    final fullText = segments.map((s) => s.text).join(' ');
+    final fullText = segments.map((s) => s.text).join('');
 
     return PageAyah(
       surah: surahNumber,
@@ -678,10 +694,16 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
   final AudioService _audioService = AudioService();
   AudioPlaybackState _audioState = AudioPlaybackState.stopped;
   String? _highlightedWordId;
-  PageAyah? _currentPlayingAyah;
 
   // Add this new variable for user selection
   String? _userSelectedAyahId; // Changed from _userSelectedWordId
+
+  // Bottom bar state variables
+  int _currentAyahIndex = 0;
+  int? _highlightedAyahIndex;
+  bool _isDragging = false;
+  bool _isPlaying = false;
+  bool _isLoading = false;
 
   // PageView controller
   late PageController _pageController;
@@ -708,6 +730,8 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       if (mounted) {
         setState(() {
           _audioState = state;
+          _isLoading = state == AudioPlaybackState.loading;
+          _isPlaying = state == AudioPlaybackState.playing;
         });
       }
     });
@@ -723,7 +747,17 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     _audioService.currentAyahStream.listen((ayah) {
       if (mounted) {
         setState(() {
-          _currentPlayingAyah = ayah;
+          if (ayah != null) {
+            // Update current ayah index based on playing ayah
+            final ayahs = _getCurrentPageAyahs();
+            for (int i = 0; i < ayahs.length; i++) {
+              if (ayahs[i].surah == ayah.surah && ayahs[i].ayah == ayah.ayah) {
+                _currentAyahIndex = i;
+                _highlightedAyahIndex = i;
+                break;
+              }
+            }
+          }
         });
       }
     });
@@ -916,11 +950,30 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     if (_audioState != AudioPlaybackState.stopped) {
       _stopAudio();
     }
+
+    // Reset bottom bar state for new page
+    setState(() {
+      _currentAyahIndex = 0;
+      _highlightedAyahIndex = null;
+      _isDragging = false;
+    });
   }
 
-  Future<void> _playPageAudio() async {
+  Future<void> _stopAudio() async {
+    await _audioService.stop();
+    setState(() {
+      _highlightedWordId = null;
+      _isPlaying = false;
+      _isLoading = false;
+      _currentAyahIndex = 0;
+      _highlightedAyahIndex = null;
+    });
+  }
+
+  // Helper method to get current page ayahs
+  List<PageAyah> _getCurrentPageAyahs() {
     final page = _allPagesData[_currentPage];
-    if (page == null || page.ayahs.isEmpty) return;
+    if (page == null) return [];
 
     // Filter out non-Quranic content and sort ayahs
     final ayahsToPlay =
@@ -930,34 +983,49 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
             return a.ayah.compareTo(b.ayah);
           });
 
-    if (ayahsToPlay.isNotEmpty) {
-      await _audioService.playPageAyahs(ayahsToPlay);
+    return ayahsToPlay;
+  }
+
+  // Progress bar change handler
+  void _onProgressBarChanged(double value) {
+    if (_isDragging) {
+      final ayahs = _getCurrentPageAyahs();
+      if (ayahs.isNotEmpty) {
+        final newIndex = (value * (ayahs.length - 1)).round();
+        setState(() {
+          _currentAyahIndex = newIndex;
+          _highlightedAyahIndex = newIndex;
+        });
+      }
     }
   }
 
-  Future<void> _toggleAudio() async {
-    switch (_audioState) {
-      case AudioPlaybackState.stopped:
-        await _playPageAudio();
-        break;
-      case AudioPlaybackState.playing:
-        await _audioService.pause();
-        break;
-      case AudioPlaybackState.paused:
-        await _audioService.resume();
-        break;
-      case AudioPlaybackState.loading:
-        // Do nothing while loading
-        break;
-    }
-  }
+  // Toggle play/pause for bottom bar
+  Future<void> _togglePlayPause() async {
+    final ayahs = _getCurrentPageAyahs();
+    if (ayahs.isEmpty) return;
 
-  Future<void> _stopAudio() async {
-    await _audioService.stop();
     setState(() {
-      _currentPlayingAyah = null;
-      _highlightedWordId = null;
+      _isLoading = true;
     });
+
+    if (_isPlaying) {
+      await _audioService.pause();
+      setState(() {
+        _isPlaying = false;
+        _isLoading = false;
+      });
+    } else {
+      // Start playing from current ayah index
+      final ayahsToPlay = ayahs.skip(_currentAyahIndex).toList();
+      if (ayahsToPlay.isNotEmpty) {
+        await _audioService.playPageAyahs(ayahsToPlay);
+        setState(() {
+          _isPlaying = true;
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -998,14 +1066,6 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
         toolbarHeight:
             _isPreloading ? (isTablet ? 90 : 76) : (isTablet ? 70 : 56),
         automaticallyImplyLeading: false,
-        actions: [
-          if (_audioState == AudioPlaybackState.playing ||
-              _audioState == AudioPlaybackState.paused)
-            IconButton(
-              icon: const Icon(Icons.stop),
-              onPressed: _stopAudio,
-            ),
-        ],
       ),
       body: _isInitializing
           ? Center(
@@ -1025,84 +1085,198 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                 ],
               ),
             )
-          : Stack(
+          : Column(
               children: [
-                PageView.builder(
-                  controller: _pageController,
-                  itemCount: 604,
-                  onPageChanged: _onPageChanged,
-                  itemBuilder: (context, index) {
-                    final page = index + 1;
-                    return _buildMushafPage(page);
-                  },
+                // Main content area
+                Expanded(
+                  child: PageView.builder(
+                    controller: _pageController,
+                    itemCount: 604,
+                    onPageChanged: _onPageChanged,
+                    itemBuilder: (context, index) {
+                      final page = index + 1;
+                      return _buildMushafPage(page);
+                    },
+                  ),
                 ),
-                // Floating Audio Button
-                Positioned(
-                  right: 16,
-                  bottom: 16,
-                  child: _buildFloatingAudioButton(),
-                ),
+                // Audio Bottom Bar
+                _buildAudioBottomBar(isTablet),
               ],
             ),
     );
   }
 
-  Widget _buildFloatingAudioButton() {
+  Widget _buildAudioBottomBar(bool isTablet) {
+    final ayahs = _getCurrentPageAyahs();
+
     return Container(
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            spreadRadius: 2,
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+      height: isTablet ? 100 : 80,
+      decoration: const BoxDecoration(
+        color: Color(0xFFF0E6D6),
+        border: Border(
+          top: BorderSide(color: Color(0xFFD2B48C), width: 1),
+        ),
+      ),
+      padding: EdgeInsets.only(
+        left: isTablet ? 20 : 16,
+        right: isTablet ? 20 : 16,
+        top: isTablet ? 12 : 10,
+        bottom: isTablet ? 16 : 12,
+      ),
+      child: Row(
+        children: [
+          // Current Ayah Info
+          Container(
+            width: isTablet ? 50 : 45,
+            child: Text(
+              ayahs.isNotEmpty
+                  ? '${_currentAyahIndex + 1}/${ayahs.length}'
+                  : '0/0',
+              style: TextStyle(
+                fontSize: isTablet ? 12 : 10,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF8B7355),
+              ),
+            ),
+          ),
+          SizedBox(width: isTablet ? 12 : 10),
+
+          // Single Play/Pause Button
+          GestureDetector(
+            onTap: ayahs.isNotEmpty ? _togglePlayPause : null,
+            child: Container(
+              width: isTablet ? 48 : 44,
+              height: isTablet ? 48 : 44,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: ayahs.isNotEmpty ? const Color(0xFF8B7355) : Colors.grey,
+              ),
+              child: _isLoading
+                  ? SizedBox(
+                      width: isTablet ? 20 : 18,
+                      height: isTablet ? 20 : 18,
+                      child: const CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                  : Icon(
+                      _isPlaying ? Icons.pause : Icons.play_arrow,
+                      size: isTablet ? 26 : 24,
+                      color: Colors.white,
+                    ),
+            ),
+          ),
+          SizedBox(width: isTablet ? 16 : 12),
+
+          // Progress Slider
+          Expanded(
+            child: SliderTheme(
+              data: SliderTheme.of(context).copyWith(
+                trackHeight: isTablet ? 4 : 3,
+                thumbShape: RoundSliderThumbShape(
+                  enabledThumbRadius: isTablet ? 10 : 8,
+                ),
+                overlayShape: RoundSliderOverlayShape(
+                  overlayRadius: isTablet ? 16 : 14,
+                ),
+                activeTrackColor: const Color(0xFF8B7355),
+                inactiveTrackColor: const Color(0xFFD2B48C),
+                thumbColor: const Color(0xFF8B7355),
+                overlayColor: const Color(0xFF8B7355).withOpacity(0.2),
+              ),
+              child: Slider(
+                value: ayahs.isEmpty
+                    ? 0.0
+                    : (_currentAyahIndex /
+                        (ayahs.length - 1).clamp(1, double.infinity)),
+                min: 0.0,
+                max: 1.0,
+                divisions: ayahs.length > 1 ? ayahs.length - 1 : 1,
+                onChangeStart: (value) {
+                  setState(() {
+                    _isDragging = true;
+                  });
+                },
+                onChanged: _onProgressBarChanged,
+                onChangeEnd: (value) {
+                  setState(() {
+                    _isDragging = false;
+                  });
+                },
+              ),
+            ),
+          ),
+          SizedBox(width: isTablet ? 16 : 12),
+
+          // Info Section - Right side
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              // Surah:Ayah Info
+              if (ayahs.isNotEmpty && _highlightedAyahIndex != null)
+                Text(
+                  '${ayahs[_highlightedAyahIndex!].surah}:${ayahs[_highlightedAyahIndex!].ayah}',
+                  style: TextStyle(
+                    fontSize: isTablet ? 12 : 10,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF8B7355),
+                  ),
+                ),
+              SizedBox(height: isTablet ? 4 : 3),
+              // Page & Reciter Info
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isTablet ? 8 : 6,
+                      vertical: isTablet ? 3 : 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE6D7C3),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                          color: const Color(0xFFD2B48C), width: 0.5),
+                    ),
+                    child: Text(
+                      '$_currentPage/604',
+                      style: TextStyle(
+                        fontSize: isTablet ? 11 : 9,
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xFF8B7355),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: isTablet ? 6 : 4),
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isTablet ? 8 : 6,
+                      vertical: isTablet ? 3 : 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE6D7C3),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                          color: const Color(0xFFD2B48C), width: 0.5),
+                    ),
+                    child: Text(
+                      'باسط',
+                      style: TextStyle(
+                        fontSize: isTablet ? 11 : 9,
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xFF8B7355),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ],
       ),
-      child: FloatingActionButton(
-        onPressed:
-            _audioState == AudioPlaybackState.loading ? null : _toggleAudio,
-        backgroundColor: _getAudioButtonColor(),
-        foregroundColor: Colors.white,
-        elevation: 0,
-        child: _getAudioButtonIcon(),
-      ),
     );
-  }
-
-  Color _getAudioButtonColor() {
-    switch (_audioState) {
-      case AudioPlaybackState.playing:
-        return Colors.orange[600]!;
-      case AudioPlaybackState.paused:
-        return Colors.blue[600]!;
-      case AudioPlaybackState.loading:
-        return Colors.grey[600]!;
-      case AudioPlaybackState.stopped:
-      default:
-        return Colors.green[600]!;
-    }
-  }
-
-  Widget _getAudioButtonIcon() {
-    switch (_audioState) {
-      case AudioPlaybackState.playing:
-        return const Icon(Icons.pause, size: 28);
-      case AudioPlaybackState.paused:
-        return const Icon(Icons.play_arrow, size: 28);
-      case AudioPlaybackState.loading:
-        return const SizedBox(
-          width: 24,
-          height: 24,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-          ),
-        );
-      case AudioPlaybackState.stopped:
-      default:
-        return const Icon(Icons.play_arrow, size: 28);
-    }
   }
 
   Widget _buildMushafPage(int page) {
@@ -1141,7 +1315,9 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     final appBarHeight =
         _isPreloading ? (isTablet ? 90.0 : 76.0) : (isTablet ? 70.0 : 56.0);
     final statusBarHeight = MediaQuery.of(context).padding.top;
-    final availableHeight = screenSize.height - appBarHeight - statusBarHeight;
+    final bottomBarHeight = isTablet ? 100.0 : 80.0;
+    final availableHeight =
+        screenSize.height - appBarHeight - statusBarHeight - bottomBarHeight;
 
     return Container(
       width: double.infinity,
@@ -1151,22 +1327,15 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          return SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: constraints.maxHeight,
-              ),
-              child: IntrinsicHeight(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: mushafPage.lines
-                      .map((line) =>
-                          _buildLine(line, constraints, page, mushafPage))
-                      .toList(),
-                ),
-              ),
-            ),
+          return Column(
+            mainAxisAlignment: page <= 2
+                ? MainAxisAlignment.center // Center content for pages 1-2
+                : MainAxisAlignment
+                    .spaceEvenly, // Distribute evenly for other pages
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: mushafPage.lines
+                .map((line) => _buildLine(line, constraints, page, mushafPage))
+                .toList(),
           );
         },
       ),
@@ -1179,6 +1348,37 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     final isTablet = screenSize.width > 600;
     final isLandscape = screenSize.width > screenSize.height;
 
+    // For pages 1-2, use natural height instead of stretching
+    if (page <= 2) {
+      return Container(
+        width: double.infinity,
+        child: Builder(
+          builder: (context) {
+            if (line.lineType == 'surah_name') {
+              final surahNumber =
+                  int.tryParse(line.text.replaceAll('SURAH_BANNER_', ''));
+              if (surahNumber != null) {
+                return GestureDetector(
+                  child: SurahBanner(
+                    surahNumber: surahNumber,
+                    isCentered: line.isCentered,
+                  ),
+                );
+              }
+            }
+
+            // Check if this line has ayah segments for word highlighting
+            final segments = mushafPage.lineToSegments[line.lineNumber] ?? [];
+
+            // Special formatting for different line types and pages
+            return _buildLineWithSpecialFormatting(line, segments, page,
+                mushafPage, isTablet, isLandscape, screenSize);
+          },
+        ),
+      );
+    }
+
+    // For regular pages, use expanded to fill height
     return Expanded(
       flex: 1,
       child: Container(
@@ -1201,41 +1401,86 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
             // Check if this line has ayah segments for word highlighting
             final segments = mushafPage.lineToSegments[line.lineNumber] ?? [];
 
-            return Center(
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 0),
-                  child: segments.isNotEmpty
-                      ? GestureDetector(
-                          onTap: () {
-                            // Handle line tap - highlight the first ayah in the line
-                            if (segments.isNotEmpty) {
-                              final firstSegment = segments.first;
-                              final ayah = _findAyahForSegment(firstSegment);
-                              if (ayah != null) {
-                                setState(() {
-                                  _userSelectedAyahId =
-                                      '${ayah.surah}:${ayah.ayah}'; // Changed to ayah ID
-                                });
-                              }
-                            }
-                          },
-                          child: _buildHighlightableText(line, segments, page),
-                        )
-                      : _buildTextWithThickness(
-                          line.text,
-                          _getMaximizedFontSize(
-                              line.lineType, isTablet, isLandscape, screenSize),
-                          line.lineType == 'surah_name'
-                              ? 'SurahNameFont'
-                              : 'QPCPageFont$page'),
-                ),
-              ),
-            );
+            // Special formatting for different line types and pages
+            return _buildLineWithSpecialFormatting(line, segments, page,
+                mushafPage, isTablet, isLandscape, screenSize);
           },
         ),
       ),
+    );
+  }
+
+  Widget _buildLineWithSpecialFormatting(
+      SimpleMushafLine line,
+      List<AyahSegment> segments,
+      int page,
+      MushafPage mushafPage,
+      bool isTablet,
+      bool isLandscape,
+      Size screenSize) {
+    // Special formatting for basmallah lines - center them without stretching
+    if (line.lineType == 'basmallah') {
+      return Center(
+        child: _buildTextWithThicknessNoStretch(
+          line.text,
+          _getMaximizedFontSize(
+              line.lineType, isTablet, isLandscape, screenSize),
+          'QPCPageFont$page',
+        ),
+      );
+    }
+
+    // Special formatting for first few pages (1-2) and last few pages (600-604) - no stretching, keep original
+    if (page <= 2 || page >= 600) {
+      return Center(
+        child: segments.isNotEmpty
+            ? GestureDetector(
+                onTap: () {
+                  // Handle line tap - highlight the first ayah in the line
+                  if (segments.isNotEmpty) {
+                    final firstSegment = segments.first;
+                    final ayah = _findAyahForSegment(firstSegment);
+                    if (ayah != null) {
+                      setState(() {
+                        _userSelectedAyahId = '${ayah.surah}:${ayah.ayah}';
+                      });
+                    }
+                  }
+                },
+                child: _buildHighlightableTextNoStretch(line, segments, page),
+              )
+            : _buildTextWithThicknessNoStretch(
+                line.text,
+                _getMaximizedFontSize(
+                    line.lineType, isTablet, isLandscape, screenSize),
+                'QPCPageFont$page'),
+      );
+    }
+
+    // Default formatting for regular pages - stretch to full width
+    return Container(
+      width: double.infinity,
+      child: segments.isNotEmpty
+          ? GestureDetector(
+              onTap: () {
+                // Handle line tap - highlight the first ayah in the line
+                if (segments.isNotEmpty) {
+                  final firstSegment = segments.first;
+                  final ayah = _findAyahForSegment(firstSegment);
+                  if (ayah != null) {
+                    setState(() {
+                      _userSelectedAyahId = '${ayah.surah}:${ayah.ayah}';
+                    });
+                  }
+                }
+              },
+              child: _buildHighlightableText(line, segments, page),
+            )
+          : _buildTextWithThickness(
+              line.text,
+              _getMaximizedFontSize(
+                  line.lineType, isTablet, isLandscape, screenSize),
+              'QPCPageFont$page'),
     );
   }
 
@@ -1310,29 +1555,202 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
               ),
             ),
           );
+        }
+      }
 
-          // Add space between words (except for the last word in the segment)
-          if (word != sortedWords.last) {
-            ayahSpans.add(
-              TextSpan(
-                text: ' ',
-                style: TextStyle(
-                  fontFamily: 'QPCPageFont$page',
-                  fontSize: fontSize,
+      // Wrap the entire ayah in a single highlightable container
+      spans.add(
+        WidgetSpan(
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                // Toggle ayah selection
+                if (_userSelectedAyahId == ayahId) {
+                  _userSelectedAyahId = null;
+                } else {
+                  _userSelectedAyahId = ayahId;
+                }
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              decoration: BoxDecoration(
+                color: isUserSelected ? Colors.blue.withOpacity(0.3) : null,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: FittedBox(
+                fit: BoxFit.fitWidth,
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  textDirection: TextDirection.rtl,
+                  text: TextSpan(children: ayahSpans),
                 ),
               ),
-            );
-          }
-        }
+            ),
+          ),
+        ),
+      );
+    }
 
-        // Add space between segments (except for the last segment)
-        if (segment != ayahSegments.last) {
+    // Reverse the spans to display right-to-left
+    spans = spans.reversed.toList();
+
+    return Container(
+      width: double.infinity,
+      child: FittedBox(
+        fit: BoxFit.fitWidth,
+        child: RichText(
+          textAlign: TextAlign.center,
+          textDirection: TextDirection.rtl,
+          text: TextSpan(children: spans),
+        ),
+      ),
+    );
+  }
+
+  PageAyah? _findAyahForSegment(AyahSegment segment) {
+    final page = _allPagesData[_currentPage];
+    if (page == null) return null;
+
+    for (final ayah in page.ayahs) {
+      if (ayah.segments.contains(segment)) {
+        return ayah;
+      }
+    }
+    return null;
+  }
+
+  Widget _buildTextWithThickness(
+      String text, double fontSize, String fontFamily,
+      {Color? backgroundColor, Color textColor = Colors.black}) {
+    Widget textWidget = Container(
+      width: double.infinity,
+      child: FittedBox(
+        fit: BoxFit.fitWidth,
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          textDirection: TextDirection.rtl,
+          maxLines: 1,
+          style: TextStyle(
+            fontFamily: fontFamily,
+            fontSize: fontSize,
+            color: textColor,
+          ),
+        ),
+      ),
+    );
+
+    if (backgroundColor != null) {
+      return Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: textWidget,
+      );
+    }
+
+    return textWidget;
+  }
+
+  Widget _buildTextWithThicknessNoStretch(
+      String text, double fontSize, String fontFamily,
+      {Color? backgroundColor, Color textColor = Colors.black}) {
+    Widget textWidget = Text(
+      text,
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.rtl,
+      maxLines: 1,
+      style: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: fontSize,
+        color: textColor,
+      ),
+    );
+
+    if (backgroundColor != null) {
+      return Container(
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: textWidget,
+      );
+    }
+
+    return textWidget;
+  }
+
+  Widget _buildHighlightableTextNoStretch(
+      SimpleMushafLine line, List<AyahSegment> segments, int page) {
+    final screenSize = MediaQuery.of(context).size;
+    final isTablet = screenSize.width > 600;
+    final isLandscape = screenSize.width > screenSize.height;
+    final fontSize =
+        _getMaximizedFontSize(line.lineType, isTablet, isLandscape, screenSize);
+
+    // Sort segments by their line number and position in the line
+    segments.sort((a, b) {
+      if (a.lineNumber != b.lineNumber) {
+        return a.lineNumber.compareTo(b.lineNumber);
+      }
+      return a.startIndex.compareTo(b.startIndex);
+    });
+
+    // Group segments by ayah for continuous highlighting
+    Map<String, List<AyahSegment>> segmentsByAyah = {};
+    for (final segment in segments) {
+      final ayah = _findAyahForSegment(segment);
+      if (ayah != null) {
+        final ayahId = '${ayah.surah}:${ayah.ayah}';
+        segmentsByAyah.putIfAbsent(ayahId, () => []).add(segment);
+      }
+    }
+
+    // Create a list of text spans with highlighting
+    List<InlineSpan> spans = [];
+
+    // Process ayahs to create continuous highlighting
+    for (final entry in segmentsByAyah.entries) {
+      final ayahId = entry.key;
+      final ayahSegments = entry.value;
+
+      // Sort segments by line number and position
+      ayahSegments.sort((a, b) {
+        if (a.lineNumber != b.lineNumber) {
+          return a.lineNumber.compareTo(b.lineNumber);
+        }
+        return a.startIndex.compareTo(b.startIndex);
+      });
+
+      final isUserSelected = _userSelectedAyahId == ayahId;
+
+      // Create a single container for the entire ayah
+      List<InlineSpan> ayahSpans = [];
+
+      for (final segment in ayahSegments) {
+        final ayah = _findAyahForSegment(segment);
+        if (ayah == null) continue;
+
+        // Words are already sorted by startIndex in _buildAyah, so use them as-is
+        final sortedWords = segment.words;
+
+        // Build word spans for this segment
+        for (final word in sortedWords) {
+          final wordId = '${ayah.surah}:${ayah.ayah}:${word.wordIndex}';
+          final isAudioHighlighted = _highlightedWordId == wordId;
+
           ayahSpans.add(
             TextSpan(
-              text: ' ',
+              text: word.text,
               style: TextStyle(
                 fontFamily: 'QPCPageFont$page',
                 fontSize: fontSize,
+                color: Colors.black,
+                backgroundColor:
+                    isAudioHighlighted ? Colors.yellow.withOpacity(0.7) : null,
               ),
             ),
           );
@@ -1360,7 +1778,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                 borderRadius: BorderRadius.circular(6),
               ),
               child: RichText(
-                textAlign: TextAlign.right,
+                textAlign: TextAlign.center,
                 textDirection: TextDirection.rtl,
                 text: TextSpan(children: ayahSpans),
               ),
@@ -1368,89 +1786,16 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
           ),
         ),
       );
-
-      // Add space between different ayahs
-      if (entry != segmentsByAyah.entries.last) {
-        spans.add(
-          TextSpan(
-            text: ' ',
-            style: TextStyle(
-              fontFamily: 'QPCPageFont$page',
-              fontSize: fontSize,
-            ),
-          ),
-        );
-      }
     }
 
     // Reverse the spans to display right-to-left
     spans = spans.reversed.toList();
 
     return RichText(
-      textAlign: TextAlign.right,
+      textAlign: TextAlign.center,
       textDirection: TextDirection.rtl,
       text: TextSpan(children: spans),
     );
-  }
-
-  PageAyah? _findAyahForSegment(AyahSegment segment) {
-    final page = _allPagesData[_currentPage];
-    if (page == null) return null;
-
-    for (final ayah in page.ayahs) {
-      if (ayah.segments.contains(segment)) {
-        return ayah;
-      }
-    }
-    return null;
-  }
-
-  Widget _buildTextWithThickness(
-      String text, double fontSize, String fontFamily,
-      {Color? backgroundColor, Color textColor = Colors.black}) {
-    final strokeWidth = fontSize * 0.025;
-
-    Widget textWidget = Stack(
-      children: [
-        Text(
-          text,
-          textAlign: TextAlign.right,
-          textDirection: TextDirection.rtl,
-          maxLines: 1,
-          style: TextStyle(
-            fontFamily: fontFamily,
-            fontSize: fontSize,
-            foreground: Paint()
-              ..style = PaintingStyle.stroke
-              ..strokeWidth = strokeWidth
-              ..color = textColor,
-          ),
-        ),
-        Text(
-          text,
-          textAlign: TextAlign.right,
-          textDirection: TextDirection.rtl,
-          maxLines: 1,
-          style: TextStyle(
-            fontFamily: fontFamily,
-            fontSize: fontSize,
-            color: textColor,
-          ),
-        ),
-      ],
-    );
-
-    if (backgroundColor != null) {
-      return Container(
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: textWidget,
-      );
-    }
-
-    return textWidget;
   }
 
   double _getMaximizedFontSize(
@@ -1458,6 +1803,19 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     final screenMultiplier =
         isTablet ? (isLandscape ? 1.8 : 1.5) : (isLandscape ? 1.3 : 1.0);
     final widthMultiplier = (screenSize.width / 400).clamp(0.8, 2.5);
-    return 20.0 * screenMultiplier * widthMultiplier;
+
+    // Base font size
+    double baseFontSize = 20.0 * screenMultiplier * widthMultiplier;
+
+    // Adjust font size based on line type
+    switch (lineType) {
+      case 'basmallah':
+        return baseFontSize * 1.3; // Larger for basmallah
+      case 'surah_name':
+        return baseFontSize * 1.1; // Slightly larger for surah names
+      case 'ayah':
+      default:
+        return baseFontSize; // Normal size for ayah text
+    }
   }
 }
