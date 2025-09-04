@@ -788,6 +788,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
 
   static final Set<int> _loadedFonts = <int>{};
   static bool _surahNameFontLoaded = false;
+  final Map<int, double> _uniformFontSizeCache = {};
 
   // Preloading configuration
   static const int BATCH_SIZE = 10;
@@ -1197,7 +1198,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     final isTablet = screenSize.width > 600;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F1E8),
+      backgroundColor: const Color(0xFFFAFAFA),
       appBar: AppBar(
         title: Column(
           children: [
@@ -1215,7 +1216,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
           ],
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xFF8B7355),
+        backgroundColor: const Color(0xFF2E7D32),
         foregroundColor: Colors.white,
         toolbarHeight:
             _isPreloading ? (isTablet ? 90 : 76) : (isTablet ? 70 : 56),
@@ -1241,7 +1242,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                     _loadingMessage,
                     style: TextStyle(
                         fontSize: isTablet ? 18 : 16,
-                        color: const Color(0xFFD2B48C)),
+                        color: const Color(0xFF2E7D32)),
                   ),
                 ],
               ),
@@ -1273,9 +1274,9 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     return Container(
       height: isTablet ? 100 : 80,
       decoration: const BoxDecoration(
-        color: Color(0xFFF0E6D6),
+        color: Color(0xFFF8F8F8),
         border: Border(
-          top: BorderSide(color: Color(0xFFD2B48C), width: 1),
+          top: BorderSide(color: Color(0xFFE0E0E0), width: 1),
         ),
       ),
       padding: EdgeInsets.only(
@@ -1296,7 +1297,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
               style: TextStyle(
                 fontSize: isTablet ? 12 : 10,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF8B7355),
+                color: const Color(0xFF2E7D32),
               ),
             ),
           ),
@@ -1310,7 +1311,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
               height: isTablet ? 48 : 44,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: ayahs.isNotEmpty ? const Color(0xFF8B7355) : Colors.grey,
+                color: ayahs.isNotEmpty ? const Color(0xFF2E7D32) : Colors.grey,
               ),
               child: _isLoading
                   ? SizedBox(
@@ -1341,10 +1342,10 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                 overlayShape: RoundSliderOverlayShape(
                   overlayRadius: isTablet ? 16 : 14,
                 ),
-                activeTrackColor: const Color(0xFF8B7355),
-                inactiveTrackColor: const Color(0xFFD2B48C),
-                thumbColor: const Color(0xFF8B7355),
-                overlayColor: const Color(0xFF8B7355).withOpacity(0.2),
+                activeTrackColor: const Color(0xFF2E7D32),
+                inactiveTrackColor: const Color(0xFFBDBDBD),
+                thumbColor: const Color(0xFF2E7D32),
+                overlayColor: const Color(0xFF2E7D32).withOpacity(0.2),
               ),
               child: Slider(
                 value: ayahs.isEmpty
@@ -1382,7 +1383,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                   style: TextStyle(
                     fontSize: isTablet ? 12 : 10,
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFF8B7355),
+                    color: const Color(0xFF2E7D32),
                   ),
                 ),
               SizedBox(height: isTablet ? 4 : 3),
@@ -1396,17 +1397,17 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                       vertical: isTablet ? 3 : 2,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE6D7C3),
+                      color: const Color(0xFFE8F5E8),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                          color: const Color(0xFFD2B48C), width: 0.5),
+                          color: const Color(0xFFC8E6C9), width: 0.5),
                     ),
                     child: Text(
                       '$_currentPage/604',
                       style: TextStyle(
                         fontSize: isTablet ? 11 : 9,
                         fontWeight: FontWeight.w500,
-                        color: const Color(0xFF8B7355),
+                        color: const Color(0xFF2E7D32),
                       ),
                     ),
                   ),
@@ -1417,17 +1418,17 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                       vertical: isTablet ? 3 : 2,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE6D7C3),
+                      color: const Color(0xFFE8F5E8),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                          color: const Color(0xFFD2B48C), width: 0.5),
+                          color: const Color(0xFFC8E6C9), width: 0.5),
                     ),
                     child: Text(
                       'باسط',
                       style: TextStyle(
                         fontSize: isTablet ? 11 : 9,
                         fontWeight: FontWeight.w500,
-                        color: const Color(0xFF8B7355),
+                        color: const Color(0xFF2E7D32),
                       ),
                     ),
                   ),
@@ -1484,10 +1485,23 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       width: double.infinity,
       height: availableHeight,
       decoration: const BoxDecoration(
-        color: Color(0xFFF0E6D6),
+        color: Color(0xFFFFFFFF),
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
+          // Compute a uniform font size for this page so all lines share the same size
+          final screenSize = MediaQuery.of(context).size;
+          final isTablet = screenSize.width > 600;
+          final isLandscape = screenSize.width > screenSize.height;
+          final computedSize = _computeUniformFontSizeForPage(
+            page,
+            mushafPage,
+            constraints.maxWidth,
+            isTablet,
+            isLandscape,
+            screenSize,
+          );
+          _uniformFontSizeCache[page] = computedSize;
           return Column(
             mainAxisAlignment: page <= 2
                 ? MainAxisAlignment.center // Center content for pages 1-2
@@ -1579,20 +1593,24 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       bool isTablet,
       bool isLandscape,
       Size screenSize) {
-    // Special formatting for basmallah lines - center them without stretching
+    final double? uniformFontSize = _uniformFontSizeCache[page];
+    // Special formatting for basmallah lines - scale uniformly to fit width
     if (line.lineType == 'basmallah') {
       return Center(
-        child: _buildTextWithThicknessNoStretch(
-          line.text,
-          _getMaximizedFontSize(
-              line.lineType, isTablet, isLandscape, screenSize),
-          'QPCPageFont$page',
-        ),
+        child: (uniformFontSize != null)
+            ? _buildTextWithThicknessFixedSize(
+                line.text, uniformFontSize, 'QPCPageFont$page')
+            : _buildTextWithThickness(
+                line.text,
+                _getMaximizedFontSize(
+                    line.lineType, isTablet, isLandscape, screenSize),
+                'QPCPageFont$page',
+              ),
       );
     }
 
-    // Special formatting for first few pages (1-2) and last few pages (600-604) - no stretching, keep original
-    if (page <= 2 || page >= 603) {
+    // If we have a uniform size for the page, use fixed-size rendering
+    if (uniformFontSize != null) {
       return Center(
         child: segments.isNotEmpty
             ? GestureDetector(
@@ -1608,18 +1626,17 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                     }
                   }
                 },
-                child: _buildHighlightableTextNoStretch(line, segments, page),
+                child: _buildHighlightableTextFixedSize(
+                    line, segments, page, uniformFontSize),
               )
-            : _buildTextWithThicknessNoStretch(
-                line.text,
-                _getMaximizedFontSize(
-                    line.lineType, isTablet, isLandscape, screenSize),
-                'QPCPageFont$page'),
+            : _buildTextWithThicknessFixedSize(
+                line.text, uniformFontSize, 'QPCPageFont$page'),
       );
     }
 
     // Default formatting for regular pages - stretch to full width
     return Container(
+      padding: const EdgeInsets.all(12),
       width: double.infinity,
       child: segments.isNotEmpty
           ? GestureDetector(
@@ -1734,7 +1751,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
               });
             },
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
               decoration: BoxDecoration(
                 color: isUserSelected ? Colors.blue.withOpacity(0.3) : null,
                 borderRadius: BorderRadius.circular(6),
@@ -1816,23 +1833,28 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     return textWidget;
   }
 
-  Widget _buildTextWithThicknessNoStretch(
+  Widget _buildTextWithThicknessFixedSize(
       String text, double fontSize, String fontFamily,
       {Color? backgroundColor, Color textColor = Colors.black}) {
-    Widget textWidget = Text(
-      text,
-      textAlign: TextAlign.center,
-      textDirection: TextDirection.rtl,
-      maxLines: 1,
-      style: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: fontSize,
-        color: textColor,
+    Widget textWidget = Container(
+      width: double.infinity,
+      child: Text(
+        text,
+        textAlign: TextAlign.center,
+        textDirection: TextDirection.rtl,
+        maxLines: 1,
+        overflow: TextOverflow.visible,
+        style: TextStyle(
+          fontFamily: fontFamily,
+          fontSize: fontSize,
+          color: textColor,
+        ),
       ),
     );
 
     if (backgroundColor != null) {
       return Container(
+        width: double.infinity,
         decoration: BoxDecoration(
           color: backgroundColor,
           borderRadius: BorderRadius.circular(4),
@@ -1844,15 +1866,9 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     return textWidget;
   }
 
-  Widget _buildHighlightableTextNoStretch(
-      SimpleMushafLine line, List<AyahSegment> segments, int page) {
-    final screenSize = MediaQuery.of(context).size;
-    final isTablet = screenSize.width > 600;
-    final isLandscape = screenSize.width > screenSize.height;
-    final fontSize =
-        _getMaximizedFontSize(line.lineType, isTablet, isLandscape, screenSize);
-
-    // Sort segments by their line number and position in the line
+  Widget _buildHighlightableTextFixedSize(SimpleMushafLine line,
+      List<AyahSegment> segments, int page, double fontSize) {
+    // Sort segments
     segments.sort((a, b) {
       if (a.lineNumber != b.lineNumber) {
         return a.lineNumber.compareTo(b.lineNumber);
@@ -1860,7 +1876,6 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       return a.startIndex.compareTo(b.startIndex);
     });
 
-    // Group segments by ayah for continuous highlighting
     Map<String, List<AyahSegment>> segmentsByAyah = {};
     for (final segment in segments) {
       final ayah = _findAyahForSegment(segment);
@@ -1870,15 +1885,12 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       }
     }
 
-    // Create a list of text spans with highlighting
     List<InlineSpan> spans = [];
 
-    // Process ayahs to create continuous highlighting
     for (final entry in segmentsByAyah.entries) {
       final ayahId = entry.key;
       final ayahSegments = entry.value;
 
-      // Sort segments by line number and position
       ayahSegments.sort((a, b) {
         if (a.lineNumber != b.lineNumber) {
           return a.lineNumber.compareTo(b.lineNumber);
@@ -1888,21 +1900,14 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
 
       final isUserSelected = _userSelectedAyahId == ayahId;
 
-      // Create a single container for the entire ayah
       List<InlineSpan> ayahSpans = [];
-
       for (final segment in ayahSegments) {
         final ayah = _findAyahForSegment(segment);
         if (ayah == null) continue;
-
-        // Words are already sorted by startIndex in _buildAyah, so use them as-is
         final sortedWords = segment.words;
-
-        // Build word spans for this segment
         for (final word in sortedWords) {
           final wordId = '${ayah.surah}:${ayah.ayah}:${word.wordIndex}';
           final isAudioHighlighted = _highlightedWordId == wordId;
-
           ayahSpans.add(
             TextSpan(
               text: word.text,
@@ -1918,13 +1923,11 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
         }
       }
 
-      // Wrap the entire ayah in a single highlightable container
       spans.add(
         WidgetSpan(
           child: GestureDetector(
             onTap: () {
               setState(() {
-                // Toggle ayah selection
                 if (_userSelectedAyahId == ayahId) {
                   _userSelectedAyahId = null;
                 } else {
@@ -1933,7 +1936,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
               });
             },
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
               decoration: BoxDecoration(
                 color: isUserSelected ? Colors.blue.withOpacity(0.3) : null,
                 borderRadius: BorderRadius.circular(6),
@@ -1949,13 +1952,15 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       );
     }
 
-    // Reverse the spans to display right-to-left
     spans = spans.reversed.toList();
 
-    return RichText(
-      textAlign: TextAlign.center,
-      textDirection: TextDirection.rtl,
-      text: TextSpan(children: spans),
+    return Container(
+      width: double.infinity,
+      child: RichText(
+        textAlign: TextAlign.center,
+        textDirection: TextDirection.rtl,
+        text: TextSpan(children: spans),
+      ),
     );
   }
 
@@ -1978,5 +1983,64 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       default:
         return baseFontSize; // Normal size for ayah text
     }
+  }
+
+  double _computeUniformFontSizeForPage(
+    int page,
+    MushafPage mushafPage,
+    double maxWidth,
+    bool isTablet,
+    bool isLandscape,
+    Size screenSize,
+  ) {
+    // Binary search between reasonable bounds for the largest size that fits all lines
+    double low = 8.0;
+    double high = 300.0;
+
+    // Start near the heuristic size to speed convergence
+    final heuristic =
+        _getMaximizedFontSize('ayah', isTablet, isLandscape, screenSize);
+    if (heuristic > low && heuristic < high) {
+      high = heuristic * 1.5;
+    }
+
+    final String fontFamily = 'QPCPageFont$page';
+
+    bool fitsAll(double size) {
+      final double targetWidth = maxWidth - 8.0; // small margin
+      for (final line in mushafPage.lines) {
+        // Only measure text-based lines shown with this font
+        if (line.lineType == 'surah_name') continue;
+        final String text = line.text;
+        if (text.isEmpty) continue;
+        final painter = TextPainter(
+          textDirection: TextDirection.rtl,
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          text: TextSpan(
+            text: text,
+            style: TextStyle(
+              fontFamily: fontFamily,
+              fontSize: size,
+            ),
+          ),
+        );
+        painter.layout(minWidth: 0, maxWidth: double.infinity);
+        if (painter.size.width > targetWidth) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    for (int i = 0; i < 18; i++) {
+      final mid = (low + high) / 2.0;
+      if (fitsAll(mid)) {
+        low = mid;
+      } else {
+        high = mid;
+      }
+    }
+    return low;
   }
 }
