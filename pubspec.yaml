@@ -15,7 +15,6 @@ dependencies:
   cupertino_icons: ^1.0.8
   sqflite: ^2.3.0
   path: ^1.8.3
-  flutter_svg: ^2.0.10
   audioplayers: ^5.0.0
 
 dev_dependencies:
@@ -30,6 +29,6 @@ flutter:
     - assets/quran/scripts/qpc-v2.db
     - assets/quran/fonts/qpc-v2-font/
     - assets/quran/fonts/surah-name-v2.ttf
-    - assets/quran/svg/
-    - assets/quran/svg/surah_name/
+    - assets/quran/fonts/surah-header/surah-header.ttf
+    - assets/quran/fonts/surah-header/ligatures.json
     - assets/quran/audio/ayah-recitation-mahmoud-khalil-al-husary-mujawwad-hafs-956.json
