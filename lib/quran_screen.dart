@@ -1,14 +1,53 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as p;
 import 'package:audioplayers/audioplayers.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'surah_header_banner.dart';
 
 // ===================== MODELS =====================
+
+// Surah Model
+class Surah {
+  final int id;
+  final String name;
+  final String nameSimple;
+  final String nameArabic;
+  final int revelationOrder;
+  final String revelationPlace;
+  final int versesCount;
+  final bool bismillahPre;
+
+  Surah({
+    required this.id,
+    required this.name,
+    required this.nameSimple,
+    required this.nameArabic,
+    required this.revelationOrder,
+    required this.revelationPlace,
+    required this.versesCount,
+    required this.bismillahPre,
+  });
+
+  factory Surah.fromJson(Map<String, dynamic> json) {
+    return Surah(
+      id: json['id'],
+      name: json['name'],
+      nameSimple: json['name_simple'],
+      nameArabic: json['name_arabic'],
+      revelationOrder: json['revelation_order'],
+      revelationPlace: json['revelation_place'],
+      versesCount: json['verses_count'],
+      bismillahPre: json['bismillah_pre'],
+    );
+  }
+}
 
 // Core Ayah Model
 class PageAyah {
@@ -211,6 +250,133 @@ int _safeParseIntRequired(dynamic value, {int defaultValue = 0}) {
   return parsed ?? defaultValue;
 }
 
+// ===================== SURAH SERVICE =====================
+
+class SurahService {
+  static final SurahService _instance = SurahService._internal();
+  factory SurahService() => _instance;
+  SurahService._internal();
+
+  List<Surah>? _surahs;
+  Map<int, int>? _surahToPageMap; // Maps surah ID to starting page
+
+  Future<void> initialize() async {
+    await _loadSurahMetadata();
+  }
+
+  Future<void> buildSurahToPageMap(Map<int, MushafPage> allPagesData) async {
+    if (_surahs == null) return;
+
+    print('Building surah mapping with ${allPagesData.length} pages...');
+    _surahToPageMap = _buildSurahToPageMapping(allPagesData);
+
+    // Debug: Print some sample mappings
+    if (_surahToPageMap != null && _surahToPageMap!.isNotEmpty) {
+      print('Sample surah mappings:');
+      final sortedEntries = _surahToPageMap!.entries.toList()
+        ..sort((a, b) => a.value.compareTo(b.value));
+
+      for (int i = 0; i < min(10, sortedEntries.length); i++) {
+        final entry = sortedEntries[i];
+        final surah = getSurahById(entry.key);
+        print(
+            '  Surah ${entry.key} (${surah?.nameSimple}) starts on page ${entry.value}');
+      }
+    } else {
+      print('ERROR: Surah mapping is empty or null!');
+    }
+  }
+
+  Future<void> _loadSurahMetadata() async {
+    try {
+      final jsonString = await rootBundle
+          .loadString('assets/quran/metadata/quran-metadata-surah-name.json');
+      final Map<String, dynamic> jsonData = json.decode(jsonString);
+
+      _surahs = [];
+      jsonData.forEach((key, value) {
+        _surahs!.add(Surah.fromJson(value));
+      });
+
+      // Sort by surah ID
+      _surahs!.sort((a, b) => a.id.compareTo(b.id));
+    } catch (e) {
+      print('Error loading surah metadata: $e');
+    }
+  }
+
+  // Add this method to find surah start pages
+  Map<int, int> _buildSurahToPageMapping(Map<int, MushafPage> allPagesData) {
+    final surahToPage = <int, int>{};
+    final surahFirstAyah =
+        <int, int>{}; // Track the lowest ayah number for each surah
+
+    print('Building mapping with ${allPagesData.length} pages available');
+
+    for (int page = 1; page <= 604; page++) {
+      final pageData = allPagesData[page];
+      if (pageData != null) {
+        // Debug: Print ayah info for first few pages
+        if (page <= 5) {
+          print(
+              'Page $page ayahs: ${pageData.ayahs.map((a) => '${a.surah}:${a.ayah}').join(', ')}');
+        }
+
+        // Find the first occurrence of each surah (ayah number 1)
+        for (final ayah in pageData.ayahs) {
+          final surahId = ayah.surah;
+          final ayahNumber = ayah.ayah;
+
+          // Only consider ayah number 1 as the start of a surah
+          if (ayahNumber == 1 && !surahToPage.containsKey(surahId)) {
+            surahToPage[surahId] = page;
+            surahFirstAyah[surahId] = ayahNumber;
+            print(
+                '  Found surah $surahId starting on page $page (ayah $ayahNumber)');
+          }
+        }
+      } else {
+        if (page <= 10) {
+          print('Page $page has no data');
+        }
+      }
+    }
+
+    print('Surah mapping built: ${surahToPage.length} surahs mapped');
+
+    // Debug: Print some sample mappings
+    final sortedEntries = surahToPage.entries.toList()
+      ..sort((a, b) => a.value.compareTo(b.value));
+
+    for (int i = 0; i < min(10, sortedEntries.length); i++) {
+      final entry = sortedEntries[i];
+      final surah = getSurahById(entry.key);
+      print(
+          '  Surah ${entry.key} (${surah?.nameSimple}) starts on page ${entry.value} (first ayah: ${surahFirstAyah[entry.key]})');
+    }
+
+    return surahToPage;
+  }
+
+  List<Surah>? get surahs => _surahs;
+  Map<int, int>? get surahToPageMap => _surahToPageMap;
+
+  int? getSurahStartPage(int surahId) {
+    final page = _surahToPageMap?[surahId];
+    print('getSurahStartPage($surahId) = $page');
+    if (_surahToPageMap != null) {
+      print('Available surahs in mapping: ${_surahToPageMap!.keys.toList()}');
+    } else {
+      print('Surah mapping is null!');
+    }
+    return page;
+  }
+
+  Surah? getSurahById(int surahId) {
+    return _surahs?.firstWhere((surah) => surah.id == surahId);
+  }
+}
+
 // ===================== AUDIO SERVICE =====================
 
 class AudioService {
@@ -219,6 +385,7 @@ class AudioService {
   AudioService._internal();
 
   final AudioPlayer _audioPlayer = AudioPlayer();
+  final AudioCacheService _cacheService = AudioCacheService();
   Map<String, AudioData>? _allAudioData;
 
   StreamSubscription<Duration>? _positionSubscription;
@@ -246,6 +413,7 @@ class AudioService {
 
   Future<void> initialize() async {
     await _loadAudioData();
+    await _cacheService.initialize();
 
     _playerStateSubscription =
         _audioPlayer.onPlayerStateChanged.listen((state) {
@@ -329,7 +497,17 @@ class AudioService {
       _lastHighlightedWordId = null;
       _highlightController.add(null);
 
-      await _audioPlayer.play(UrlSource(audioData.audioUrl));
+      // Check if audio is cached first
+      String audioPath;
+      try {
+        audioPath =
+            await _cacheService.downloadAndCacheAudio(audioData.audioUrl);
+        await _audioPlayer.play(DeviceFileSource(audioPath));
+      } catch (cacheError) {
+        print('Cache error, falling back to URL: $cacheError');
+        // Fallback to URL if cache fails
+        await _audioPlayer.play(UrlSource(audioData.audioUrl));
+      }
     } catch (e) {
       print('Error playing ayah ${ayah.surah}:${ayah.ayah} - $e');
       // Skip to next ayah on error
@@ -369,6 +547,25 @@ class AudioService {
     _currentAyahController.add(null);
     _pageAyahs = null;
     _currentAyahIndex = 0;
+  }
+
+  Future<void> seekToAyah(int ayahIndex) async {
+    if (_pageAyahs == null ||
+        ayahIndex < 0 ||
+        ayahIndex >= _pageAyahs!.length) {
+      return;
+    }
+
+    _currentAyahIndex = ayahIndex;
+    await _playCurrentAyah();
+  }
+
+  Future<int> getCacheSize() async {
+    return await _cacheService.getCacheSize();
+  }
+
+  Future<void> clearCache() async {
+    await _cacheService.clearCache();
   }
 
   void _updateWordHighlight(Duration position) {
@@ -489,39 +686,384 @@ class AudioService {
   }
 }
 
-// ===================== PAGE BUILDER =====================
+// ===================== AUDIO CACHE SERVICE =====================
+
+class AudioCacheService {
+  static final AudioCacheService _instance = AudioCacheService._internal();
+  factory AudioCacheService() => _instance;
+  AudioCacheService._internal();
+
+  static Directory? _cacheDirectory;
+  static const String _audioCacheFolder = 'audio_cache';
+  static const int _maxCacheSize = 100; // Maximum number of cached files
+
+  Future<void> initialize() async {
+    final appDir = await getApplicationDocumentsDirectory();
+    _cacheDirectory = Directory(p.join(appDir.path, _audioCacheFolder));
+    await _cacheDirectory!.create(recursive: true);
+  }
+
+  Future<String?> getCachedAudioPath(String audioUrl) async {
+    if (_cacheDirectory == null) await initialize();
+
+    final fileName = _getFileNameFromUrl(audioUrl);
+    final filePath = p.join(_cacheDirectory!.path, fileName);
+    final file = File(filePath);
+
+    if (await file.exists()) {
+      return filePath;
+    }
+    return null;
+  }
+
+  Future<String> downloadAndCacheAudio(String audioUrl) async {
+    if (_cacheDirectory == null) await initialize();
+
+    final fileName = _getFileNameFromUrl(audioUrl);
+    final filePath = p.join(_cacheDirectory!.path, fileName);
+    final file = File(filePath);
+
+    // Check if already cached
+    if (await file.exists()) {
+      return filePath;
+    }
+
+    try {
+      // Download the audio file
+      final response = await http.get(Uri.parse(audioUrl));
+      if (response.statusCode == 200) {
+        await file.writeAsBytes(response.bodyBytes);
+
+        // Clean up old cache files if needed
+        await _cleanupOldCache();
+
+        return filePath;
+      } else {
+        throw Exception('Failed to download audio: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error downloading audio: $e');
+      rethrow;
+    }
+  }
+
+  String _getFileNameFromUrl(String url) {
+    // Extract a safe filename from the URL
+    final uri = Uri.parse(url);
+    final pathSegments = uri.pathSegments;
+    final fileName = pathSegments.isNotEmpty ? pathSegments.last : 'audio.mp3';
+
+    // Ensure the filename has an extension
+    if (!fileName.contains('.')) {
+      return '$fileName.mp3';
+    }
+
+    return fileName;
+  }
+
+  Future<void> _cleanupOldCache() async {
+    if (_cacheDirectory == null) return;
+
+    try {
+      final files = await _cacheDirectory!.list().toList();
+      final fileInfos = <FileSystemEntity>[];
+
+      for (final file in files) {
+        if (file is File) {
+          fileInfos.add(file);
+        }
+      }
+
+      // Sort by modification time (oldest first)
+      fileInfos.sort((a, b) {
+        final aStat = a.statSync();
+        final bStat = b.statSync();
+        return aStat.modified.compareTo(bStat.modified);
+      });
+
+      // Remove oldest files if we exceed the cache limit
+      if (fileInfos.length > _maxCacheSize) {
+        final filesToDelete = fileInfos.take(fileInfos.length - _maxCacheSize);
+        for (final file in filesToDelete) {
+          await file.delete();
+        }
+      }
+    } catch (e) {
+      print('Error cleaning up cache: $e');
+    }
+  }
+
+  Future<void> clearCache() async {
+    if (_cacheDirectory == null) return;
+
+    try {
+      if (await _cacheDirectory!.exists()) {
+        await _cacheDirectory!.delete(recursive: true);
+        await _cacheDirectory!.create(recursive: true);
+      }
+    } catch (e) {
+      print('Error clearing cache: $e');
+    }
+  }
+
+  Future<int> getCacheSize() async {
+    if (_cacheDirectory == null) return 0;
+
+    try {
+      final files = await _cacheDirectory!.list().toList();
+      int totalSize = 0;
+
+      for (final file in files) {
+        if (file is File) {
+          totalSize += await file.length();
+        }
+      }
+
+      return totalSize;
+    } catch (e) {
+      print('Error getting cache size: $e');
+      return 0;
+    }
+  }
+}
+
+// ===================== OPTIMIZED DATABASE SERVICE =====================
+
+class OptimizedDatabaseService {
+  static Database? _wordsDb;
+  static Database? _layoutDb;
+  static bool _isInitialized = false;
+
+  // Connection pooling simulation with singleton pattern
+  static Future<void> initialize() async {
+    if (_isInitialized) return;
+
+    final databasesPath = await getDatabasesPath();
+
+    // Open databases with optimized settings
+    _wordsDb = await openDatabase(
+      p.join(databasesPath, 'qpc-v2.db'),
+      version: 1,
+      onCreate: (db, version) async {
+        // Create indexes for better performance
+        await db
+            .execute('CREATE INDEX IF NOT EXISTS idx_words_id ON words(id)');
+        await db.execute(
+            'CREATE INDEX IF NOT EXISTS idx_words_surah_ayah ON words(surah, ayah)');
+      },
+    );
+
+    _layoutDb = await openDatabase(
+      p.join(databasesPath, 'qpc-v2-15-lines.db'),
+      version: 1,
+      onCreate: (db, version) async {
+        await db.execute(
+            'CREATE INDEX IF NOT EXISTS idx_pages_page_number ON pages(page_number)');
+        await db.execute(
+            'CREATE INDEX IF NOT EXISTS idx_pages_line_number ON pages(page_number, line_number)');
+      },
+    );
+
+    _isInitialized = true;
+  }
+
+  static Database get wordsDb {
+    if (_wordsDb == null) throw Exception('Database not initialized');
+    return _wordsDb!;
+  }
+
+  static Database get layoutDb {
+    if (_layoutDb == null) throw Exception('Database not initialized');
+    return _layoutDb!;
+  }
+
+  static Future<void> close() async {
+    await _wordsDb?.close();
+    await _layoutDb?.close();
+    _isInitialized = false;
+  }
+}
+
+// ===================== OPTIMIZED PAGE BUILDER =====================
 
 class MushafPageBuilder {
+  // Cache for frequently accessed data
+  static final Map<int, List<Map<String, dynamic>>> _layoutCache = {};
+  static final Map<String, List<Map<String, dynamic>>> _wordsCache = {};
+  static const int MAX_CACHE_SIZE =
+      604; // Cache ALL pages in memory like Quran.com/Tarteel
+
   static Future<MushafPage> buildPage({
     required int pageNumber,
     required Database wordsDb,
     required Database layoutDb,
   }) async {
+    final stopwatch = Stopwatch()..start();
+
+    // Get layout data (cached)
+    final layoutData = await _getLayoutData(pageNumber, layoutDb);
+
+    if (layoutData.isEmpty) {
+      return MushafPage(
+        pageNumber: pageNumber,
+        lines: [],
+        ayahs: [],
+        lineToSegments: {},
+      );
+    }
+
+    // Get all words for the page in a single optimized query
+    final allWords = await _getAllWordsForPage(pageNumber, layoutData, wordsDb);
+
+    // Group words by line for efficient lookup
+    final wordsByLine = _groupWordsByLine(allWords, layoutData);
+
+    // Build lines and ayahs in parallel
+    final result =
+        await _buildPageFromData(pageNumber, layoutData, wordsByLine);
+
+    stopwatch.stop();
+    PerformanceMonitor.logPerformance(
+        'buildPage_$pageNumber', stopwatch.elapsed);
+
+    return result;
+  }
+
+  static Future<List<Map<String, dynamic>>> _getLayoutData(
+      int pageNumber, Database layoutDb) async {
+    // Check cache first
+    if (_layoutCache.containsKey(pageNumber)) {
+      return _layoutCache[pageNumber]!;
+    }
+
     final layoutData = await layoutDb.rawQuery(
         "SELECT * FROM pages WHERE page_number = ? ORDER BY line_number ASC",
         [pageNumber]);
 
+    // Cache the result
+    if (_layoutCache.length >= MAX_CACHE_SIZE) {
+      _layoutCache.remove(_layoutCache.keys.first);
+    }
+    _layoutCache[pageNumber] = layoutData;
+
+    return layoutData;
+  }
+
+  static Future<List<Map<String, dynamic>>> _getAllWordsForPage(
+    int pageNumber,
+    List<Map<String, dynamic>> layoutData,
+    Database wordsDb,
+  ) async {
+    // Collect all word ID ranges
+    final List<Map<String, int>> wordRanges = [];
+    for (var lineData in layoutData) {
+      final firstWordId = _safeParseInt(lineData['first_word_id']);
+      final lastWordId = _safeParseInt(lineData['last_word_id']);
+      if (firstWordId != null && lastWordId != null) {
+        wordRanges.add({
+          'first': firstWordId,
+          'last': lastWordId,
+          'line_number': _safeParseIntRequired(lineData['line_number']),
+        });
+      }
+    }
+
+    if (wordRanges.isEmpty) return [];
+
+    // Create cache key for this page's word ranges
+    final cacheKey =
+        '${pageNumber}_${wordRanges.map((r) => '${r['first']}-${r['last']}').join('_')}';
+
+    // Check cache first
+    if (_wordsCache.containsKey(cacheKey)) {
+      return _wordsCache[cacheKey]!;
+    }
+
+    // Build optimized query with multiple ranges
+    final conditions = wordRanges
+        .map((range) => "(id >= ${range['first']} AND id <= ${range['last']})")
+        .join(' OR ');
+
+    final query = "SELECT * FROM words WHERE $conditions ORDER BY id ASC";
+    final allWords = await wordsDb.rawQuery(query);
+
+    // Cache the result
+    if (_wordsCache.length >= MAX_CACHE_SIZE) {
+      _wordsCache.remove(_wordsCache.keys.first);
+    }
+    _wordsCache[cacheKey] = allWords;
+
+    return allWords;
+  }
+
+  static Map<int, List<Map<String, dynamic>>> _groupWordsByLine(
+    List<Map<String, dynamic>> allWords,
+    List<Map<String, dynamic>> layoutData,
+  ) {
+    final wordsByLine = <int, List<Map<String, dynamic>>>{};
+
+    // Create a map of word ID ranges to line numbers
+    final lineRanges = <int, Map<String, int>>{};
+    for (var lineData in layoutData) {
+      final lineNumber = _safeParseIntRequired(lineData['line_number']);
+      final firstWordId = _safeParseInt(lineData['first_word_id']);
+      final lastWordId = _safeParseInt(lineData['last_word_id']);
+
+      if (firstWordId != null && lastWordId != null) {
+        lineRanges[lineNumber] = {
+          'first': firstWordId,
+          'last': lastWordId,
+        };
+      }
+    }
+
+    // Group words by line
+    for (var word in allWords) {
+      final wordId = _safeParseIntRequired(word['id']);
+
+      for (var entry in lineRanges.entries) {
+        final lineNumber = entry.key;
+        final range = entry.value;
+
+        if (wordId >= range['first']! && wordId <= range['last']!) {
+          wordsByLine.putIfAbsent(lineNumber, () => []).add(word);
+          break;
+        }
+      }
+    }
+
+    return wordsByLine;
+  }
+
+  static Future<MushafPage> _buildPageFromData(
+    int pageNumber,
+    List<Map<String, dynamic>> layoutData,
+    Map<int, List<Map<String, dynamic>>> wordsByLine,
+  ) async {
     List<SimpleMushafLine> lines = [];
     List<PageAyah> ayahs = [];
     Map<int, List<AyahSegment>> lineToSegments = {};
+    Map<String, List<AyahWordData>> ayahWords = {};
 
-    // Temporary storage for building ayahs
-    Map<String, List<AyahWordData>> ayahWords = {}; // "surah:ayah" -> words
+    // Process all lines in parallel
+    final lineFutures = layoutData.map((lineData) => _buildLineFromData(
+        lineData, wordsByLine[lineData['line_number']] ?? []));
 
-    // First pass: build lines and collect ayah words
-    for (var lineData in layoutData) {
-      final line = await _buildLine(lineData, wordsDb);
-      lines.add(line.simpleLine);
+    final lineResults = await Future.wait(lineFutures);
+
+    // Collect results
+    for (var lineResult in lineResults) {
+      lines.add(lineResult.simpleLine);
 
       // Collect ayah words for this line
-      for (var ayahWord in line.ayahWords) {
+      for (var ayahWord in lineResult.ayahWords) {
         final key = "${ayahWord.surah}:${ayahWord.ayah}";
         ayahWords.putIfAbsent(key, () => []).add(ayahWord);
       }
     }
 
-    // Second pass: build complete ayahs from collected words
-    for (var entry in ayahWords.entries) {
+    // Build complete ayahs from collected words
+    final ayahFutures = ayahWords.entries.map((entry) async {
       final parts = entry.key.split(':');
       final surahNumber = int.parse(parts[0]);
       final ayahNumber = int.parse(parts[1]);
@@ -533,13 +1075,15 @@ class MushafPageBuilder {
         words: words,
       );
 
-      ayahs.add(ayah);
-
       // Map segments to lines
       for (var segment in ayah.segments) {
         lineToSegments.putIfAbsent(segment.lineNumber, () => []).add(segment);
       }
-    }
+
+      return ayah;
+    });
+
+    ayahs = await Future.wait(ayahFutures);
 
     // Sort ayahs by order
     ayahs.sort((a, b) {
@@ -555,13 +1099,13 @@ class MushafPageBuilder {
     );
   }
 
-  static Future<_LineBuilder> _buildLine(
-      Map<String, dynamic> lineData, Database wordsDb) async {
+  static Future<_LineBuilder> _buildLineFromData(
+    Map<String, dynamic> lineData,
+    List<Map<String, dynamic>> words,
+  ) async {
     final lineNumber = _safeParseIntRequired(lineData['line_number']);
     final lineType = lineData['line_type'] as String? ?? 'ayah';
     final isCentered = _safeParseInt(lineData['is_centered']) == 1;
-    final firstWordId = _safeParseInt(lineData['first_word_id']);
-    final lastWordId = _safeParseInt(lineData['last_word_id']);
     final surahNumber = _safeParseInt(lineData['surah_number']);
 
     String lineText = '';
@@ -576,9 +1120,8 @@ class MushafPageBuilder {
         break;
 
       case 'basmallah':
-        if (firstWordId != null && lastWordId != null) {
-          final result = await _buildWordsFromRange(
-              wordsDb, firstWordId, lastWordId, lineNumber);
+        if (words.isNotEmpty) {
+          final result = _buildWordsFromData(words, lineNumber);
           lineText = result.text;
           ayahWords = result.words;
         } else {
@@ -598,9 +1141,8 @@ class MushafPageBuilder {
 
       case 'ayah':
       default:
-        if (firstWordId != null && lastWordId != null) {
-          final result = await _buildWordsFromRange(
-              wordsDb, firstWordId, lastWordId, lineNumber);
+        if (words.isNotEmpty) {
+          final result = _buildWordsFromData(words, lineNumber);
           lineText = result.text;
           ayahWords = result.words;
 
@@ -624,53 +1166,42 @@ class MushafPageBuilder {
     );
   }
 
-  static Future<_WordsResult> _buildWordsFromRange(
-    Database wordsDb,
-    int firstWordId,
-    int lastWordId,
+  static _WordsResult _buildWordsFromData(
+    List<Map<String, dynamic>> words,
     int lineNumber,
-  ) async {
-    try {
-      final words = await wordsDb.rawQuery(
-          "SELECT * FROM words WHERE id >= ? AND id <= ? ORDER BY id ASC",
-          [firstWordId, lastWordId]);
+  ) {
+    if (words.isEmpty) return _WordsResult('', []);
 
-      if (words.isEmpty) return _WordsResult('', []);
+    List<String> wordTexts = [];
+    List<AyahWordData> ayahWords = [];
+    int currentIndex = 0;
 
-      List<String> wordTexts = [];
-      List<AyahWordData> ayahWords = [];
-      int currentIndex = 0;
+    for (int i = 0; i < words.length; i++) {
+      final word = words[i];
+      final wordText = word['text'] as String? ?? '';
+      final surahNum = _safeParseInt(word['surah']);
+      final ayahNum = _safeParseInt(word['ayah']);
 
-      for (int i = 0; i < words.length; i++) {
-        final word = words[i];
-        final wordText = word['text'] as String? ?? '';
-        final surahNum = _safeParseInt(word['surah']);
-        final ayahNum = _safeParseInt(word['ayah']);
+      wordTexts.add(wordText);
 
-        wordTexts.add(wordText);
+      if (surahNum != null && ayahNum != null) {
+        ayahWords.add(AyahWordData(
+          surah: surahNum,
+          ayah: ayahNum,
+          text: wordText,
+          lineNumber: lineNumber,
+          startIndex: currentIndex,
+          endIndex: currentIndex + wordText.length,
+        ));
 
-        if (surahNum != null && ayahNum != null) {
-          ayahWords.add(AyahWordData(
-            surah: surahNum,
-            ayah: ayahNum,
-            text: wordText,
-            lineNumber: lineNumber,
-            startIndex: currentIndex,
-            endIndex: currentIndex + wordText.length,
-          ));
-
-          currentIndex += wordText.length;
-        } else {
-          // Handle words without ayah info
-          currentIndex += wordText.length;
-        }
+        currentIndex += wordText.length;
+      } else {
+        // Handle words without ayah info
+        currentIndex += wordText.length;
       }
-
-      return _WordsResult(wordTexts.join(''), ayahWords);
-    } catch (e) {
-      print('Error building words from range: $e');
-      return _WordsResult('', []);
     }
+
+    return _WordsResult(wordTexts.join(''), ayahWords);
   }
 
   static Future<PageAyah> _buildAyah({
@@ -745,6 +1276,167 @@ class MushafPageBuilder {
   }
 }
 
+// ===================== OPTIMIZED FONT SERVICE =====================
+
+class OptimizedFontService {
+  static final Set<int> _loadedFonts = <int>{};
+  static bool _surahNameFontLoaded = false;
+  static const int FONT_PRELOAD_RADIUS =
+      604; // Preload ALL fonts like Quran.com/Tarteel
+
+  static Future<void> preloadFontsAroundPage(int pageNumber) async {
+    final fontsToLoad = <int>{};
+
+    for (int i = -FONT_PRELOAD_RADIUS; i <= FONT_PRELOAD_RADIUS; i++) {
+      final page = pageNumber + i;
+      if (page >= 1 && page <= 604 && !_loadedFonts.contains(page)) {
+        fontsToLoad.add(page);
+      }
+    }
+
+    // Load fonts in parallel
+    final fontFutures = fontsToLoad.map((page) => _loadFontForPage(page));
+    await Future.wait(fontFutures);
+  }
+
+  static Future<void> _loadFontForPage(int page) async {
+    if (_loadedFonts.contains(page)) return;
+
+    try {
+      final fontLoader = FontLoader('QPCPageFont$page');
+      final fontData =
+          await rootBundle.load('assets/quran/fonts/qpc-v2-font/p$page.ttf');
+      fontLoader.addFont(Future.value(fontData));
+      await fontLoader.load();
+      _loadedFonts.add(page);
+    } catch (e) {
+      // Font loading failed - continue silently
+    }
+  }
+
+  static Future<void> loadSurahNameFont() async {
+    if (_surahNameFontLoaded) return;
+
+    try {
+      final fontLoader = FontLoader('SurahNameFont');
+      final fontData =
+          await rootBundle.load('assets/quran/fonts/surah-name-v2.ttf');
+      fontLoader.addFont(Future.value(fontData));
+      await fontLoader.load();
+      _surahNameFontLoaded = true;
+    } catch (e) {
+      // Font loading failed - continue silently
+    }
+  }
+
+  // Preload ALL fonts at startup like Quran.com/Tarteel
+  static Future<void> preloadAllFonts() async {
+    final fontFutures = <Future<void>>[];
+
+    // Load all 604 page fonts in parallel
+    for (int page = 1; page <= 604; page++) {
+      if (!_loadedFonts.contains(page)) {
+        fontFutures.add(_loadFontForPage(page));
+      }
+    }
+
+    // Load all fonts in parallel for maximum speed
+    await Future.wait(fontFutures);
+    print('All 604 fonts preloaded successfully!');
+  }
+
+  static bool isFontLoaded(int page) => _loadedFonts.contains(page);
+  static bool isSurahNameFontLoaded() => _surahNameFontLoaded;
+}
+
+// ===================== OPTIMIZED PAGE CACHE =====================
+
+class OptimizedPageCache {
+  static final Map<int, MushafPage> _pageCache = {};
+  static const int MAX_CACHE_SIZE =
+      604; // Cache ALL pages in memory like Quran.com/Tarteel
+  static final List<int> _accessOrder = [];
+
+  static MushafPage? getPage(int pageNumber) {
+    if (_pageCache.containsKey(pageNumber)) {
+      // Update access order for LRU
+      _accessOrder.remove(pageNumber);
+      _accessOrder.add(pageNumber);
+      return _pageCache[pageNumber];
+    }
+    return null;
+  }
+
+  static void cachePage(int pageNumber, MushafPage page) {
+    if (_pageCache.length >= MAX_CACHE_SIZE) {
+      // Remove least recently used page
+      final oldestKey = _accessOrder.removeAt(0);
+      _pageCache.remove(oldestKey);
+    }
+
+    _pageCache[pageNumber] = page;
+    _accessOrder.add(pageNumber);
+  }
+
+  static void clearCache() {
+    _pageCache.clear();
+    _accessOrder.clear();
+  }
+
+  static int get cacheSize => _pageCache.length;
+}
+
+// ===================== PERFORMANCE MONITORING =====================
+
+class PerformanceMonitor {
+  static final Map<String, List<Duration>> _metrics = {};
+  static const int MAX_METRICS_PER_OPERATION = 100;
+
+  static void startTimer(String operation) {
+    _metrics[operation] ??= [];
+  }
+
+  static void endTimer(String operation, Duration duration) {
+    final metrics = _metrics[operation];
+    if (metrics != null) {
+      metrics.add(duration);
+      // Keep only recent metrics to prevent memory bloat
+      if (metrics.length > MAX_METRICS_PER_OPERATION) {
+        metrics.removeAt(0);
+      }
+    }
+  }
+
+  static Duration? getAverageTime(String operation) {
+    final metrics = _metrics[operation];
+    if (metrics == null || metrics.isEmpty) return null;
+
+    final totalMs =
+        metrics.fold<int>(0, (sum, duration) => sum + duration.inMilliseconds);
+    return Duration(milliseconds: totalMs ~/ metrics.length);
+  }
+
+  static void logPerformance(String operation, Duration duration) {
+    print('Performance: $operation took ${duration.inMilliseconds}ms');
+  }
+
+  static void printSummary() {
+    print('\n=== Performance Summary ===');
+    for (final entry in _metrics.entries) {
+      final avgTime = getAverageTime(entry.key);
+      if (avgTime != null) {
+        print(
+            '${entry.key}: ${avgTime.inMilliseconds}ms average (${entry.value.length} samples)');
+      }
+    }
+    print('========================\n');
+  }
+
+  static void clearMetrics() {
+    _metrics.clear();
+  }
+}
+
 // ===================== MAIN WIDGET =====================
 
 class MushafPageViewer extends StatefulWidget {
@@ -755,8 +1447,6 @@ class MushafPageViewer extends StatefulWidget {
 }
 
 class _MushafPageViewerState extends State<MushafPageViewer> {
-  Database? _wordsDb;
-  Database? _layoutDb;
   int _currentPage = 1;
 
   // Store all pages data with new model
@@ -764,14 +1454,15 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
   final Set<int> _loadedPages = {};
 
   bool _isInitializing = true;
-  bool _isPreloading = false;
   String _loadingMessage = 'Initializing...';
-  double _preloadProgress = 0.0;
 
   // Audio service
   final AudioService _audioService = AudioService();
   AudioPlaybackState _audioState = AudioPlaybackState.stopped;
   String? _highlightedWordId;
+
+  // Surah service
+  final SurahService _surahService = SurahService();
 
   // Add this new variable for user selection
   String? _userSelectedAyahId; // Changed from _userSelectedWordId
@@ -786,13 +1477,14 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
   // PageView controller
   late PageController _pageController;
 
-  static final Set<int> _loadedFonts = <int>{};
-  static bool _surahNameFontLoaded = false;
   final Map<int, double> _uniformFontSizeCache = {};
 
-  // Preloading configuration
-  static const int BATCH_SIZE = 10;
-  static const int PRELOAD_RADIUS = 5;
+  // Preloading configuration - Load ALL pages into memory like Quran.com/Tarteel
+  static const int PRELOAD_RADIUS = 3; // Keep reasonable radius for navigation
+
+  // Search state
+  String _searchQuery = '';
+  List<Surah> _filteredSurahs = [];
 
   @override
   void initState() {
@@ -800,6 +1492,11 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     _pageController = PageController(initialPage: 0);
     _initDatabases();
     _initAudio();
+    _initSurahService();
+  }
+
+  Future<void> _initSurahService() async {
+    await _surahService.initialize();
   }
 
   Future<void> _initAudio() async {
@@ -851,6 +1548,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
 
       final databasesPath = await getDatabasesPath();
 
+      // Copy databases if they don't exist
       final wordsDbPath = p.join(databasesPath, 'qpc-v2.db');
       if (!await File(wordsDbPath).exists()) {
         setState(() {
@@ -875,19 +1573,40 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
         await File(layoutDbPath).writeAsBytes(layoutBytes, flush: true);
       }
 
-      _wordsDb = await openDatabase(wordsDbPath);
-      _layoutDb = await openDatabase(layoutDbPath);
+      // Initialize optimized database service
+      await OptimizedDatabaseService.initialize();
 
-      await _loadSurahNameFont();
+      // Load surah name font
+      await OptimizedFontService.loadSurahNameFont();
+
+      // Preload surah header font and ligatures
+      await SurahBanner.preload();
+
+      // Preload ALL fonts at startup like Quran.com/Tarteel
+      setState(() {
+        _loadingMessage = 'Preloading fonts...';
+      });
+      await OptimizedFontService.preloadAllFonts();
 
       // Load initial page immediately
-      await _loadPage(_currentPage);
+      await _loadPageOptimized(_currentPage);
+
+      // Load a few more pages to get better mapping data
+      for (int page = 1; page <= 10; page++) {
+        if (!_loadedPages.contains(page)) {
+          await _loadPageOptimized(page);
+        }
+      }
+
+      // Build dynamic surah-to-page mapping after loading some pages
+      print('Building mapping with ${_allPagesData.length} pages loaded');
+      await _surahService.buildSurahToPageMap(_allPagesData);
 
       setState(() {
         _isInitializing = false;
       });
 
-      // Start background preloading
+      // Start background preloading of ALL pages
       _startBackgroundPreloading();
     } catch (e) {
       setState(() {
@@ -898,41 +1617,22 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
   }
 
   Future<void> _startBackgroundPreloading() async {
-    setState(() {
-      _isPreloading = true;
-      _preloadProgress = 0.0;
-    });
-
     final totalPages = 604;
-    int loadedCount = _loadedPages.length;
+    final batch = <Future<void>>[];
 
-    for (int batchStart = 1;
-        batchStart <= totalPages;
-        batchStart += BATCH_SIZE) {
-      final batchEnd = (batchStart + BATCH_SIZE - 1).clamp(1, totalPages);
-      final batch = <Future<void>>[];
-
-      for (int page = batchStart; page <= batchEnd; page++) {
-        if (!_loadedPages.contains(page)) {
-          batch.add(_loadPageSilently(page));
-        }
+    // Load ALL pages at once like Quran.com/Tarteel
+    for (int page = 1; page <= totalPages; page++) {
+      if (!_loadedPages.contains(page)) {
+        batch.add(_loadPageSilentlyOptimized(page));
       }
-
-      if (batch.isNotEmpty) {
-        await Future.wait(batch);
-        loadedCount += batch.length;
-
-        setState(() {
-          _preloadProgress = loadedCount / totalPages;
-        });
-      }
-
-      await Future.delayed(const Duration(milliseconds: 50));
     }
 
-    setState(() {
-      _isPreloading = false;
-    });
+    if (batch.isNotEmpty) {
+      // Load all pages in parallel for maximum speed (silent background loading)
+      await Future.wait(batch);
+    }
+
+    print('All 604 pages loaded into memory successfully!');
   }
 
   Future<void> _loadAroundCurrentPage(int currentPage) async {
@@ -945,78 +1645,73 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       }
     }
 
-    final futures = pagesToLoad.map((page) => _loadPageSilently(page));
-    await Future.wait(futures);
-  }
+    // Load pages in smaller batches to prevent overwhelming the system
+    const maxConcurrentPages = 3;
+    for (int i = 0; i < pagesToLoad.length; i += maxConcurrentPages) {
+      final batch = pagesToLoad.skip(i).take(maxConcurrentPages).toList();
+      final futures = batch.map((page) => _loadPageSilentlyOptimized(page));
+      await Future.wait(futures);
 
-  Future<void> _loadFontForPage(int page) async {
-    if (_loadedFonts.contains(page)) return;
-
-    try {
-      final fontLoader = FontLoader('QPCPageFont$page');
-      final fontData =
-          await rootBundle.load('assets/quran/fonts/qpc-v2-font/p$page.ttf');
-      fontLoader.addFont(Future.value(fontData));
-      await fontLoader.load();
-      _loadedFonts.add(page);
-    } catch (e) {
-      // Font loading failed
+      // Small delay between batches to prevent UI blocking
+      if (i + maxConcurrentPages < pagesToLoad.length) {
+        await Future.delayed(const Duration(milliseconds: 10));
+      }
     }
   }
 
-  Future<void> _loadSurahNameFont() async {
-    if (_surahNameFontLoaded) return;
-
-    try {
-      final fontLoader = FontLoader('SurahNameFont');
-      final fontData =
-          await rootBundle.load('assets/quran/fonts/surah-name-v2.ttf');
-      fontLoader.addFont(Future.value(fontData));
-      await fontLoader.load();
-      _surahNameFontLoaded = true;
-    } catch (e) {
-      // Font loading failed
-    }
-  }
-
-  Future<void> _loadPage(int page) async {
-    if (_loadedPages.contains(page)) {
+  Future<void> _loadPageOptimized(int page) async {
+    // Check cache first - should always be available after preloading
+    final cachedPage = OptimizedPageCache.getPage(page);
+    if (cachedPage != null) {
+      _allPagesData[page] = cachedPage;
+      _loadedPages.add(page);
       setState(() {
         _currentPage = page;
       });
       return;
     }
 
-    await _loadPageSilently(page);
+    // If not in cache, load it (shouldn't happen after full preload)
+    await _loadPageSilentlyOptimized(page);
     setState(() {
       _currentPage = page;
     });
   }
 
-  Future<void> _loadPageSilently(int page) async {
-    if (_wordsDb == null || _layoutDb == null || _loadedPages.contains(page))
-      return;
+  Future<void> _loadPageSilentlyOptimized(int page) async {
+    if (_loadedPages.contains(page)) return;
+
+    final stopwatch = Stopwatch()..start();
 
     try {
-      await _loadFontForPage(page);
-
+      // All fonts are already preloaded at startup
       final mushafPage = await MushafPageBuilder.buildPage(
         pageNumber: page,
-        wordsDb: _wordsDb!,
-        layoutDb: _layoutDb!,
+        wordsDb: OptimizedDatabaseService.wordsDb,
+        layoutDb: OptimizedDatabaseService.layoutDb,
       );
 
+      // Cache the page
+      OptimizedPageCache.cachePage(page, mushafPage);
       _allPagesData[page] = mushafPage;
       _loadedPages.add(page);
+
+      stopwatch.stop();
+      PerformanceMonitor.logPerformance('loadPage_$page', stopwatch.elapsed);
     } catch (e) {
       print('Error loading page $page: $e');
       // Create empty page as fallback
-      _allPagesData[page] = MushafPage(
+      final emptyPage = MushafPage(
         pageNumber: page,
         lines: [],
         ayahs: [],
         lineToSegments: {},
       );
+      _allPagesData[page] = emptyPage;
+      _loadedPages.add(page);
+
+      stopwatch.stop();
+      PerformanceMonitor.logPerformance('loadPage_', stopwatch.elapsed);
     }
   }
 
@@ -1065,6 +1760,57 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     return ayahsToPlay;
   }
 
+  // Helper method to seek to a specific ayah by ID
+  void _seekToAyahFromId(String ayahId) {
+    final ayahs = _getCurrentPageAyahs();
+    if (ayahs.isEmpty) return;
+
+    // Parse the ayahId (format: "surah:ayah")
+    final parts = ayahId.split(':');
+    if (parts.length != 2) return;
+
+    final surah = int.tryParse(parts[0]);
+    final ayah = int.tryParse(parts[1]);
+    if (surah == null || ayah == null) return;
+
+    // Find the ayah index in the current page
+    for (int i = 0; i < ayahs.length; i++) {
+      if (ayahs[i].surah == surah && ayahs[i].ayah == ayah) {
+        // Update the current ayah index and highlighted ayah
+        setState(() {
+          _currentAyahIndex = i;
+          _highlightedAyahIndex = i;
+        });
+
+        // Seek to this ayah in the audio service
+        _audioService.seekToAyah(i);
+        break;
+      }
+    }
+  }
+
+  // Direct search for surah start page when mapping is not available
+  int? _findSurahStartPageDirectly(int surahId) {
+    print('Searching for surah $surahId start page directly...');
+
+    // Search through available pages
+    for (int page = 1; page <= 604; page++) {
+      final pageData = _allPagesData[page];
+      if (pageData != null) {
+        for (final ayah in pageData.ayahs) {
+          if (ayah.surah == surahId && ayah.ayah == 1) {
+            print('Found surah $surahId starting on page $page');
+            return page;
+          }
+        }
+      }
+    }
+
+    // If not found in loaded pages, load more pages and search
+    print('Surah $surahId not found in loaded pages, loading more...');
+    return null; // For now, return null. We could implement async loading here
+  }
+
   // Progress bar change handler
   void _onProgressBarChanged(double value) {
     if (_isDragging) {
@@ -1107,76 +1853,301 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     }
   }
 
-  void _showPageJumpDialog() {
-    final TextEditingController pageController = TextEditingController();
+  Widget _buildSearchBox() {
+    // Get current surah info
+    final currentSurah = _getCurrentSurah();
+    final surahInfo = currentSurah != null
+        ? '${currentSurah.nameSimple} (${currentSurah.id})'
+        : 'Page $_currentPage';
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Jump to Page'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Enter page number (1-604):'),
-              const SizedBox(height: 16),
-              TextField(
-                controller: pageController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  hintText: 'Page number',
-                  border: OutlineInputBorder(),
-                ),
-                autofocus: true,
-                onSubmitted: (value) {
-                  _jumpToPage(value);
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
+    return GestureDetector(
+      onTap: _showSurahListBottomSheet,
+      child: Container(
+        height: 40,
+        width: double
+            .infinity, // Full width to match mushaf// Match content padding
+        margin: const EdgeInsets.only(bottom: 12), // Match content padding
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFFFFF)
+              .withOpacity(0.0), // Completely transparent
+          borderRadius: BorderRadius.zero, // No rounded corners - rectangular
+          border: Border.all(
+            color:
+                const Color(0xFFE0E0E0).withOpacity(0.3), // Very subtle border
+            width: 0.5,
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
+        ),
+        child: Row(
+          mainAxisAlignment:
+              MainAxisAlignment.spaceBetween, // Space between left and right
+          children: [
+            // Surah name on the left
+            Text(
+              surahInfo,
+              style: TextStyle(
+                color: const Color(0xFF424242)
+                    .withOpacity(0.6), // More subtle text
+                fontSize: 16,
+                fontWeight: FontWeight.w400, // Lighter weight
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
-            ElevatedButton(
-              onPressed: () {
-                _jumpToPage(pageController.text);
-                Navigator.of(context).pop();
-              },
-              child: const Text('Go'),
+            // Search button on the right
+            Icon(
+              Icons.search,
+              color:
+                  const Color(0xFF424242).withOpacity(0.5), // More subtle icon
+              size: 18, // Slightly smaller
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Surah? _getCurrentSurah() {
+    // Get the current page data to find which surah(s) are on this page
+    final pageData = _allPagesData[_currentPage];
+    if (pageData == null || pageData.ayahs.isEmpty) {
+      print('No page data or ayahs found for page $_currentPage');
+      return null;
+    }
+
+    // Count ayahs per surah to find the main surah
+    final surahCounts = <int, int>{};
+    for (final ayah in pageData.ayahs) {
+      surahCounts[ayah.surah] = (surahCounts[ayah.surah] ?? 0) + 1;
+    }
+
+    if (surahCounts.isEmpty) {
+      print('No surahs found on page $_currentPage');
+      return null;
+    }
+
+    // Find the surah with the most ayahs on this page (main surah)
+    int mainSurahId =
+        surahCounts.entries.reduce((a, b) => a.value > b.value ? a : b).key;
+
+    final surah = _surahService.getSurahById(mainSurahId);
+
+    if (surah != null) {
+      if (surahCounts.length > 1) {
+        final surahNames = surahCounts.entries
+            .map((e) =>
+                '${_surahService.getSurahById(e.key)?.nameSimple ?? 'Unknown'} (${e.value} ayahs)')
+            .join(', ');
+        print(
+            'Page $_currentPage has multiple surahs: $surahNames - showing main surah: ${surah.nameSimple}');
+      } else {
+        print(
+            'Page $_currentPage belongs to surah: ${surah.nameSimple} (ID: $mainSurahId)');
+      }
+      return surah;
+    } else {
+      print('Surah with ID $mainSurahId not found in metadata');
+      return null;
+    }
+  }
+
+  void _showSurahListBottomSheet() {
+    final surahs = _surahService.surahs;
+    if (surahs == null) return;
+
+    // Initialize filtered surahs with all surahs
+    _filteredSurahs = List.from(surahs);
+    _searchQuery = '';
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return DraggableScrollableSheet(
+              initialChildSize: 0.7,
+              minChildSize: 0.5,
+              maxChildSize: 0.9,
+              builder: (context, scrollController) {
+                return Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      // Handle bar
+                      Container(
+                        margin: const EdgeInsets.only(top: 8),
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      // Header
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          children: [
+                            const Text(
+                              'Select Surah',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const Spacer(),
+                            IconButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              icon: const Icon(Icons.close),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Search bar
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: TextField(
+                          decoration: InputDecoration(
+                            hintText: 'Search surahs...',
+                            prefixIcon: const Icon(Icons.search),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                          ),
+                          onChanged: (value) {
+                            setModalState(() {
+                              _searchQuery = value.toLowerCase();
+                              _filteredSurahs = surahs.where((surah) {
+                                return surah.nameSimple
+                                        .toLowerCase()
+                                        .contains(_searchQuery) ||
+                                    surah.nameArabic.contains(_searchQuery) ||
+                                    surah.id.toString().contains(_searchQuery);
+                              }).toList();
+                            });
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      // Surah list
+                      Expanded(
+                        child: _filteredSurahs.isEmpty
+                            ? const Center(
+                                child: Text(
+                                  'No surahs found',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              )
+                            : ListView.builder(
+                                controller: scrollController,
+                                itemCount: _filteredSurahs.length,
+                                itemBuilder: (context, index) {
+                                  final surah = _filteredSurahs[index];
+                                  return ListTile(
+                                    leading: CircleAvatar(
+                                      backgroundColor: const Color(0xFF616161),
+                                      child: Text(
+                                        '${surah.id}',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    title: Text(
+                                      surah.nameSimple,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    subtitle: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          surah.nameArabic,
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        Text(
+                                          '${surah.versesCount} verses • ${surah.revelationPlace}',
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                      ],
+                                    ),
+                                    trailing: const Icon(
+                                        Icons.arrow_forward_ios,
+                                        size: 16),
+                                    onTap: () {
+                                      Navigator.of(context).pop();
+                                      _navigateToSurah(surah.id);
+                                    },
+                                  );
+                                },
+                              ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
         );
       },
     );
   }
 
-  void _jumpToPage(String pageText) {
-    final pageNumber = int.tryParse(pageText);
-    if (pageNumber != null && pageNumber >= 1 && pageNumber <= 604) {
+  void _navigateToSurah(int surahId) {
+    // Check if mapping is available, if not try to rebuild it
+    if (_surahService.surahToPageMap == null ||
+        _surahService.surahToPageMap!.isEmpty) {
+      print('Surah mapping is empty, rebuilding...');
+      _surahService.buildSurahToPageMap(_allPagesData);
+    }
+
+    // If still no mapping, try to find the surah start page directly
+    int? startPage = _surahService.getSurahStartPage(surahId);
+    if (startPage == null) {
+      print('Surah $surahId not found in mapping, searching directly...');
+      startPage = _findSurahStartPageDirectly(surahId);
+    }
+
+    print('Navigating to surah $surahId, start page: $startPage');
+
+    if (startPage != null) {
       // Stop audio if playing
       if (_audioState != AudioPlaybackState.stopped) {
         _stopAudio();
       }
 
-      // Navigate to the page
+      // Navigate to the surah's starting page
       _pageController.animateToPage(
-        pageNumber - 1, // PageController uses 0-based index
+        startPage - 1, // PageController uses 0-based index
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
 
       // Load the page if not already loaded
-      _loadPage(pageNumber);
+      _loadPageOptimized(startPage);
     } else {
       // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please enter a valid page number between 1 and 604'),
+          content: Text('Could not find the starting page for this surah'),
           backgroundColor: Colors.red,
         ),
       );
@@ -1186,9 +2157,12 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
   @override
   void dispose() {
     _pageController.dispose();
-    _wordsDb?.close();
-    _layoutDb?.close();
+    OptimizedDatabaseService.close();
     _audioService.dispose();
+
+    // Print performance summary before disposing
+    PerformanceMonitor.printSummary();
+
     super.dispose();
   }
 
@@ -1198,36 +2172,18 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     final isTablet = screenSize.width > 600;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFAFAFA),
+      backgroundColor:
+          const Color(0xFFFFFFFF), // White to match mushaf background
       appBar: AppBar(
-        title: Column(
-          children: [
-            Text('Mushaf - Page $_currentPage'),
-            if (_isPreloading)
-              Container(
-                margin: const EdgeInsets.only(top: 4),
-                child: LinearProgressIndicator(
-                  value: _preloadProgress,
-                  backgroundColor: Colors.white30,
-                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
-                  minHeight: 2,
-                ),
-              ),
-          ],
-        ),
-        centerTitle: true,
-        backgroundColor: const Color(0xFF2E7D32),
-        foregroundColor: Colors.white,
-        toolbarHeight:
-            _isPreloading ? (isTablet ? 90 : 76) : (isTablet ? 70 : 56),
+        title: _buildSearchBox(),
+        centerTitle: false, // Don't center since we want full width
+        backgroundColor:
+            const Color(0xFFFFFFFF), // White to match mushaf background
+        foregroundColor:
+            const Color(0xFF424242), // Neutral dark gray for subtle contrast
         automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: _showPageJumpDialog,
-            tooltip: 'Jump to Page',
-          ),
-        ],
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
       ),
       body: _isInitializing
           ? Center(
@@ -1242,7 +2198,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                     _loadingMessage,
                     style: TextStyle(
                         fontSize: isTablet ? 18 : 16,
-                        color: const Color(0xFF2E7D32)),
+                        color: const Color(0xFF424242)),
                   ),
                 ],
               ),
@@ -1261,7 +2217,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                     },
                   ),
                 ),
-                // Audio Bottom Bar
+                // Audio Bottom Bar - always visible
                 _buildAudioBottomBar(isTablet),
               ],
             ),
@@ -1274,10 +2230,8 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     return Container(
       height: isTablet ? 100 : 80,
       decoration: const BoxDecoration(
-        color: Color(0xFFF8F8F8),
-        border: Border(
-          top: BorderSide(color: Color(0xFFE0E0E0), width: 1),
-        ),
+        color: Color(0xFFFFFFFF), // White to match mushaf background
+        // Removed top border for seamless blending
       ),
       padding: EdgeInsets.only(
         left: isTablet ? 20 : 16,
@@ -1297,7 +2251,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
               style: TextStyle(
                 fontSize: isTablet ? 12 : 10,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF2E7D32),
+                color: const Color(0xFF424242).withOpacity(0.7),
               ),
             ),
           ),
@@ -1311,7 +2265,16 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
               height: isTablet ? 48 : 44,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: ayahs.isNotEmpty ? const Color(0xFF2E7D32) : Colors.grey,
+                color: ayahs.isNotEmpty
+                    ? const Color(0xFF424242)
+                        .withOpacity(0.05) // Even more transparent
+                    : Colors.grey.withOpacity(0.05),
+                border: Border.all(
+                  color: ayahs.isNotEmpty
+                      ? const Color(0xFF424242).withOpacity(0.15)
+                      : Colors.grey.withOpacity(0.15),
+                  width: 0.5, // Thinner border
+                ),
               ),
               child: _isLoading
                   ? SizedBox(
@@ -1325,7 +2288,8 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                   : Icon(
                       _isPlaying ? Icons.pause : Icons.play_arrow,
                       size: isTablet ? 26 : 24,
-                      color: Colors.white,
+                      color: const Color(0xFF424242)
+                          .withOpacity(0.5), // More subtle gray
                     ),
             ),
           ),
@@ -1342,10 +2306,10 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                 overlayShape: RoundSliderOverlayShape(
                   overlayRadius: isTablet ? 16 : 14,
                 ),
-                activeTrackColor: const Color(0xFF2E7D32),
-                inactiveTrackColor: const Color(0xFFBDBDBD),
-                thumbColor: const Color(0xFF2E7D32),
-                overlayColor: const Color(0xFF2E7D32).withOpacity(0.2),
+                activeTrackColor: const Color(0xFF424242).withOpacity(0.3),
+                inactiveTrackColor: const Color(0xFFE0E0E0),
+                thumbColor: const Color(0xFF424242).withOpacity(0.4),
+                overlayColor: const Color(0xFF424242).withOpacity(0.1),
               ),
               child: Slider(
                 value: ayahs.isEmpty
@@ -1383,7 +2347,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                   style: TextStyle(
                     fontSize: isTablet ? 12 : 10,
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFF2E7D32),
+                    color: const Color(0xFF424242).withOpacity(0.7),
                   ),
                 ),
               SizedBox(height: isTablet ? 4 : 3),
@@ -1397,17 +2361,19 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                       vertical: isTablet ? 3 : 2,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE8F5E8),
+                      color: const Color(0xFFF5F5F5)
+                          .withOpacity(0.3), // More transparent
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                          color: const Color(0xFFC8E6C9), width: 0.5),
+                          color: const Color(0xFFE0E0E0).withOpacity(0.3),
+                          width: 0.3), // Lighter border
                     ),
                     child: Text(
                       '$_currentPage/604',
                       style: TextStyle(
                         fontSize: isTablet ? 11 : 9,
                         fontWeight: FontWeight.w500,
-                        color: const Color(0xFF2E7D32),
+                        color: const Color(0xFF424242).withOpacity(0.7),
                       ),
                     ),
                   ),
@@ -1418,17 +2384,19 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                       vertical: isTablet ? 3 : 2,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE8F5E8),
+                      color: const Color(0xFFF5F5F5)
+                          .withOpacity(0.3), // More transparent
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                          color: const Color(0xFFC8E6C9), width: 0.5),
+                          color: const Color(0xFFE0E0E0).withOpacity(0.3),
+                          width: 0.3), // Lighter border
                     ),
                     child: Text(
                       'باسط',
                       style: TextStyle(
                         fontSize: isTablet ? 11 : 9,
                         fontWeight: FontWeight.w500,
-                        color: const Color(0xFF2E7D32),
+                        color: const Color(0xFF424242).withOpacity(0.7),
                       ),
                     ),
                   ),
@@ -1474,8 +2442,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
 
     final screenSize = MediaQuery.of(context).size;
     final isTablet = screenSize.width > 600;
-    final appBarHeight =
-        _isPreloading ? (isTablet ? 90.0 : 76.0) : (isTablet ? 70.0 : 56.0);
+    final appBarHeight = isTablet ? 70.0 : 56.0;
     final statusBarHeight = MediaQuery.of(context).padding.top;
     final bottomBarHeight = isTablet ? 100.0 : 80.0;
     final availableHeight =
@@ -1636,7 +2603,6 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
 
     // Default formatting for regular pages - stretch to full width
     return Container(
-      padding: const EdgeInsets.all(12),
       width: double.infinity,
       child: segments.isNotEmpty
           ? GestureDetector(
@@ -1717,7 +2683,8 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
         final sortedWords = segment.words;
 
         // Build word spans for this segment
-        for (final word in sortedWords) {
+        for (int i = 0; i < sortedWords.length; i++) {
+          final word = sortedWords[i];
           final wordId = '${ayah.surah}:${ayah.ayah}:${word.wordIndex}';
           final isAudioHighlighted = _highlightedWordId == wordId;
 
@@ -1733,6 +2700,20 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
               ),
             ),
           );
+
+          // Add thin space between words (except after the last word)
+          if (i < sortedWords.length - 1) {
+            ayahSpans.add(
+              TextSpan(
+                text: '\u2009',
+                style: TextStyle(
+                  fontFamily: 'QPCPageFont$page',
+                  fontSize: fontSize,
+                  color: Colors.black,
+                ),
+              ),
+            );
+          }
         }
       }
 
@@ -1749,6 +2730,9 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                   _userSelectedAyahId = ayahId;
                 }
               });
+
+              // Position audio to this ayah
+              _seekToAyahFromId(ayahId);
             },
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
@@ -1757,7 +2741,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                 borderRadius: BorderRadius.circular(6),
               ),
               child: FittedBox(
-                fit: BoxFit.fitWidth,
+                fit: BoxFit.scaleDown,
                 child: RichText(
                   textAlign: TextAlign.center,
                   textDirection: TextDirection.rtl,
@@ -1776,7 +2760,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     return Container(
       width: double.infinity,
       child: FittedBox(
-        fit: BoxFit.fitWidth,
+        fit: BoxFit.scaleDown,
         child: RichText(
           textAlign: TextAlign.center,
           textDirection: TextDirection.rtl,
@@ -1804,7 +2788,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     Widget textWidget = Container(
       width: double.infinity,
       child: FittedBox(
-        fit: BoxFit.fitWidth,
+        fit: BoxFit.scaleDown,
         child: Text(
           text,
           textAlign: TextAlign.center,
@@ -1905,7 +2889,8 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
         final ayah = _findAyahForSegment(segment);
         if (ayah == null) continue;
         final sortedWords = segment.words;
-        for (final word in sortedWords) {
+        for (int i = 0; i < sortedWords.length; i++) {
+          final word = sortedWords[i];
           final wordId = '${ayah.surah}:${ayah.ayah}:${word.wordIndex}';
           final isAudioHighlighted = _highlightedWordId == wordId;
           ayahSpans.add(
@@ -1920,6 +2905,20 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
               ),
             ),
           );
+
+          // Add thin space between words (except after the last word)
+          if (i < sortedWords.length - 1) {
+            ayahSpans.add(
+              TextSpan(
+                text: '\u2009',
+                style: TextStyle(
+                  fontFamily: 'QPCPageFont$page',
+                  fontSize: fontSize,
+                  color: Colors.black,
+                ),
+              ),
+            );
+          }
         }
       }
 
@@ -1934,9 +2933,11 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                   _userSelectedAyahId = ayahId;
                 }
               });
+
+              // Position audio to this ayah
+              _seekToAyahFromId(ayahId);
             },
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
               decoration: BoxDecoration(
                 color: isUserSelected ? Colors.blue.withOpacity(0.3) : null,
                 borderRadius: BorderRadius.circular(6),
@@ -2013,12 +3014,31 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
         if (line.lineType == 'surah_name') continue;
         final String text = line.text;
         if (text.isEmpty) continue;
+
+        // For lines with ayah segments, we need to account for thin spaces between words
+        String textToMeasure = text;
+        if (line.lineType == 'ayah' || line.lineType == 'basmallah') {
+          // Get the segments for this line to count words
+          final segments = mushafPage.lineToSegments[line.lineNumber] ?? [];
+          if (segments.isNotEmpty) {
+            // Count total words across all segments for this line
+            int totalWords = 0;
+            for (final segment in segments) {
+              totalWords += segment.words.length;
+            }
+            // Add thin spaces between words (totalWords - 1 spaces)
+            if (totalWords > 1) {
+              textToMeasure = text + '\u2009' * (totalWords - 1);
+            }
+          }
+        }
+
         final painter = TextPainter(
           textDirection: TextDirection.rtl,
           textAlign: TextAlign.center,
           maxLines: 1,
           text: TextSpan(
-            text: text,
+            text: textToMeasure,
             style: TextStyle(
               fontFamily: fontFamily,
               fontSize: size,
