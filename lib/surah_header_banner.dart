@@ -57,6 +57,30 @@ class SurahBanner extends StatefulWidget {
 }
 
 class _SurahBannerState extends State<SurahBanner> {
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDataIfNeeded();
+  }
+
+  Future<void> _loadDataIfNeeded() async {
+    if (SurahBanner._ligatures == null && !SurahBanner._isInitializing && !_isLoading) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      await SurahBanner._ensureFontAndLigaturesLoaded();
+
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -97,10 +121,8 @@ class _SurahBannerState extends State<SurahBanner> {
       ),
     );
 
-    // If data is not loaded yet, show loading state only once
-    if (SurahBanner._ligatures == null && !SurahBanner._isInitializing) {
-      // Start loading in background
-      SurahBanner._ensureFontAndLigaturesLoaded();
+    // Show loading state or fallback
+    if (SurahBanner._ligatures == null) {
       return Container(
         width: double.infinity,
         constraints: BoxConstraints(
@@ -142,6 +164,7 @@ class _SurahBannerState extends State<SurahBanner> {
             'text': glyph,
           },
           creationParamsCodec: const StandardMessageCodec(),
+
         ),
       );
     }
