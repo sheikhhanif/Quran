@@ -685,6 +685,9 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
   final Map<int, MushafPage> _allPagesData = {};
   final Set<int> _loadedPages = {};
 
+  // Cache for uniform font sizes per page
+  final Map<int, double> _uniformFontSizeCache = {};
+
   bool _isInitializing = true;
   bool _isPreloading = false;
   String _loadingMessage = 'Initializing...';
@@ -772,25 +775,25 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
 
       final databasesPath = await getDatabasesPath();
 
-      final wordsDbPath = p.join(databasesPath, 'qpc-v2.db');
+      final wordsDbPath = p.join(databasesPath, 'qpc-hafs.db');
       if (!await File(wordsDbPath).exists()) {
         setState(() {
           _loadingMessage = 'Copying words database...';
         });
         final wordsData =
-            await rootBundle.load('assets/quran/scripts/qpc-v2.db');
+            await rootBundle.load('assets/quran/scripts/qpc-hafs.db');
         final wordsBytes = wordsData.buffer
             .asUint8List(wordsData.offsetInBytes, wordsData.lengthInBytes);
         await File(wordsDbPath).writeAsBytes(wordsBytes, flush: true);
       }
 
-      final layoutDbPath = p.join(databasesPath, 'qpc-v2-15-lines.db');
+      final layoutDbPath = p.join(databasesPath, 'qpc-v4-15-lines.db');
       if (!await File(layoutDbPath).exists()) {
         setState(() {
           _loadingMessage = 'Copying layout database...';
         });
         final layoutData =
-            await rootBundle.load('assets/quran/layout/qpc-v2-15-lines.db');
+            await rootBundle.load('assets/quran/layout/qpc-v4-15-lines.db');
         final layoutBytes = layoutData.buffer
             .asUint8List(layoutData.offsetInBytes, layoutData.lengthInBytes);
         await File(layoutDbPath).writeAsBytes(layoutBytes, flush: true);
@@ -875,8 +878,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
 
     try {
       final fontLoader = FontLoader('QPCPageFont$page');
-      final fontData =
-          await rootBundle.load('assets/quran/fonts/hafs.ttf');
+      final fontData = await rootBundle.load('assets/quran/fonts/uth.ttf');
       fontLoader.addFont(Future.value(fontData));
       await fontLoader.load();
       _loadedFonts.add(page);
@@ -1312,8 +1314,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
 
     final screenSize = MediaQuery.of(context).size;
     final isTablet = screenSize.width > 600;
-    final appBarHeight =
-        _isPreloading ? (isTablet ? 90.0 : 76.0) : (isTablet ? 70.0 : 56.0);
+    final appBarHeight = isTablet ? 70.0 : 56.0;
     final statusBarHeight = MediaQuery.of(context).padding.top;
     final bottomBarHeight = isTablet ? 100.0 : 80.0;
     final availableHeight =
@@ -1323,10 +1324,23 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       width: double.infinity,
       height: availableHeight,
       decoration: const BoxDecoration(
-        color: Color(0xFFF0E6D6),
+        color: Color(0xFFFFFFFF),
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
+          // Compute a uniform font size for this page so all lines share the same size
+          final screenSize = MediaQuery.of(context).size;
+          final isTablet = screenSize.width > 600;
+          final isLandscape = screenSize.width > screenSize.height;
+          final computedSize = _computeUniformFontSizeForPage(
+            page,
+            mushafPage,
+            constraints.maxWidth,
+            isTablet,
+            isLandscape,
+            screenSize,
+          );
+          _uniformFontSizeCache[page] = computedSize;
           return Column(
             mainAxisAlignment: page <= 2
                 ? MainAxisAlignment.center // Center content for pages 1-2
@@ -1418,21 +1432,27 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       bool isTablet,
       bool isLandscape,
       Size screenSize) {
-    // Special formatting for basmallah lines - center them without stretching
+    final double? uniformFontSize = _uniformFontSizeCache[page];
+    // Special formatting for basmallah lines - scale uniformly to fit width
     if (line.lineType == 'basmallah') {
-      return Center(
-        child: _buildTextWithThicknessNoStretch(
-          line.text,
-          _getMaximizedFontSize(
-              line.lineType, isTablet, isLandscape, screenSize),
-          'QPCPageFont$page',
-        ),
+      return Container(
+        width: double.infinity,
+        child: (uniformFontSize != null)
+            ? _buildTextWithThicknessFixedSize(
+                line.text, uniformFontSize, 'QPCPageFont$page')
+            : _buildTextWithThickness(
+                line.text,
+                _getMaximizedFontSize(
+                    line.lineType, isTablet, isLandscape, screenSize),
+                'QPCPageFont$page',
+              ),
       );
     }
 
-    // Special formatting for first few pages (1-2) and last few pages (600-604) - no stretching, keep original
-    if (page <= 2 || page >= 600) {
-      return Center(
+    // If we have a uniform size for the page, use fixed-size rendering
+    if (uniformFontSize != null) {
+      return Container(
+        width: double.infinity,
         child: segments.isNotEmpty
             ? GestureDetector(
                 onTap: () {
@@ -1447,13 +1467,11 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                     }
                   }
                 },
-                child: _buildHighlightableTextNoStretch(line, segments, page),
+                child: _buildHighlightableTextFixedSize(
+                    line, segments, page, uniformFontSize),
               )
-            : _buildTextWithThicknessNoStretch(
-                line.text,
-                _getMaximizedFontSize(
-                    line.lineType, isTablet, isLandscape, screenSize),
-                'QPCPageFont$page'),
+            : _buildTextWithThicknessFixedSize(
+                line.text, uniformFontSize, 'QPCPageFont$page'),
       );
     }
 
@@ -1539,7 +1557,8 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
         final sortedWords = segment.words;
 
         // Build word spans for this segment
-        for (final word in sortedWords) {
+        for (int i = 0; i < sortedWords.length; i++) {
+          final word = sortedWords[i];
           final wordId = '${ayah.surah}:${ayah.ayah}:${word.wordIndex}';
           final isAudioHighlighted = _highlightedWordId == wordId;
 
@@ -1555,6 +1574,20 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
               ),
             ),
           );
+
+          // Add thin space between words (except after the last word)
+          if (i < sortedWords.length - 1) {
+            ayahSpans.add(
+              TextSpan(
+                text: '\u2009',
+                style: TextStyle(
+                  fontFamily: 'QPCPageFont$page',
+                  fontSize: fontSize,
+                  color: Colors.black,
+                ),
+              ),
+            );
+          }
         }
       }
 
@@ -1571,9 +1604,12 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                   _userSelectedAyahId = ayahId;
                 }
               });
+
+              // Position audio to this ayah
+              _seekToAyahFromId(ayahId);
             },
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
               decoration: BoxDecoration(
                 color: isUserSelected ? Colors.blue.withOpacity(0.3) : null,
                 borderRadius: BorderRadius.circular(6),
@@ -1620,7 +1656,63 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     return null;
   }
 
+  void _seekToAyahFromId(String ayahId) {
+    final parts = ayahId.split(':');
+    if (parts.length != 2) return;
+
+    final surahNumber = int.tryParse(parts[0]);
+    final ayahNumber = int.tryParse(parts[1]);
+
+    if (surahNumber == null || ayahNumber == null) return;
+
+    final ayahs = _getCurrentPageAyahs();
+    for (int i = 0; i < ayahs.length; i++) {
+      if (ayahs[i].surah == surahNumber && ayahs[i].ayah == ayahNumber) {
+        setState(() {
+          _currentAyahIndex = i;
+          _highlightedAyahIndex = i;
+        });
+        break;
+      }
+    }
+  }
+
   Widget _buildTextWithThickness(
+      String text, double fontSize, String fontFamily,
+      {Color? backgroundColor, Color textColor = Colors.black}) {
+    Widget textWidget = Container(
+      width: double.infinity,
+      child: FittedBox(
+        fit: BoxFit.fitWidth,
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          textDirection: TextDirection.rtl,
+          maxLines: 1,
+          style: TextStyle(
+            fontFamily: fontFamily,
+            fontSize: fontSize,
+            color: textColor,
+          ),
+        ),
+      ),
+    );
+
+    if (backgroundColor != null) {
+      return Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: textWidget,
+      );
+    }
+
+    return textWidget;
+  }
+
+  Widget _buildTextWithThicknessFixedSize(
       String text, double fontSize, String fontFamily,
       {Color? backgroundColor, Color textColor = Colors.black}) {
     Widget textWidget = Container(
@@ -1683,14 +1775,8 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     return textWidget;
   }
 
-  Widget _buildHighlightableTextNoStretch(
-      SimpleMushafLine line, List<AyahSegment> segments, int page) {
-    final screenSize = MediaQuery.of(context).size;
-    final isTablet = screenSize.width > 600;
-    final isLandscape = screenSize.width > screenSize.height;
-    final fontSize =
-        _getMaximizedFontSize(line.lineType, isTablet, isLandscape, screenSize);
-
+  Widget _buildHighlightableTextNoStretch(SimpleMushafLine line,
+      List<AyahSegment> segments, int page, double uniformFontSize) {
     // Sort segments by their line number and position in the line
     segments.sort((a, b) {
       if (a.lineNumber != b.lineNumber) {
@@ -1747,7 +1833,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
               text: word.text,
               style: TextStyle(
                 fontFamily: 'QPCPageFont$page',
-                fontSize: fontSize,
+                fontSize: uniformFontSize,
                 color: Colors.black,
                 backgroundColor:
                     isAudioHighlighted ? Colors.yellow.withOpacity(0.7) : null,
@@ -1796,6 +1882,202 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       textDirection: TextDirection.rtl,
       text: TextSpan(children: spans),
     );
+  }
+
+  Widget _buildHighlightableTextFixedSize(SimpleMushafLine line,
+      List<AyahSegment> segments, int page, double fontSize) {
+    // Sort segments
+    segments.sort((a, b) {
+      if (a.lineNumber != b.lineNumber) {
+        return a.lineNumber.compareTo(b.lineNumber);
+      }
+      return a.startIndex.compareTo(b.startIndex);
+    });
+
+    Map<String, List<AyahSegment>> segmentsByAyah = {};
+    for (final segment in segments) {
+      final ayah = _findAyahForSegment(segment);
+      if (ayah != null) {
+        final ayahId = '${ayah.surah}:${ayah.ayah}';
+        segmentsByAyah.putIfAbsent(ayahId, () => []).add(segment);
+      }
+    }
+
+    List<InlineSpan> spans = [];
+
+    for (final entry in segmentsByAyah.entries) {
+      final ayahId = entry.key;
+      final ayahSegments = entry.value;
+
+      ayahSegments.sort((a, b) {
+        if (a.lineNumber != b.lineNumber) {
+          return a.lineNumber.compareTo(b.lineNumber);
+        }
+        return a.startIndex.compareTo(b.startIndex);
+      });
+
+      final isUserSelected = _userSelectedAyahId == ayahId;
+
+      List<InlineSpan> ayahSpans = [];
+      for (final segment in ayahSegments) {
+        final ayah = _findAyahForSegment(segment);
+        if (ayah == null) continue;
+        final sortedWords = segment.words;
+        for (int i = 0; i < sortedWords.length; i++) {
+          final word = sortedWords[i];
+          final wordId = '${ayah.surah}:${ayah.ayah}:${word.wordIndex}';
+          final isAudioHighlighted = _highlightedWordId == wordId;
+          ayahSpans.add(
+            TextSpan(
+              text: word.text,
+              style: TextStyle(
+                fontFamily: 'QPCPageFont$page',
+                fontSize: fontSize,
+                color: Colors.black,
+                backgroundColor:
+                    isAudioHighlighted ? Colors.yellow.withOpacity(0.7) : null,
+              ),
+            ),
+          );
+
+          // Add thin space between words (except after the last word)
+          if (i < sortedWords.length - 1) {
+            ayahSpans.add(
+              TextSpan(
+                text: '\u2009',
+                style: TextStyle(
+                  fontFamily: 'QPCPageFont$page',
+                  fontSize: fontSize,
+                  color: Colors.black,
+                ),
+              ),
+            );
+          }
+        }
+      }
+
+      spans.add(
+        WidgetSpan(
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                if (_userSelectedAyahId == ayahId) {
+                  _userSelectedAyahId = null;
+                } else {
+                  _userSelectedAyahId = ayahId;
+                }
+              });
+
+              // Position audio to this ayah
+              _seekToAyahFromId(ayahId);
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: isUserSelected ? Colors.blue.withOpacity(0.3) : null,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: RichText(
+                textAlign: TextAlign.center,
+                textDirection: TextDirection.rtl,
+                text: TextSpan(children: ayahSpans),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    spans = spans.reversed.toList();
+
+    return Container(
+      width: double.infinity,
+      child: FittedBox(
+        fit: BoxFit.fitWidth,
+        child: RichText(
+          textAlign: TextAlign.center,
+          textDirection: TextDirection.rtl,
+          text: TextSpan(children: spans),
+        ),
+      ),
+    );
+  }
+
+  double _computeUniformFontSizeForPage(
+    int page,
+    MushafPage mushafPage,
+    double maxWidth,
+    bool isTablet,
+    bool isLandscape,
+    Size screenSize,
+  ) {
+    // Binary search between reasonable bounds for the largest size that fits all lines
+    double low = 8.0;
+    double high = 300.0;
+
+    // Start near the heuristic size to speed convergence
+    final heuristic =
+        _getMaximizedFontSize('ayah', isTablet, isLandscape, screenSize);
+    if (heuristic > low && heuristic < high) {
+      high = heuristic * 1.5;
+    }
+
+    final String fontFamily = 'QPCPageFont$page';
+
+    bool fitsAll(double size) {
+      final double targetWidth = maxWidth - 8.0; // small margin
+      for (final line in mushafPage.lines) {
+        // Only measure text-based lines shown with this font
+        if (line.lineType == 'surah_name') continue;
+        final String text = line.text;
+        if (text.isEmpty) continue;
+
+        // For lines with ayah segments, we need to account for thin spaces between words
+        String textToMeasure = text;
+        if (line.lineType == 'ayah' || line.lineType == 'basmallah') {
+          // Get the segments for this line to count words
+          final segments = mushafPage.lineToSegments[line.lineNumber] ?? [];
+          if (segments.isNotEmpty) {
+            // Count total words across all segments for this line
+            int totalWords = 0;
+            for (final segment in segments) {
+              totalWords += segment.words.length;
+            }
+            // Add thin spaces between words (totalWords - 1 spaces)
+            if (totalWords > 1) {
+              textToMeasure = text + '\u2009' * (totalWords - 1);
+            }
+          }
+        }
+
+        final painter = TextPainter(
+          textDirection: TextDirection.rtl,
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          text: TextSpan(
+            text: textToMeasure,
+            style: TextStyle(
+              fontFamily: fontFamily,
+              fontSize: size,
+            ),
+          ),
+        );
+        painter.layout(minWidth: 0, maxWidth: double.infinity);
+        if (painter.size.width > targetWidth) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    for (int i = 0; i < 18; i++) {
+      final mid = (low + high) / 2.0;
+      if (fitsAll(mid)) {
+        low = mid;
+      } else {
+        high = mid;
+      }
+    }
+    return low;
   }
 
   double _getMaximizedFontSize(
