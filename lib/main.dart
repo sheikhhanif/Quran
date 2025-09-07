@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'quran_screen.dart';
 
-
 void main() {
   runApp(const MuslimlyApp());
 }
@@ -22,4 +21,3 @@ class MuslimlyApp extends StatelessWidget {
     );
   }
 }
-

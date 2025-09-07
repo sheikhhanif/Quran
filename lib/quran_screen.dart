@@ -231,6 +231,13 @@ enum AudioPlaybackState {
   loading,
 }
 
+// Theme state
+enum ThemeMode {
+  normal,
+  lightSepia,
+  dark,
+}
+
 // ===================== HELPER FUNCTIONS =====================
 
 // Safe integer conversion from database values
@@ -309,7 +316,7 @@ class SurahService {
   Map<int, int> _buildSurahToPageMapping(Map<int, MushafPage> allPagesData) {
     final surahToPage = <int, int>{};
     final surahFirstAyah =
-    <int, int>{}; // Track the lowest ayah number for each surah
+        <int, int>{}; // Track the lowest ayah number for each surah
 
     print('Building mapping with ${allPagesData.length} pages available');
 
@@ -392,13 +399,13 @@ class AudioService {
   StreamSubscription<PlayerState>? _playerStateSubscription;
 
   final StreamController<Duration> _positionController =
-  StreamController<Duration>.broadcast();
+      StreamController<Duration>.broadcast();
   final StreamController<AudioPlaybackState> _stateController =
-  StreamController<AudioPlaybackState>.broadcast();
+      StreamController<AudioPlaybackState>.broadcast();
   final StreamController<String?> _highlightController =
-  StreamController<String?>.broadcast();
+      StreamController<String?>.broadcast();
   final StreamController<PageAyah?> _currentAyahController =
-  StreamController<PageAyah?>.broadcast();
+      StreamController<PageAyah?>.broadcast();
 
   Stream<Duration> get positionStream => _positionController.stream;
   Stream<AudioPlaybackState> get stateStream => _stateController.stream;
@@ -417,25 +424,25 @@ class AudioService {
 
     _playerStateSubscription =
         _audioPlayer.onPlayerStateChanged.listen((state) {
-          switch (state) {
-            case PlayerState.playing:
-              _stateController.add(AudioPlaybackState.playing);
-              break;
-            case PlayerState.paused:
-              _stateController.add(AudioPlaybackState.paused);
-              break;
-            case PlayerState.stopped:
-              _stateController.add(AudioPlaybackState.stopped);
-              _highlightController.add(null);
-              _currentAyahController.add(null);
-              break;
-            case PlayerState.completed:
-              _onAudioCompleted();
-              break;
-            case PlayerState.disposed:
-              break;
-          }
-        });
+      switch (state) {
+        case PlayerState.playing:
+          _stateController.add(AudioPlaybackState.playing);
+          break;
+        case PlayerState.paused:
+          _stateController.add(AudioPlaybackState.paused);
+          break;
+        case PlayerState.stopped:
+          _stateController.add(AudioPlaybackState.stopped);
+          _highlightController.add(null);
+          _currentAyahController.add(null);
+          break;
+        case PlayerState.completed:
+          _onAudioCompleted();
+          break;
+        case PlayerState.disposed:
+          break;
+      }
+    });
 
     _positionSubscription = _audioPlayer.onPositionChanged.listen((position) {
       _positionController.add(position);
@@ -501,7 +508,7 @@ class AudioService {
       String audioPath;
       try {
         audioPath =
-        await _cacheService.downloadAndCacheAudio(audioData.audioUrl);
+            await _cacheService.downloadAndCacheAudio(audioData.audioUrl);
         await _audioPlayer.play(DeviceFileSource(audioPath));
       } catch (cacheError) {
         print('Cache error, falling back to URL: $cacheError');
@@ -604,7 +611,7 @@ class AudioService {
         // Fallback: clamp to valid range
         final fallbackWordIndex = wordIndex.clamp(1, ayahWords.length);
         newWordId =
-        '${_currentAyah!.surah}:${_currentAyah!.ayah}:$fallbackWordIndex';
+            '${_currentAyah!.surah}:${_currentAyah!.ayah}:$fallbackWordIndex';
         print(
             'Fallback: Audio wordIndex: $wordIndex -> UI word: $fallbackWordIndex');
       }
@@ -647,7 +654,7 @@ class AudioService {
           // Fallback: clamp to valid range
           final fallbackWordIndex = wordIndex.clamp(1, ayahWords.length);
           newWordId =
-          '${_currentAyah!.surah}:${_currentAyah!.ayah}:$fallbackWordIndex';
+              '${_currentAyah!.surah}:${_currentAyah!.ayah}:$fallbackWordIndex';
         }
       }
     }
@@ -891,7 +898,7 @@ class MushafPageBuilder {
   static final Map<int, List<Map<String, dynamic>>> _layoutCache = {};
   static final Map<String, List<Map<String, dynamic>>> _wordsCache = {};
   static const int MAX_CACHE_SIZE =
-  604; // Cache ALL pages in memory like Quran.com/Tarteel
+      604; // Cache ALL pages in memory like Quran.com/Tarteel
 
   static Future<MushafPage> buildPage({
     required int pageNumber,
@@ -920,7 +927,7 @@ class MushafPageBuilder {
 
     // Build lines and ayahs in parallel
     final result =
-    await _buildPageFromData(pageNumber, layoutData, wordsByLine);
+        await _buildPageFromData(pageNumber, layoutData, wordsByLine);
 
     stopwatch.stop();
     PerformanceMonitor.logPerformance(
@@ -950,10 +957,10 @@ class MushafPageBuilder {
   }
 
   static Future<List<Map<String, dynamic>>> _getAllWordsForPage(
-      int pageNumber,
-      List<Map<String, dynamic>> layoutData,
-      Database wordsDb,
-      ) async {
+    int pageNumber,
+    List<Map<String, dynamic>> layoutData,
+    Database wordsDb,
+  ) async {
     // Collect all word ID ranges
     final List<Map<String, int>> wordRanges = [];
     for (var lineData in layoutData) {
@@ -997,9 +1004,9 @@ class MushafPageBuilder {
   }
 
   static Map<int, List<Map<String, dynamic>>> _groupWordsByLine(
-      List<Map<String, dynamic>> allWords,
-      List<Map<String, dynamic>> layoutData,
-      ) {
+    List<Map<String, dynamic>> allWords,
+    List<Map<String, dynamic>> layoutData,
+  ) {
     final wordsByLine = <int, List<Map<String, dynamic>>>{};
 
     // Create a map of word ID ranges to line numbers
@@ -1036,10 +1043,10 @@ class MushafPageBuilder {
   }
 
   static Future<MushafPage> _buildPageFromData(
-      int pageNumber,
-      List<Map<String, dynamic>> layoutData,
-      Map<int, List<Map<String, dynamic>>> wordsByLine,
-      ) async {
+    int pageNumber,
+    List<Map<String, dynamic>> layoutData,
+    Map<int, List<Map<String, dynamic>>> wordsByLine,
+  ) async {
     List<SimpleMushafLine> lines = [];
     List<PageAyah> ayahs = [];
     Map<int, List<AyahSegment>> lineToSegments = {};
@@ -1100,9 +1107,9 @@ class MushafPageBuilder {
   }
 
   static Future<_LineBuilder> _buildLineFromData(
-      Map<String, dynamic> lineData,
-      List<Map<String, dynamic>> words,
-      ) async {
+    Map<String, dynamic> lineData,
+    List<Map<String, dynamic>> words,
+  ) async {
     final lineNumber = _safeParseIntRequired(lineData['line_number']);
     final lineType = lineData['line_type'] as String? ?? 'ayah';
     final isCentered = _safeParseInt(lineData['is_centered']) == 1;
@@ -1167,9 +1174,9 @@ class MushafPageBuilder {
   }
 
   static _WordsResult _buildWordsFromData(
-      List<Map<String, dynamic>> words,
-      int lineNumber,
-      ) {
+    List<Map<String, dynamic>> words,
+    int lineNumber,
+  ) {
     if (words.isEmpty) return _WordsResult('', []);
 
     List<String> wordTexts = [];
@@ -1282,7 +1289,7 @@ class OptimizedFontService {
   static final Set<int> _loadedFonts = <int>{};
   static bool _surahNameFontLoaded = false;
   static const int FONT_PRELOAD_RADIUS =
-  604; // Preload ALL fonts like Quran.com/Tarteel
+      604; // Preload ALL fonts like Quran.com/Tarteel
 
   static Future<void> preloadFontsAroundPage(int pageNumber) async {
     final fontsToLoad = <int>{};
@@ -1305,7 +1312,7 @@ class OptimizedFontService {
     try {
       final fontLoader = FontLoader('QPCPageFont$page');
       final fontData =
-      await rootBundle.load('assets/quran/fonts/qpc-v2-font/p$page.ttf');
+          await rootBundle.load('assets/quran/fonts/qpc-v2-font/p$page.ttf');
       fontLoader.addFont(Future.value(fontData));
       await fontLoader.load();
       _loadedFonts.add(page);
@@ -1320,7 +1327,7 @@ class OptimizedFontService {
     try {
       final fontLoader = FontLoader('SurahNameFont');
       final fontData =
-      await rootBundle.load('assets/quran/fonts/surah-name-v2.ttf');
+          await rootBundle.load('assets/quran/fonts/surah-name-v2.ttf');
       fontLoader.addFont(Future.value(fontData));
       await fontLoader.load();
       _surahNameFontLoaded = true;
@@ -1354,7 +1361,7 @@ class OptimizedFontService {
 class OptimizedPageCache {
   static final Map<int, MushafPage> _pageCache = {};
   static const int MAX_CACHE_SIZE =
-  604; // Cache ALL pages in memory like Quran.com/Tarteel
+      604; // Cache ALL pages in memory like Quran.com/Tarteel
   static final List<int> _accessOrder = [];
 
   static MushafPage? getPage(int pageNumber) {
@@ -1412,7 +1419,7 @@ class PerformanceMonitor {
     if (metrics == null || metrics.isEmpty) return null;
 
     final totalMs =
-    metrics.fold<int>(0, (sum, duration) => sum + duration.inMilliseconds);
+        metrics.fold<int>(0, (sum, duration) => sum + duration.inMilliseconds);
     return Duration(milliseconds: totalMs ~/ metrics.length);
   }
 
@@ -1487,10 +1494,14 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
   String _searchQuery = '';
   List<Surah> _filteredSurahs = [];
 
+  // Theme state
+  ThemeMode _currentTheme = ThemeMode.normal;
+
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: 0);
+    _pageController = PageController(
+        initialPage: 603); // Start at page 1 (index 603 in reversed order)
     _initializeApp();
   }
 
@@ -1552,7 +1563,6 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
 
       // 10. Start background preloading (non-blocking)
       _startBackgroundPreloading();
-
     } catch (e) {
       print('Initialization error: $e');
       setState(() {
@@ -1626,7 +1636,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
         _loadingMessage = 'Copying layout database...';
       });
       final layoutData =
-      await rootBundle.load('assets/quran/layout/qpc-v2-15-lines.db');
+          await rootBundle.load('assets/quran/layout/qpc-v2-15-lines.db');
       final layoutBytes = layoutData.buffer
           .asUint8List(layoutData.offsetInBytes, layoutData.lengthInBytes);
       await File(layoutDbPath).writeAsBytes(layoutBytes, flush: true);
@@ -1666,7 +1676,8 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       }
     }
 
-    print('Background preloading completed: ${_loadedPages.length} pages loaded');
+    print(
+        'Background preloading completed: ${_loadedPages.length} pages loaded');
   }
 
   Future<void> _loadAroundCurrentPage(int currentPage) async {
@@ -1750,7 +1761,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
   }
 
   void _onPageChanged(int index) {
-    final page = index + 1;
+    final page = 604 - index; // Reverse the page order
     _currentPage = page;
     _loadAroundCurrentPage(page);
 
@@ -1785,11 +1796,11 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
 
     // Filter out non-Quranic content and sort ayahs
     final ayahsToPlay =
-    page.ayahs.where((ayah) => ayah.surah > 0 && ayah.ayah > 0).toList()
-      ..sort((a, b) {
-        if (a.surah != b.surah) return a.surah.compareTo(b.surah);
-        return a.ayah.compareTo(b.ayah);
-      });
+        page.ayahs.where((ayah) => ayah.surah > 0 && ayah.ayah > 0).toList()
+          ..sort((a, b) {
+            if (a.surah != b.surah) return a.surah.compareTo(b.surah);
+            return a.ayah.compareTo(b.ayah);
+          });
 
     return ayahsToPlay;
   }
@@ -1897,43 +1908,38 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     return GestureDetector(
       onTap: _showSurahListBottomSheet,
       child: Container(
-        height: 40,
-        width: double
-            .infinity, // Full width to match mushaf// Match content padding
-        margin: const EdgeInsets.only(bottom: 12), // Match content padding
+        height: 36,
+        width: double.infinity, // Full width to match mushaf
+        margin: EdgeInsets.zero, // No margin for edge-to-edge
         decoration: BoxDecoration(
-          color: const Color(0xFFFFFFFF)
-              .withOpacity(0.0), // Completely transparent
+          color: _getAppBarColor().withOpacity(0.0), // Completely transparent
           borderRadius: BorderRadius.zero, // No rounded corners - rectangular
-          border: Border.all(
-            color:
-            const Color(0xFFE0E0E0).withOpacity(0.3), // Very subtle border
-            width: 0.5,
-          ),
+          // Removed border to match mushaf page body
         ),
-        child: Row(
-          mainAxisAlignment:
-          MainAxisAlignment.spaceBetween, // Space between left and right
-          children: [
-            // Surah name on the left
-            Text(
-              surahInfo,
-              style: TextStyle(
-                color: const Color(0xFF424242)
-                    .withOpacity(0.6), // More subtle text
-                fontSize: 16,
-                fontWeight: FontWeight.w400, // Lighter weight
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+          child: Row(
+            mainAxisAlignment:
+                MainAxisAlignment.spaceBetween, // Space between left and right
+            children: [
+              // Surah name on the left
+              Text(
+                surahInfo,
+                style: TextStyle(
+                  color: _getTextColor().withOpacity(0.6), // More subtle text
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500, // Medium weight
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
-            ),
-            // Search button on the right
-            Icon(
-              Icons.search,
-              color:
-              const Color(0xFF424242).withOpacity(0.5), // More subtle icon
-              size: 18, // Slightly smaller
-            ),
-          ],
+              // Search button on the right
+              Icon(
+                Icons.search,
+                color: _getTextColor().withOpacity(0.5), // More subtle icon
+                size: 16, // Smaller to match compact design
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1968,7 +1974,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       if (surahCounts.length > 1) {
         final surahNames = surahCounts.entries
             .map((e) =>
-        '${_surahService.getSurahById(e.key)?.nameSimple ?? 'Unknown'} (${e.value} ayahs)')
+                '${_surahService.getSurahById(e.key)?.nameSimple ?? 'Unknown'} (${e.value} ayahs)')
             .join(', ');
         print(
             'Page $_currentPage has multiple surahs: $surahNames - showing main surah: ${surah.nameSimple}');
@@ -2063,8 +2069,8 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                               _searchQuery = value.toLowerCase();
                               _filteredSurahs = surahs.where((surah) {
                                 return surah.nameSimple
-                                    .toLowerCase()
-                                    .contains(_searchQuery) ||
+                                        .toLowerCase()
+                                        .contains(_searchQuery) ||
                                     surah.nameArabic.contains(_searchQuery) ||
                                     surah.id.toString().contains(_searchQuery);
                               }).toList();
@@ -2077,62 +2083,62 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                       Expanded(
                         child: _filteredSurahs.isEmpty
                             ? const Center(
-                          child: Text(
-                            'No surahs found',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        )
-                            : ListView.builder(
-                          controller: scrollController,
-                          itemCount: _filteredSurahs.length,
-                          itemBuilder: (context, index) {
-                            final surah = _filteredSurahs[index];
-                            return ListTile(
-                              leading: CircleAvatar(
-                                backgroundColor: const Color(0xFF616161),
                                 child: Text(
-                                  '${surah.id}',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
+                                  'No surahs found',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey,
                                   ),
                                 ),
-                              ),
-                              title: Text(
-                                surah.nameSimple,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w600),
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    surah.nameArabic,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
+                              )
+                            : ListView.builder(
+                                controller: scrollController,
+                                itemCount: _filteredSurahs.length,
+                                itemBuilder: (context, index) {
+                                  final surah = _filteredSurahs[index];
+                                  return ListTile(
+                                    leading: CircleAvatar(
+                                      backgroundColor: const Color(0xFF616161),
+                                      child: Text(
+                                        '${surah.id}',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                    '${surah.versesCount} verses • ${surah.revelationPlace}',
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
-                                ],
+                                    title: Text(
+                                      surah.nameSimple,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    subtitle: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          surah.nameArabic,
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        Text(
+                                          '${surah.versesCount} verses • ${surah.revelationPlace}',
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                      ],
+                                    ),
+                                    trailing: const Icon(
+                                        Icons.arrow_forward_ios,
+                                        size: 16),
+                                    onTap: () {
+                                      Navigator.of(context).pop();
+                                      _navigateToSurah(surah.id);
+                                    },
+                                  );
+                                },
                               ),
-                              trailing: const Icon(
-                                  Icons.arrow_forward_ios,
-                                  size: 16),
-                              onTap: () {
-                                Navigator.of(context).pop();
-                                _navigateToSurah(surah.id);
-                              },
-                            );
-                          },
-                        ),
                       ),
                     ],
                   ),
@@ -2170,7 +2176,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
 
       // Navigate to the surah's starting page
       _pageController.animateToPage(
-        startPage - 1, // PageController uses 0-based index
+        604 - startPage, // Convert to reversed index (page 1 = index 603)
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
@@ -2185,6 +2191,79 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
           backgroundColor: Colors.red,
         ),
       );
+    }
+  }
+
+  // Theme toggle method
+  void _toggleTheme() {
+    setState(() {
+      switch (_currentTheme) {
+        case ThemeMode.normal:
+          _currentTheme = ThemeMode.lightSepia;
+          break;
+        case ThemeMode.lightSepia:
+          _currentTheme = ThemeMode.dark;
+          break;
+        case ThemeMode.dark:
+          _currentTheme = ThemeMode.normal;
+          break;
+      }
+    });
+  }
+
+  // Get theme colors
+  Color _getBackgroundColor() {
+    switch (_currentTheme) {
+      case ThemeMode.normal:
+        return const Color(0xFFFFFFFF); // White
+      case ThemeMode.lightSepia:
+        return const Color(0xFFF7F3E9); // Warmer, more readable sepia
+      case ThemeMode.dark:
+        return const Color(0xFF1A1A1A); // Dark
+    }
+  }
+
+  Color _getTextColor() {
+    switch (_currentTheme) {
+      case ThemeMode.normal:
+        return Colors.black;
+      case ThemeMode.lightSepia:
+        return const Color(0xFF3D2914); // Darker, more contrasted sepia
+      case ThemeMode.dark:
+        return const Color(0xFFE0E0E0); // Light gray
+    }
+  }
+
+  Color _getAppBarColor() {
+    switch (_currentTheme) {
+      case ThemeMode.normal:
+        return const Color(0xFFFFFFFF); // White
+      case ThemeMode.lightSepia:
+        return const Color(0xFFF7F3E9); // Warmer, more readable sepia
+      case ThemeMode.dark:
+        return const Color(0xFF2A2A2A); // Dark gray
+    }
+  }
+
+  Color _getBottomBarColor() {
+    switch (_currentTheme) {
+      case ThemeMode.normal:
+        return const Color(0xFFFFFFFF); // White
+      case ThemeMode.lightSepia:
+        return const Color(0xFFF7F3E9); // Warmer, more readable sepia
+      case ThemeMode.dark:
+        return const Color(0xFF2A2A2A); // Dark gray
+    }
+  }
+
+  IconData _getThemeIcon() {
+    switch (_currentTheme) {
+      case ThemeMode.normal:
+        return Icons.palette; // Normal theme icon
+      case ThemeMode.lightSepia:
+        return Icons.filter_vintage; // Sepia theme icon
+      case ThemeMode.dark:
+        return Icons.dark_mode; // Dark theme icon
     }
   }
 
@@ -2206,55 +2285,59 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     final isTablet = screenSize.width > 600;
 
     return Scaffold(
-      backgroundColor:
-      const Color(0xFFFFFFFF), // White to match mushaf background
+      backgroundColor: _getBackgroundColor(),
       appBar: AppBar(
         title: _buildSearchBox(),
         centerTitle: false, // Don't center since we want full width
-        backgroundColor:
-        const Color(0xFFFFFFFF), // White to match mushaf background
-        foregroundColor:
-        const Color(0xFF424242), // Neutral dark gray for subtle contrast
+        backgroundColor: _getAppBarColor(),
+        foregroundColor: _getTextColor(),
         automaticallyImplyLeading: false,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
+        toolbarHeight: 48, // Reduced height to move content higher
+        titleSpacing: 0, // Remove default title spacing
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: _currentTheme == ThemeMode.dark
+              ? Brightness.light
+              : Brightness.dark,
+        ),
       ),
       body: _isInitializing
           ? Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(
-              strokeWidth: isTablet ? 6 : 4,
-            ),
-            SizedBox(height: isTablet ? 24 : 16),
-            Text(
-              _loadingMessage,
-              style: TextStyle(
-                  fontSize: isTablet ? 18 : 16,
-                  color: const Color(0xFF424242)),
-            ),
-          ],
-        ),
-      )
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(
+                    strokeWidth: isTablet ? 6 : 4,
+                  ),
+                  SizedBox(height: isTablet ? 24 : 16),
+                  Text(
+                    _loadingMessage,
+                    style: TextStyle(
+                        fontSize: isTablet ? 18 : 16, color: _getTextColor()),
+                  ),
+                ],
+              ),
+            )
           : Column(
-        children: [
-          // Main content area
-          Expanded(
-            child: PageView.builder(
-              controller: _pageController,
-              itemCount: 604,
-              onPageChanged: _onPageChanged,
-              itemBuilder: (context, index) {
-                final page = index + 1;
-                return _buildMushafPage(page);
-              },
+              children: [
+                // Main content area
+                Expanded(
+                  child: PageView.builder(
+                    controller: _pageController,
+                    itemCount: 604,
+                    onPageChanged: _onPageChanged,
+                    itemBuilder: (context, index) {
+                      final page = 604 - index; // Reverse the page order
+                      return _buildMushafPage(page);
+                    },
+                  ),
+                ),
+                // Audio Bottom Bar - always visible
+                _buildAudioBottomBar(isTablet),
+              ],
             ),
-          ),
-          // Audio Bottom Bar - always visible
-          _buildAudioBottomBar(isTablet),
-        ],
-      ),
     );
   }
 
@@ -2262,16 +2345,16 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     final ayahs = _getCurrentPageAyahs();
 
     return Container(
-      height: isTablet ? 100 : 80,
-      decoration: const BoxDecoration(
-        color: Color(0xFFFFFFFF), // White to match mushaf background
+      height: isTablet ? 90 : 80,
+      decoration: BoxDecoration(
+        color: _getBottomBarColor(),
         // Removed top border for seamless blending
       ),
       padding: EdgeInsets.only(
         left: isTablet ? 20 : 16,
         right: isTablet ? 20 : 16,
-        top: isTablet ? 12 : 10,
-        bottom: isTablet ? 16 : 12,
+        top: isTablet ? 16 : 14,
+        bottom: isTablet ? 20 : 16,
       ),
       child: Row(
         children: [
@@ -2281,73 +2364,73 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
             child: Text(
               '$_currentPage/604',
               style: TextStyle(
-                fontSize: isTablet ? 11 : 9,
+                fontSize: isTablet ? 10 : 8,
                 fontWeight: FontWeight.w500,
-                color: const Color(0xFF424242).withOpacity(0.7),
+                color: _getTextColor().withOpacity(0.7),
               ),
             ),
           ),
-          SizedBox(width: isTablet ? 12 : 10),
+          SizedBox(width: isTablet ? 10 : 8),
 
           // Single Play/Pause Button
           GestureDetector(
             onTap: ayahs.isNotEmpty ? _togglePlayPause : null,
             child: Container(
-              width: isTablet ? 48 : 44,
-              height: isTablet ? 48 : 44,
+              width: isTablet ? 44 : 40,
+              height: isTablet ? 44 : 40,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: ayahs.isNotEmpty
-                    ? const Color(0xFF424242)
-                    .withOpacity(0.05) // Even more transparent
+                    ? _getTextColor().withOpacity(0.05) // Even more transparent
                     : Colors.grey.withOpacity(0.05),
                 border: Border.all(
                   color: ayahs.isNotEmpty
-                      ? const Color(0xFF424242).withOpacity(0.15)
+                      ? _getTextColor().withOpacity(0.15)
                       : Colors.grey.withOpacity(0.15),
                   width: 0.5, // Thinner border
                 ),
               ),
               child: _isLoading
                   ? SizedBox(
-                width: isTablet ? 20 : 18,
-                height: isTablet ? 20 : 18,
-                child: const CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
-              )
+                      width: isTablet ? 16 : 14,
+                      height: isTablet ? 16 : 14,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(_getTextColor()),
+                      ),
+                    )
                   : Icon(
-                _isPlaying ? Icons.pause : Icons.play_arrow,
-                size: isTablet ? 26 : 24,
-                color: const Color(0xFF424242)
-                    .withOpacity(0.5), // More subtle gray
-              ),
+                      _isPlaying ? Icons.pause : Icons.play_arrow,
+                      size: isTablet ? 24 : 22,
+                      color:
+                          _getTextColor().withOpacity(0.5), // More subtle gray
+                    ),
             ),
           ),
-          SizedBox(width: isTablet ? 16 : 12),
+          SizedBox(width: isTablet ? 12 : 8),
 
           // Progress Slider
           Expanded(
             child: SliderTheme(
               data: SliderTheme.of(context).copyWith(
-                trackHeight: isTablet ? 4 : 3,
+                trackHeight: isTablet ? 3 : 2,
                 thumbShape: RoundSliderThumbShape(
-                  enabledThumbRadius: isTablet ? 10 : 8,
+                  enabledThumbRadius: isTablet ? 8 : 6,
                 ),
                 overlayShape: RoundSliderOverlayShape(
-                  overlayRadius: isTablet ? 16 : 14,
+                  overlayRadius: isTablet ? 12 : 10,
                 ),
-                activeTrackColor: const Color(0xFF424242).withOpacity(0.3),
-                inactiveTrackColor: const Color(0xFFE0E0E0),
-                thumbColor: const Color(0xFF424242).withOpacity(0.4),
-                overlayColor: const Color(0xFF424242).withOpacity(0.1),
+                activeTrackColor: _getTextColor().withOpacity(0.3),
+                inactiveTrackColor: _getTextColor().withOpacity(0.1),
+                thumbColor: _getTextColor().withOpacity(0.4),
+                overlayColor: _getTextColor().withOpacity(0.1),
               ),
               child: Slider(
                 value: ayahs.isEmpty
                     ? 0.0
                     : (_currentAyahIndex /
-                    (ayahs.length - 1).clamp(1, double.infinity)),
+                        (ayahs.length - 1).clamp(1, double.infinity)),
                 min: 0.0,
                 max: 1.0,
                 divisions: ayahs.length > 1 ? ayahs.length - 1 : 1,
@@ -2365,7 +2448,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
               ),
             ),
           ),
-          SizedBox(width: isTablet ? 16 : 12),
+          SizedBox(width: isTablet ? 12 : 8),
 
           // Info Section - Right side
           Column(
@@ -2377,12 +2460,35 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                 Text(
                   '${ayahs[_highlightedAyahIndex!].surah}:${ayahs[_highlightedAyahIndex!].ayah}',
                   style: TextStyle(
-                    fontSize: isTablet ? 12 : 10,
+                    fontSize: isTablet ? 10 : 8,
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFF424242).withOpacity(0.7),
+                    color: _getTextColor().withOpacity(0.7),
                   ),
                 ),
             ],
+          ),
+          SizedBox(width: isTablet ? 12 : 8),
+
+          // Theme toggle button - rightmost
+          GestureDetector(
+            onTap: _toggleTheme,
+            child: Container(
+              width: isTablet ? 40 : 36,
+              height: isTablet ? 40 : 36,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: _getTextColor().withOpacity(0.1),
+                border: Border.all(
+                  color: _getTextColor().withOpacity(0.3),
+                  width: 1,
+                ),
+              ),
+              child: Icon(
+                _getThemeIcon(),
+                color: _getTextColor().withOpacity(0.7),
+                size: isTablet ? 20 : 18,
+              ),
+            ),
           ),
         ],
       ),
@@ -2422,18 +2528,22 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
 
     final screenSize = MediaQuery.of(context).size;
     final isTablet = screenSize.width > 600;
-    final appBarHeight = isTablet ? 70.0 : 56.0;
+    final appBarHeight = isTablet ? 60.0 : 48.0;
     final statusBarHeight = MediaQuery.of(context).padding.top;
-    final bottomBarHeight = isTablet ? 100.0 : 80.0;
-    final availableHeight =
-        screenSize.height - appBarHeight - statusBarHeight - bottomBarHeight;
+    final bottomBarHeight = isTablet ? 90.0 : 80.0;
+    final availableHeight = screenSize.height -
+        appBarHeight -
+        statusBarHeight -
+        bottomBarHeight -
+        8.0; // Subtract 8px for padding (4px top + 4px bottom)
 
     return Container(
       width: double.infinity,
       height: availableHeight,
-      decoration: const BoxDecoration(
-        color: Color(0xFFFFFFFF),
+      decoration: BoxDecoration(
+        color: _getBackgroundColor(),
       ),
+      padding: const EdgeInsets.all(4.0), // Add 4px padding around mushaf page
       child: LayoutBuilder(
         builder: (context, constraints) {
           // Compute a uniform font size for this page so all lines share the same size
@@ -2453,7 +2563,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
             mainAxisAlignment: page <= 2
                 ? MainAxisAlignment.center // Center content for pages 1-2
                 : MainAxisAlignment
-                .spaceEvenly, // Distribute evenly for other pages
+                    .spaceEvenly, // Distribute evenly for other pages
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: mushafPage.lines
                 .map((line) => _buildLine(line, constraints, page, mushafPage))
@@ -2478,7 +2588,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
           builder: (context) {
             if (line.lineType == 'surah_name') {
               final surahNumber =
-              int.tryParse(line.text.replaceAll('SURAH_BANNER_', ''));
+                  int.tryParse(line.text.replaceAll('SURAH_BANNER_', ''));
               if (surahNumber != null) {
                 return GestureDetector(
                   child: SurahBanner(
@@ -2509,7 +2619,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
           builder: (context) {
             if (line.lineType == 'surah_name') {
               final surahNumber =
-              int.tryParse(line.text.replaceAll('SURAH_BANNER_', ''));
+                  int.tryParse(line.text.replaceAll('SURAH_BANNER_', ''));
               if (surahNumber != null) {
                 return GestureDetector(
                   child: SurahBanner(
@@ -2545,14 +2655,14 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     if (line.lineType == 'basmallah') {
       return Center(
         child: (uniformFontSize != null)
-            ? _buildTextWithThicknessFixedSize(
-            line.text, uniformFontSize, 'QPCPageFont$page')
-            : _buildTextWithThickness(
-          line.text,
-          _getMaximizedFontSize(
-              line.lineType, isTablet, isLandscape, screenSize),
-          'QPCPageFont$page',
-        ),
+            ? _buildBasmallahTextFixedSize(
+                line.text, uniformFontSize, 'QPCPageFont$page')
+            : _buildBasmallahText(
+                line.text,
+                _getMaximizedFontSize(
+                    line.lineType, isTablet, isLandscape, screenSize),
+                'QPCPageFont$page',
+              ),
       );
     }
 
@@ -2561,23 +2671,23 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       return Center(
         child: segments.isNotEmpty
             ? GestureDetector(
-          onTap: () {
-            // Handle line tap - highlight the first ayah in the line
-            if (segments.isNotEmpty) {
-              final firstSegment = segments.first;
-              final ayah = _findAyahForSegment(firstSegment);
-              if (ayah != null) {
-                setState(() {
-                  _userSelectedAyahId = '${ayah.surah}:${ayah.ayah}';
-                });
-              }
-            }
-          },
-          child: _buildHighlightableTextFixedSize(
-              line, segments, page, uniformFontSize),
-        )
+                onTap: () {
+                  // Handle line tap - highlight the first ayah in the line
+                  if (segments.isNotEmpty) {
+                    final firstSegment = segments.first;
+                    final ayah = _findAyahForSegment(firstSegment);
+                    if (ayah != null) {
+                      setState(() {
+                        _userSelectedAyahId = '${ayah.surah}:${ayah.ayah}';
+                      });
+                    }
+                  }
+                },
+                child: _buildHighlightableTextFixedSize(
+                    line, segments, page, uniformFontSize),
+              )
             : _buildTextWithThicknessFixedSize(
-            line.text, uniformFontSize, 'QPCPageFont$page'),
+                line.text, uniformFontSize, 'QPCPageFont$page'),
       );
     }
 
@@ -2586,25 +2696,25 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       width: double.infinity,
       child: segments.isNotEmpty
           ? GestureDetector(
-        onTap: () {
-          // Handle line tap - highlight the first ayah in the line
-          if (segments.isNotEmpty) {
-            final firstSegment = segments.first;
-            final ayah = _findAyahForSegment(firstSegment);
-            if (ayah != null) {
-              setState(() {
-                _userSelectedAyahId = '${ayah.surah}:${ayah.ayah}';
-              });
-            }
-          }
-        },
-        child: _buildHighlightableText(line, segments, page),
-      )
+              onTap: () {
+                // Handle line tap - highlight the first ayah in the line
+                if (segments.isNotEmpty) {
+                  final firstSegment = segments.first;
+                  final ayah = _findAyahForSegment(firstSegment);
+                  if (ayah != null) {
+                    setState(() {
+                      _userSelectedAyahId = '${ayah.surah}:${ayah.ayah}';
+                    });
+                  }
+                }
+              },
+              child: _buildHighlightableText(line, segments, page),
+            )
           : _buildTextWithThickness(
-          line.text,
-          _getMaximizedFontSize(
-              line.lineType, isTablet, isLandscape, screenSize),
-          'QPCPageFont$page'),
+              line.text,
+              _getMaximizedFontSize(
+                  line.lineType, isTablet, isLandscape, screenSize),
+              'QPCPageFont$page'),
     );
   }
 
@@ -2614,7 +2724,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     final isTablet = screenSize.width > 600;
     final isLandscape = screenSize.width > screenSize.height;
     final fontSize =
-    _getMaximizedFontSize(line.lineType, isTablet, isLandscape, screenSize);
+        _getMaximizedFontSize(line.lineType, isTablet, isLandscape, screenSize);
 
     // Sort segments by their line number and position in the line
     segments.sort((a, b) {
@@ -2674,9 +2784,27 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
               style: TextStyle(
                 fontFamily: 'QPCPageFont$page',
                 fontSize: fontSize,
-                color: Colors.black,
+                color: _getTextColor(),
                 backgroundColor:
-                isAudioHighlighted ? Colors.yellow.withOpacity(0.7) : null,
+                    isAudioHighlighted ? Colors.yellow.withOpacity(0.7) : null,
+                shadows: [
+                  Shadow(
+                    offset: Offset(0.025, 0.025),
+                    color: _getTextColor(),
+                  ),
+                  Shadow(
+                    offset: Offset(-0.025, 0.025),
+                    color: _getTextColor(),
+                  ),
+                  Shadow(
+                    offset: Offset(0.025, -0.025),
+                    color: _getTextColor(),
+                  ),
+                  Shadow(
+                    offset: Offset(-0.025, -0.025),
+                    color: _getTextColor(),
+                  ),
+                ],
               ),
             ),
           );
@@ -2689,7 +2817,25 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                 style: TextStyle(
                   fontFamily: 'QPCPageFont$page',
                   fontSize: fontSize,
-                  color: Colors.black,
+                  color: _getTextColor(),
+                  shadows: [
+                    Shadow(
+                      offset: Offset(0.025, 0.025),
+                      color: _getTextColor(),
+                    ),
+                    Shadow(
+                      offset: Offset(-0.025, 0.025),
+                      color: _getTextColor(),
+                    ),
+                    Shadow(
+                      offset: Offset(0.025, -0.025),
+                      color: _getTextColor(),
+                    ),
+                    Shadow(
+                      offset: Offset(-0.025, -0.025),
+                      color: _getTextColor(),
+                    ),
+                  ],
                 ),
               ),
             );
@@ -2764,21 +2910,58 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
 
   Widget _buildTextWithThickness(
       String text, double fontSize, String fontFamily,
-      {Color? backgroundColor, Color textColor = Colors.black}) {
+      {Color? backgroundColor, Color? textColor}) {
+    final actualTextColor = textColor ?? _getTextColor();
+
     Widget textWidget = Container(
       width: double.infinity,
       child: FittedBox(
         fit: BoxFit.scaleDown,
-        child: Text(
-          text,
-          textAlign: TextAlign.center,
-          textDirection: TextDirection.rtl,
-          maxLines: 1,
-          style: TextStyle(
-            fontFamily: fontFamily,
-            fontSize: fontSize,
-            color: textColor,
-          ),
+        child: Stack(
+          children: [
+            // Overlay text for thickness effect
+            Text(
+              text,
+              textAlign: TextAlign.center,
+              textDirection: TextDirection.rtl,
+              maxLines: 1,
+              style: TextStyle(
+                fontFamily: fontFamily,
+                fontSize: fontSize,
+                color: actualTextColor,
+                shadows: [
+                  Shadow(
+                    offset: Offset(0.025, 0.025),
+                    color: actualTextColor,
+                  ),
+                  Shadow(
+                    offset: Offset(-0.025, 0.025),
+                    color: actualTextColor,
+                  ),
+                  Shadow(
+                    offset: Offset(0.025, -0.025),
+                    color: actualTextColor,
+                  ),
+                  Shadow(
+                    offset: Offset(-0.025, -0.025),
+                    color: actualTextColor,
+                  ),
+                ],
+              ),
+            ),
+            // Main text
+            Text(
+              text,
+              textAlign: TextAlign.center,
+              textDirection: TextDirection.rtl,
+              maxLines: 1,
+              style: TextStyle(
+                fontFamily: fontFamily,
+                fontSize: fontSize,
+                color: actualTextColor,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -2799,7 +2982,117 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
 
   Widget _buildTextWithThicknessFixedSize(
       String text, double fontSize, String fontFamily,
-      {Color? backgroundColor, Color textColor = Colors.black}) {
+      {Color? backgroundColor, Color? textColor}) {
+    final actualTextColor = textColor ?? _getTextColor();
+
+    Widget textWidget = Container(
+      width: double.infinity,
+      child: Stack(
+        children: [
+          // Overlay text for thickness effect
+          Text(
+            text,
+            textAlign: TextAlign.center,
+            textDirection: TextDirection.rtl,
+            maxLines: 1,
+            overflow: TextOverflow.visible,
+            style: TextStyle(
+              fontFamily: fontFamily,
+              fontSize: fontSize,
+              color: actualTextColor,
+              shadows: [
+                Shadow(
+                  offset: Offset(0.025, 0.025),
+                  color: actualTextColor,
+                ),
+                Shadow(
+                  offset: Offset(-0.025, 0.025),
+                  color: actualTextColor,
+                ),
+                Shadow(
+                  offset: Offset(0.025, -0.025),
+                  color: actualTextColor,
+                ),
+                Shadow(
+                  offset: Offset(-0.025, -0.025),
+                  color: actualTextColor,
+                ),
+              ],
+            ),
+          ),
+          // Main text
+          Text(
+            text,
+            textAlign: TextAlign.center,
+            textDirection: TextDirection.rtl,
+            maxLines: 1,
+            overflow: TextOverflow.visible,
+            style: TextStyle(
+              fontFamily: fontFamily,
+              fontSize: fontSize,
+              color: actualTextColor,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (backgroundColor != null) {
+      return Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: textWidget,
+      );
+    }
+
+    return textWidget;
+  }
+
+  // Special methods for basmallah text without thickness effect
+  Widget _buildBasmallahText(String text, double fontSize, String fontFamily,
+      {Color? backgroundColor, Color? textColor}) {
+    final actualTextColor = textColor ?? _getTextColor();
+
+    Widget textWidget = Container(
+      width: double.infinity,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          textDirection: TextDirection.rtl,
+          maxLines: 1,
+          style: TextStyle(
+            fontFamily: fontFamily,
+            fontSize: fontSize,
+            color: actualTextColor,
+          ),
+        ),
+      ),
+    );
+
+    if (backgroundColor != null) {
+      return Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: textWidget,
+      );
+    }
+
+    return textWidget;
+  }
+
+  Widget _buildBasmallahTextFixedSize(
+      String text, double fontSize, String fontFamily,
+      {Color? backgroundColor, Color? textColor}) {
+    final actualTextColor = textColor ?? _getTextColor();
+
     Widget textWidget = Container(
       width: double.infinity,
       child: Text(
@@ -2811,7 +3104,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
         style: TextStyle(
           fontFamily: fontFamily,
           fontSize: fontSize,
-          color: textColor,
+          color: actualTextColor,
         ),
       ),
     );
@@ -2879,9 +3172,9 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
               style: TextStyle(
                 fontFamily: 'QPCPageFont$page',
                 fontSize: fontSize,
-                color: Colors.black,
+                color: _getTextColor(),
                 backgroundColor:
-                isAudioHighlighted ? Colors.yellow.withOpacity(0.7) : null,
+                    isAudioHighlighted ? Colors.yellow.withOpacity(0.7) : null,
               ),
             ),
           );
@@ -2894,7 +3187,25 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                 style: TextStyle(
                   fontFamily: 'QPCPageFont$page',
                   fontSize: fontSize,
-                  color: Colors.black,
+                  color: _getTextColor(),
+                  shadows: [
+                    Shadow(
+                      offset: Offset(0.025, 0.025),
+                      color: _getTextColor(),
+                    ),
+                    Shadow(
+                      offset: Offset(-0.025, 0.025),
+                      color: _getTextColor(),
+                    ),
+                    Shadow(
+                      offset: Offset(0.025, -0.025),
+                      color: _getTextColor(),
+                    ),
+                    Shadow(
+                      offset: Offset(-0.025, -0.025),
+                      color: _getTextColor(),
+                    ),
+                  ],
                 ),
               ),
             );
@@ -2948,7 +3259,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
   double _getMaximizedFontSize(
       String lineType, bool isTablet, bool isLandscape, Size screenSize) {
     final screenMultiplier =
-    isTablet ? (isLandscape ? 1.8 : 1.5) : (isLandscape ? 1.3 : 1.0);
+        isTablet ? (isLandscape ? 1.8 : 1.5) : (isLandscape ? 1.3 : 1.0);
     final widthMultiplier = (screenSize.width / 400).clamp(0.8, 2.5);
 
     // Base font size
@@ -2967,20 +3278,20 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
   }
 
   double _computeUniformFontSizeForPage(
-      int page,
-      MushafPage mushafPage,
-      double maxWidth,
-      bool isTablet,
-      bool isLandscape,
-      Size screenSize,
-      ) {
+    int page,
+    MushafPage mushafPage,
+    double maxWidth,
+    bool isTablet,
+    bool isLandscape,
+    Size screenSize,
+  ) {
     // Binary search between reasonable bounds for the largest size that fits all lines
     double low = 8.0;
     double high = 300.0;
 
     // Start near the heuristic size to speed convergence
     final heuristic =
-    _getMaximizedFontSize('ayah', isTablet, isLandscape, screenSize);
+        _getMaximizedFontSize('ayah', isTablet, isLandscape, screenSize);
     if (heuristic > low && heuristic < high) {
       high = heuristic * 1.5;
     }
