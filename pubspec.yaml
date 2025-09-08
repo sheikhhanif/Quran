@@ -32,6 +32,9 @@ flutter:
     - assets/quran/scripts/qpc-hafs.db
     - assets/quran/fonts/qpc-v2-font/
     - assets/quran/fonts/uth.ttf
+    - assets/quran/fonts/hafs.ttf
+    - assets/quran/fonts/me.ttf
+    - assets/quran/fonts/kat.otf
     - assets/quran/fonts/surah-name-v2.ttf
     - assets/quran/svg/
     - assets/quran/svg/surah_name/

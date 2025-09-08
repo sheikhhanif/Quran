@@ -1326,6 +1326,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       decoration: const BoxDecoration(
         color: Color(0xFFFFFFFF),
       ),
+      padding: EdgeInsets.all(isTablet ? 16.0 : 12.0),
       child: LayoutBuilder(
         builder: (context, constraints) {
           // Compute a uniform font size for this page so all lines share the same size
@@ -1439,7 +1440,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
         width: double.infinity,
         child: (uniformFontSize != null)
             ? _buildTextWithThicknessFixedSize(
-                line.text, uniformFontSize, 'QPCPageFont$page')
+                line.text, uniformFontSize, 'QPCPageFont$page', page)
             : _buildTextWithThickness(
                 line.text,
                 _getMaximizedFontSize(
@@ -1471,7 +1472,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                     line, segments, page, uniformFontSize),
               )
             : _buildTextWithThicknessFixedSize(
-                line.text, uniformFontSize, 'QPCPageFont$page'),
+                line.text, uniformFontSize, 'QPCPageFont$page', page),
       );
     }
 
@@ -1579,7 +1580,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
           if (i < sortedWords.length - 1) {
             ayahSpans.add(
               TextSpan(
-                text: '\u2009',
+                text: '\u200A',
                 style: TextStyle(
                   fontFamily: 'QPCPageFont$page',
                   fontSize: fontSize,
@@ -1615,7 +1616,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                 borderRadius: BorderRadius.circular(6),
               ),
               child: FittedBox(
-                fit: BoxFit.fitWidth,
+                fit: BoxFit.scaleDown,
                 child: RichText(
                   textAlign: TextAlign.center,
                   textDirection: TextDirection.rtl,
@@ -1634,7 +1635,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     return Container(
       width: double.infinity,
       child: FittedBox(
-        fit: BoxFit.fitWidth,
+        fit: BoxFit.scaleDown,
         child: RichText(
           textAlign: TextAlign.center,
           textDirection: TextDirection.rtl,
@@ -1683,7 +1684,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     Widget textWidget = Container(
       width: double.infinity,
       child: FittedBox(
-        fit: BoxFit.fitWidth,
+        fit: BoxFit.scaleDown,
         child: Text(
           text,
           textAlign: TextAlign.center,
@@ -1713,12 +1714,12 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
   }
 
   Widget _buildTextWithThicknessFixedSize(
-      String text, double fontSize, String fontFamily,
+      String text, double fontSize, String fontFamily, int page,
       {Color? backgroundColor, Color textColor = Colors.black}) {
     Widget textWidget = Container(
       width: double.infinity,
       child: FittedBox(
-        fit: BoxFit.fitWidth,
+        fit: page >= 3 ? BoxFit.fitWidth : BoxFit.scaleDown,
         child: Text(
           text,
           textAlign: TextAlign.center,
@@ -1944,7 +1945,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
           if (i < sortedWords.length - 1) {
             ayahSpans.add(
               TextSpan(
-                text: '\u2009',
+                text: '\u200A',
                 style: TextStyle(
                   fontFamily: 'QPCPageFont$page',
                   fontSize: fontSize,
@@ -1992,7 +1993,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     return Container(
       width: double.infinity,
       child: FittedBox(
-        fit: BoxFit.fitWidth,
+        fit: page >= 3 ? BoxFit.fitWidth : BoxFit.scaleDown,
         child: RichText(
           textAlign: TextAlign.center,
           textDirection: TextDirection.rtl,
@@ -2042,9 +2043,9 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
             for (final segment in segments) {
               totalWords += segment.words.length;
             }
-            // Add thin spaces between words (totalWords - 1 spaces)
+            // Add hair spaces between words (totalWords - 1 spaces)
             if (totalWords > 1) {
-              textToMeasure = text + '\u2009' * (totalWords - 1);
+              textToMeasure = text + '\u200A' * (totalWords - 1);
             }
           }
         }
