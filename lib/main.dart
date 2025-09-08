@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'quran_screen.dart';
+import 'mushaf_widgets.dart';
 
 void main() {
   runApp(const MuslimlyApp());
