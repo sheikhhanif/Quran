@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as p;
 
@@ -270,8 +271,8 @@ class FontService {
 
     try {
       final fontLoader = FontLoader('QPCPageFont$page');
-      final fontData =
-          await rootBundle.load('assets/quran/fonts/qpc-v2-font/p$page.ttf');
+      final fontPath = getFontPath(page);
+      final fontData = await rootBundle.load(fontPath);
       fontLoader.addFont(Future.value(fontData));
       await fontLoader.load();
       _loadedFonts.add(page);
@@ -297,6 +298,25 @@ class FontService {
 
   static bool isFontLoaded(int page) => _loadedFonts.contains(page);
   static bool isSurahNameFontLoaded() => _surahNameFontLoaded;
+
+  // Platform-aware font path getter
+  static String getFontPath(int page) {
+    if (Platform.isAndroid) {
+      return 'assets/quran/fonts/qpc-v2-font/p$page.ttf';
+    } else {
+      return 'assets/quran/fonts/qpc-v2-woff2/p$page.woff2';
+    }
+  }
+
+  // Check if platform supports WOFF2 fonts natively
+  static bool get supportsWOFF2Natively {
+    return Platform.isIOS || Platform.isMacOS;
+  }
+
+  // Check if platform needs WebView for WOFF2 rendering
+  static bool get needsWebViewForWOFF2 {
+    return Platform.isAndroid;
+  }
 }
 
 // ===================== CACHE SERVICE =====================

@@ -18,6 +18,7 @@ dependencies:
   audioplayers: ^5.0.0
   http: ^1.1.0
   path_provider: ^2.1.1
+  webview_flutter: ^4.4.2
 
 dev_dependencies:
   flutter_test:
@@ -30,6 +31,7 @@ flutter:
     - assets/quran/layout/qpc-v2-15-lines.db
     - assets/quran/scripts/qpc-v2.db
     - assets/quran/fonts/qpc-v2-font/
+    - assets/quran/fonts/qpc-v2-woff2/
     - assets/quran/fonts/surah-name-v2.ttf
     - assets/quran/fonts/surah-header/surah-header.ttf
     - assets/quran/fonts/surah-header/ligatures.json

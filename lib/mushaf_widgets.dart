@@ -6,6 +6,7 @@ import 'quran_service.dart';
 import 'audio_service.dart';
 import 'surah_header_banner.dart';
 import 'theme.dart';
+import 'quran_metadata_page.dart';
 
 // ===================== MAIN MUSHAF WIDGET =====================
 
@@ -274,6 +275,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
           quranService: _quranService,
           onSurahSelected: (surahId) => _navigateToSurah(surahId),
           textColor: QuranTheme.getTextColor(_currentTheme),
+          theme: _currentTheme,
         ),
         centerTitle: false,
         backgroundColor: QuranTheme.getAppBarColor(_currentTheme),
@@ -419,6 +421,7 @@ class SearchBox extends StatelessWidget {
   final QuranService quranService;
   final Function(int) onSurahSelected;
   final Color textColor;
+  final QuranThemeMode theme;
 
   const SearchBox({
     Key? key,
@@ -426,6 +429,7 @@ class SearchBox extends StatelessWidget {
     required this.quranService,
     required this.onSurahSelected,
     required this.textColor,
+    required this.theme,
   }) : super(key: key);
 
   @override
@@ -436,7 +440,7 @@ class SearchBox extends StatelessWidget {
         : 'Page $currentPage';
 
     return GestureDetector(
-      onTap: () => _showSurahListBottomSheet(context),
+      onTap: () => _showSearchBottomSheet(context),
       child: Container(
         height: 36,
         width: double.infinity,
@@ -487,7 +491,7 @@ class SearchBox extends StatelessWidget {
     return quranService.surahService.getSurahById(mainSurahId);
   }
 
-  void _showSurahListBottomSheet(BuildContext context) {
+  void _showSearchBottomSheet(BuildContext context) {
     final surahs = quranService.surahService.surahs;
     if (surahs == null) return;
 
@@ -496,34 +500,41 @@ class SearchBox extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
-        return SurahListBottomSheet(
+        return SearchBottomSheet(
           surahs: surahs,
           onSurahSelected: onSurahSelected,
+          quranService: quranService,
+          theme: theme,
         );
       },
     );
   }
 }
 
-// ===================== SURAH LIST BOTTOM SHEET =====================
+// ===================== SEARCH BOTTOM SHEET =====================
 
-class SurahListBottomSheet extends StatefulWidget {
+class SearchBottomSheet extends StatefulWidget {
   final List<Surah> surahs;
   final Function(int) onSurahSelected;
+  final QuranService quranService;
+  final QuranThemeMode theme;
 
-  const SurahListBottomSheet({
+  const SearchBottomSheet({
     Key? key,
     required this.surahs,
     required this.onSurahSelected,
+    required this.quranService,
+    required this.theme,
   }) : super(key: key);
 
   @override
-  State<SurahListBottomSheet> createState() => _SurahListBottomSheetState();
+  State<SearchBottomSheet> createState() => _SearchBottomSheetState();
 }
 
-class _SurahListBottomSheetState extends State<SurahListBottomSheet> {
+class _SearchBottomSheetState extends State<SearchBottomSheet> {
   String _searchQuery = '';
   List<Surah> _filteredSurahs = [];
+  bool _showMetadataOption = false;
 
   @override
   void initState() {
@@ -531,17 +542,48 @@ class _SurahListBottomSheetState extends State<SurahListBottomSheet> {
     _filteredSurahs = List.from(widget.surahs);
   }
 
+  void _updateSearch(String value) {
+    setState(() {
+      _searchQuery = value.toLowerCase();
+      _showMetadataOption = _searchQuery.contains('quran_metadata') ||
+          _searchQuery.contains('metadata') ||
+          _searchQuery.contains('quran metadata');
+
+      _filteredSurahs = widget.surahs.where((surah) {
+        return surah.nameSimple.toLowerCase().contains(_searchQuery) ||
+            surah.nameArabic.contains(_searchQuery) ||
+            surah.id.toString().contains(_searchQuery);
+      }).toList();
+    });
+  }
+
+  void _navigateToMetadata() {
+    Navigator.of(context).pop();
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => QuranMetadataPage(
+          quranService: widget.quranService,
+          theme: widget.theme,
+          onSurahSelected: widget.onSurahSelected,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final backgroundColor = QuranTheme.getBackgroundColor(widget.theme);
+    final textColor = QuranTheme.getTextColor(widget.theme);
+
     return DraggableScrollableSheet(
       initialChildSize: 0.7,
       minChildSize: 0.5,
       maxChildSize: 0.9,
       builder: (context, scrollController) {
         return Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
             ),
@@ -553,7 +595,7 @@ class _SurahListBottomSheetState extends State<SurahListBottomSheet> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: textColor.withOpacity(0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -561,17 +603,18 @@ class _SurahListBottomSheetState extends State<SurahListBottomSheet> {
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
-                    const Text(
-                      'Select Surah',
+                    Text(
+                      'Search',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
+                        color: textColor,
                       ),
                     ),
                     const Spacer(),
                     IconButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      icon: const Icon(Icons.close),
+                      icon: Icon(Icons.close, color: textColor),
                     ),
                   ],
                 ),
@@ -580,37 +623,85 @@ class _SurahListBottomSheetState extends State<SurahListBottomSheet> {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: TextField(
                   decoration: InputDecoration(
-                    hintText: 'Search surahs...',
-                    prefixIcon: const Icon(Icons.search),
+                    hintText: 'Search surahs or type "quran_metadata"...',
+                    hintStyle: TextStyle(color: textColor.withOpacity(0.6)),
+                    prefixIcon:
+                        Icon(Icons.search, color: textColor.withOpacity(0.6)),
+                    filled: true,
+                    fillColor: textColor.withOpacity(0.05),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
                     ),
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 12,
                     ),
                   ),
-                  onChanged: (value) {
-                    setState(() {
-                      _searchQuery = value.toLowerCase();
-                      _filteredSurahs = widget.surahs.where((surah) {
-                        return surah.nameSimple
-                                .toLowerCase()
-                                .contains(_searchQuery) ||
-                            surah.nameArabic.contains(_searchQuery) ||
-                            surah.id.toString().contains(_searchQuery);
-                      }).toList();
-                    });
-                  },
+                  style: TextStyle(color: textColor),
+                  onChanged: _updateSearch,
                 ),
               ),
               const SizedBox(height: 16),
+
+              // Show metadata option if relevant search query
+              if (_showMetadataOption) ...[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Card(
+                    color: textColor.withOpacity(0.05),
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(
+                        color: textColor.withOpacity(0.1),
+                        width: 1,
+                      ),
+                    ),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: textColor.withOpacity(0.1),
+                        child: Icon(
+                          Icons.info_outline,
+                          color: textColor,
+                          size: 20,
+                        ),
+                      ),
+                      title: Text(
+                        'Quran Metadata',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: textColor,
+                        ),
+                      ),
+                      subtitle: Text(
+                        'View detailed information about all surahs',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: textColor.withOpacity(0.6),
+                        ),
+                      ),
+                      trailing: Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16,
+                        color: textColor.withOpacity(0.6),
+                      ),
+                      onTap: _navigateToMetadata,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ],
+
               Expanded(
-                child: _filteredSurahs.isEmpty
-                    ? const Center(
+                child: _filteredSurahs.isEmpty && !_showMetadataOption
+                    ? Center(
                         child: Text(
                           'No surahs found',
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: textColor.withOpacity(0.6),
+                          ),
                         ),
                       )
                     : ListView.builder(
@@ -620,38 +711,47 @@ class _SurahListBottomSheetState extends State<SurahListBottomSheet> {
                           final surah = _filteredSurahs[index];
                           return ListTile(
                             leading: CircleAvatar(
-                              backgroundColor: const Color(0xFF616161),
+                              backgroundColor: textColor.withOpacity(0.1),
                               child: Text(
                                 '${surah.id}',
-                                style: const TextStyle(
-                                  color: Colors.white,
+                                style: TextStyle(
+                                  color: textColor,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
                             title: Text(
                               surah.nameSimple,
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: textColor,
+                              ),
                             ),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   surah.nameArabic,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
+                                    color: textColor.withOpacity(0.8),
                                   ),
                                 ),
                                 Text(
                                   '${surah.versesCount} verses • ${surah.revelationPlace}',
-                                  style: const TextStyle(fontSize: 12),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: textColor.withOpacity(0.6),
+                                  ),
                                 ),
                               ],
                             ),
-                            trailing:
-                                const Icon(Icons.arrow_forward_ios, size: 16),
+                            trailing: Icon(
+                              Icons.arrow_forward_ios,
+                              size: 16,
+                              color: textColor.withOpacity(0.6),
+                            ),
                             onTap: () {
                               Navigator.of(context).pop();
                               widget.onSurahSelected(surah.id);
