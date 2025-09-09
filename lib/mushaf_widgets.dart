@@ -320,6 +320,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
                         backgroundColor:
                             QuranTheme.getBackgroundColor(_currentTheme),
                         textColor: QuranTheme.getTextColor(_currentTheme),
+                        theme: _currentTheme,
                       );
                     },
                   ),
@@ -847,6 +848,7 @@ class MushafPageWidget extends StatelessWidget {
   final Map<int, double> uniformFontSizeCache;
   final Color backgroundColor;
   final Color textColor;
+  final QuranThemeMode theme;
 
   const MushafPageWidget({
     Key? key,
@@ -858,6 +860,7 @@ class MushafPageWidget extends StatelessWidget {
     required this.uniformFontSizeCache,
     required this.backgroundColor,
     required this.textColor,
+    required this.theme,
   }) : super(key: key);
 
   @override
@@ -942,6 +945,8 @@ class MushafPageWidget extends StatelessWidget {
                   child: SurahBanner(
                     surahNumber: surahNumber,
                     isCentered: line.isCentered,
+                    theme: theme,
+                    maxWidth: constraints.maxWidth,
                   ),
                 );
               }
@@ -1012,6 +1017,8 @@ class MushafPageWidget extends StatelessWidget {
                   child: SurahBanner(
                     surahNumber: surahNumber,
                     isCentered: line.isCentered,
+                    theme: theme,
+                    maxWidth: constraints.maxWidth,
                   ),
                 );
               }

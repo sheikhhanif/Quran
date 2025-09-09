@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 enum QuranThemeMode {
   normal,
-  lightSepia,
+  reading,
   dark,
 }
 
@@ -15,7 +15,7 @@ class QuranTheme {
     switch (theme) {
       case QuranThemeMode.normal:
         return const Color(0xFFFAFAFA); // Softer white for reduced eye strain
-      case QuranThemeMode.lightSepia:
+      case QuranThemeMode.reading:
         return const Color(0xFFF5F1E8); // Warmer, more paper-like sepia
       case QuranThemeMode.dark:
         return const Color(0xFF0F0F0F); // Deeper black for better contrast
@@ -26,7 +26,7 @@ class QuranTheme {
     switch (theme) {
       case QuranThemeMode.normal:
         return const Color(0xFF1A1A1A); // Softer black, easier on eyes
-      case QuranThemeMode.lightSepia:
+      case QuranThemeMode.reading:
         return const Color(0xFF2B1810); // Richer brown for better readability
       case QuranThemeMode.dark:
         return const Color(0xFFE8E3D3); // Warm white for comfortable reading
@@ -37,7 +37,7 @@ class QuranTheme {
     switch (theme) {
       case QuranThemeMode.normal:
         return const Color(0xFF666666); // For translation text, verse numbers
-      case QuranThemeMode.lightSepia:
+      case QuranThemeMode.reading:
         return const Color(0xFF6B4423); // Muted brown for secondary elements
       case QuranThemeMode.dark:
         return const Color(0xFFB8B3A6); // Muted warm gray
@@ -48,7 +48,7 @@ class QuranTheme {
     switch (theme) {
       case QuranThemeMode.normal:
         return const Color(0xFFFAFAFA); // Match background
-      case QuranThemeMode.lightSepia:
+      case QuranThemeMode.reading:
         return const Color(0xFFF5F1E8); // Match background
       case QuranThemeMode.dark:
         return const Color(0xFF1A1A1A); // Slightly lighter than background
@@ -59,7 +59,7 @@ class QuranTheme {
     switch (theme) {
       case QuranThemeMode.normal:
         return const Color(0xFFFFFFFF); // Pure white for cards
-      case QuranThemeMode.lightSepia:
+      case QuranThemeMode.reading:
         return const Color(0xFFFAF7F0); // Lighter sepia for cards
       case QuranThemeMode.dark:
         return const Color(0xFF1A1A1A); // Card background for dark mode
@@ -70,7 +70,7 @@ class QuranTheme {
     switch (theme) {
       case QuranThemeMode.normal:
         return const Color(0xFFE0E0E0); // Subtle dividers
-      case QuranThemeMode.lightSepia:
+      case QuranThemeMode.reading:
         return const Color(0xFFD4C4B0); // Warm divider
       case QuranThemeMode.dark:
         return const Color(0xFF2A2A2A); // Dark mode dividers
@@ -81,7 +81,7 @@ class QuranTheme {
     switch (theme) {
       case QuranThemeMode.normal:
         return const Color(0xFF0D7377); // Calming teal
-      case QuranThemeMode.lightSepia:
+      case QuranThemeMode.reading:
         return const Color(0xFF8B4513); // Rich brown accent
       case QuranThemeMode.dark:
         return const Color(0xFF14A085); // Bright teal for dark mode
@@ -92,7 +92,7 @@ class QuranTheme {
     switch (theme) {
       case QuranThemeMode.normal:
         return const Color(0xFFFFF3CD); // Soft yellow highlight
-      case QuranThemeMode.lightSepia:
+      case QuranThemeMode.reading:
         return const Color(0xFFFFE4B5); // Warm highlight
       case QuranThemeMode.dark:
         return const Color(0xFF2A4A3A); // Dark green highlight
@@ -103,7 +103,7 @@ class QuranTheme {
     switch (theme) {
       case QuranThemeMode.normal:
         return const Color(0xFFB3E5FC); // Light blue selection
-      case QuranThemeMode.lightSepia:
+      case QuranThemeMode.reading:
         return const Color(0xFFDEB887); // Warm selection
       case QuranThemeMode.dark:
         return const Color(0xFF37474F); // Dark selection
@@ -114,8 +114,8 @@ class QuranTheme {
     switch (theme) {
       case QuranThemeMode.normal:
         return const Color(0x0A000000); // Very subtle shadow
-      case QuranThemeMode.lightSepia:
-        return const Color(0x0F2B1810); // Warm shadow
+      case QuranThemeMode.reading:
+        return const Color(0x08604020); // Ultra-soft warm shadow
       case QuranThemeMode.dark:
         return const Color(0x33000000); // Deeper shadow for dark mode
     }
@@ -126,7 +126,7 @@ class QuranTheme {
     switch (theme) {
       case QuranThemeMode.normal:
         return 1.0; // Full opacity for normal mode
-      case QuranThemeMode.lightSepia:
+      case QuranThemeMode.reading:
         return 0.95; // Slightly reduced for warmth
       case QuranThemeMode.dark:
         return 0.92; // Reduced for eye comfort in dark mode
@@ -137,7 +137,7 @@ class QuranTheme {
     switch (theme) {
       case QuranThemeMode.normal:
         return Icons.wb_sunny; // Sun for light mode
-      case QuranThemeMode.lightSepia:
+      case QuranThemeMode.reading:
         return Icons.filter_vintage; // Vintage for sepia
       case QuranThemeMode.dark:
         return Icons.dark_mode; // Moon for dark mode
@@ -147,8 +147,8 @@ class QuranTheme {
   static QuranThemeMode getNextTheme(QuranThemeMode currentTheme) {
     switch (currentTheme) {
       case QuranThemeMode.normal:
-        return QuranThemeMode.lightSepia;
-      case QuranThemeMode.lightSepia:
+        return QuranThemeMode.reading;
+      case QuranThemeMode.reading:
         return QuranThemeMode.dark;
       case QuranThemeMode.dark:
         return QuranThemeMode.normal;
@@ -169,7 +169,7 @@ class QuranTheme {
     switch (theme) {
       case QuranThemeMode.normal:
         return 'Light';
-      case QuranThemeMode.lightSepia:
+      case QuranThemeMode.reading:
         return 'Reading';
       case QuranThemeMode.dark:
         return 'Dark';

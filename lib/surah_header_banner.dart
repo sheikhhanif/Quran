@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
+import 'theme.dart';
 
 class SurahBanner extends StatefulWidget {
   final int surahNumber;
   final bool isCentered;
+  final QuranThemeMode? theme;
+  final double? maxWidth;
 
   const SurahBanner({
     super.key,
     required this.surahNumber,
     required this.isCentered,
+    this.theme,
+    this.maxWidth,
   });
 
   // Static variables for font and ligatures
@@ -66,7 +71,9 @@ class _SurahBannerState extends State<SurahBanner> {
   }
 
   Future<void> _loadDataIfNeeded() async {
-    if (SurahBanner._ligatures == null && !SurahBanner._isInitializing && !_isLoading) {
+    if (SurahBanner._ligatures == null &&
+        !SurahBanner._isInitializing &&
+        !_isLoading) {
       setState(() {
         _isLoading = true;
       });
@@ -87,62 +94,94 @@ class _SurahBannerState extends State<SurahBanner> {
     final isTablet = screenSize.width > 600;
     final bannerHeight = isTablet ? 84.0 : 64.0;
 
+    // Use provided theme or default to normal
+    final currentTheme = widget.theme ?? QuranThemeMode.normal;
+    final textColor = QuranTheme.getTextColor(currentTheme);
+
+    // Use provided maxWidth or calculate from screen, similar to mushaf pages
+    final availableWidth = widget.maxWidth ?? screenSize.width;
+
     // Get glyph immediately if data is already loaded
     final glyph = SurahBanner._ligatures != null
         ? SurahBanner._glyphForSurah(widget.surahNumber)
         : null;
 
     Widget flutterFallback() => Container(
-      width: double.infinity,
-      constraints: BoxConstraints(
-        minHeight: bannerHeight * 0.8,
-        maxHeight: bannerHeight * 1.2,
-      ),
-      margin: EdgeInsets.symmetric(horizontal: isTablet ? 24 : 16),
-      alignment: Alignment.center,
-      clipBehavior: Clip.none,
-      child: FittedBox(
-        fit: BoxFit.fitWidth,
-        alignment: Alignment.center,
-        child: Text(
-          glyph ?? 'سورة ${widget.surahNumber}',
-          maxLines: 1,
-          textAlign: TextAlign.center,
-          textDirection: TextDirection.rtl,
-          style: TextStyle(
-            fontFamily: glyph != null ? 'SurahHeaderFont' : 'SurahNameFont',
-            fontSize: isTablet ? 96 : 72,
-            height: 1.0,
-            letterSpacing: 0.0,
-            color: const Color(0xFF3E2723),
-            fontWeight: FontWeight.w600,
+          width: availableWidth,
+          constraints: BoxConstraints(
+            minHeight: bannerHeight * 0.8,
+            maxHeight: bannerHeight * 1.2,
+            maxWidth: availableWidth,
           ),
-        ),
-      ),
-    );
+          alignment: Alignment.center,
+          clipBehavior: Clip.none,
+          child: FittedBox(
+            fit: BoxFit.fitWidth,
+            alignment: Alignment.center,
+            child: glyph != null
+                ? ColorFiltered(
+                    colorFilter: ColorFilter.mode(
+                      textColor,
+                      BlendMode.srcIn,
+                    ),
+                    child: Text(
+                      glyph,
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      textDirection: TextDirection.rtl,
+                      style: TextStyle(
+                        fontFamily: 'SurahHeaderFont',
+                        fontSize: isTablet ? 96 : 72,
+                        height: 1.0,
+                        letterSpacing: 0.0,
+                        color: textColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  )
+                : Text(
+                    'سورة ${widget.surahNumber}',
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                    textDirection: TextDirection.rtl,
+                    style: TextStyle(
+                      fontFamily: 'SurahNameFont',
+                      fontSize: isTablet ? 96 : 72,
+                      height: 1.0,
+                      letterSpacing: 0.0,
+                      color: textColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+          ),
+        );
 
     // Show loading state or fallback
     if (SurahBanner._ligatures == null) {
       return Container(
-        width: double.infinity,
+        width: availableWidth,
         constraints: BoxConstraints(
           minHeight: bannerHeight * 0.8,
           maxHeight: bannerHeight * 1.2,
+          maxWidth: availableWidth,
         ),
-        margin: EdgeInsets.symmetric(horizontal: isTablet ? 24 : 16),
         alignment: Alignment.center,
-        child: Text(
-          'سورة ${widget.surahNumber}',
-          maxLines: 1,
-          textAlign: TextAlign.center,
-          textDirection: TextDirection.rtl,
-          style: TextStyle(
-            fontFamily: 'SurahNameFont',
-            fontSize: isTablet ? 96 : 72,
-            height: 1.0,
-            letterSpacing: 0.0,
-            color: const Color(0xFF3E2723),
-            fontWeight: FontWeight.w600,
+        child: FittedBox(
+          fit: BoxFit.fitWidth,
+          alignment: Alignment.center,
+          child: Text(
+            'سورة ${widget.surahNumber}',
+            maxLines: 1,
+            textAlign: TextAlign.center,
+            textDirection: TextDirection.rtl,
+            style: TextStyle(
+              fontFamily: 'SurahNameFont',
+              fontSize: isTablet ? 96 : 72,
+              height: 1.0,
+              letterSpacing: 0.0,
+              color: textColor,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       );
@@ -150,21 +189,28 @@ class _SurahBannerState extends State<SurahBanner> {
 
     if (Theme.of(context).platform == TargetPlatform.iOS && glyph != null) {
       return Container(
-        width: double.infinity,
+        width: availableWidth,
         constraints: BoxConstraints(
           minHeight: bannerHeight * 0.8,
           maxHeight: bannerHeight * 1.2,
+          maxWidth: availableWidth,
         ),
-        margin: EdgeInsets.symmetric(horizontal: isTablet ? 24 : 16),
         alignment: Alignment.center,
-        child: UiKitView(
-          viewType: 'SurahHeaderView',
-          layoutDirection: TextDirection.rtl,
-          creationParams: {
-            'text': glyph,
-          },
-          creationParamsCodec: const StandardMessageCodec(),
-
+        child: ColorFiltered(
+          colorFilter: ColorFilter.mode(
+            textColor,
+            BlendMode.srcIn,
+          ),
+          child: UiKitView(
+            viewType: 'SurahHeaderView',
+            layoutDirection: TextDirection.rtl,
+            creationParams: {
+              'text': glyph,
+              'theme': currentTheme.name,
+              'maxWidth': availableWidth,
+            },
+            creationParamsCodec: const StandardMessageCodec(),
+          ),
         ),
       );
     }
