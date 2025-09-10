@@ -37,3 +37,4 @@ flutter:
     - assets/quran/fonts/surah-header/ligatures.json
     - assets/quran/audio/ayah-recitation-mahmoud-khalil-al-husary-mujawwad-hafs-956.json
     - assets/quran/metadata/quran-metadata-surah-name.json
+    - assets/quran/metadata/en-sahih-international-simple.json

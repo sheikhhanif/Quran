@@ -2,11 +2,33 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/services.dart';
-import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as p;
 
 // ===================== MODELS =====================
+
+class Translation {
+  final String surah;
+  final String ayah;
+  final String text;
+
+  Translation({
+    required this.surah,
+    required this.ayah,
+    required this.text,
+  });
+
+  factory Translation.fromJson(String key, Map<String, dynamic> json) {
+    final parts = key.split(':');
+    return Translation(
+      surah: parts[0],
+      ayah: parts[1],
+      text: json['t'],
+    );
+  }
+
+  String get verseKey => '$surah:$ayah';
+}
 
 class Surah {
   final int id;
@@ -17,6 +39,7 @@ class Surah {
   final String revelationPlace;
   final int versesCount;
   final bool bismillahPre;
+  final int page;
 
   Surah({
     required this.id,
@@ -27,6 +50,7 @@ class Surah {
     required this.revelationPlace,
     required this.versesCount,
     required this.bismillahPre,
+    required this.page,
   });
 
   factory Surah.fromJson(Map<String, dynamic> json) {
@@ -39,6 +63,7 @@ class Surah {
       revelationPlace: json['revelation_place'],
       versesCount: json['verses_count'],
       bismillahPre: json['bismillah_pre'],
+      page: json['page'],
     );
   }
 }
@@ -695,6 +720,55 @@ class PageBuilder {
   }
 }
 
+// ===================== TRANSLATION SERVICE =====================
+
+class TranslationService {
+  static final TranslationService _instance = TranslationService._internal();
+  factory TranslationService() => _instance;
+  TranslationService._internal();
+
+  Map<String, Translation>? _translations;
+
+  Future<void> initialize() async {
+    await _loadTranslations();
+  }
+
+  Future<void> _loadTranslations() async {
+    try {
+      final jsonString = await rootBundle.loadString(
+          'assets/quran/metadata/en-sahih-international-simple.json');
+      final Map<String, dynamic> jsonData = json.decode(jsonString);
+
+      _translations = {};
+      jsonData.forEach((key, value) {
+        _translations![key] = Translation.fromJson(key, value);
+      });
+    } catch (e) {
+      print('Error loading translations: $e');
+    }
+  }
+
+  Translation? getTranslation(int surahNumber, int ayahNumber) {
+    final key = '$surahNumber:$ayahNumber';
+    return _translations?[key];
+  }
+
+  List<Translation> getTranslationsForPage(List<PageAyah> ayahs) {
+    final translations = <Translation>[];
+    for (final ayah in ayahs) {
+      if (ayah.surah > 0 && ayah.ayah > 0) {
+        final translation = getTranslation(ayah.surah, ayah.ayah);
+        if (translation != null) {
+          translations.add(translation);
+        }
+      }
+    }
+    return translations;
+  }
+
+  Map<String, Translation>? get translations => _translations;
+}
+
 // ===================== SURAH SERVICE =====================
 
 class SurahService {
@@ -712,7 +786,11 @@ class SurahService {
   Future<void> buildSurahToPageMap(Map<int, MushafPage> allPagesData) async {
     if (_surahs == null) return;
 
-    _surahToPageMap = _buildSurahToPageMapping(allPagesData);
+    // Use page numbers from metadata instead of dynamic mapping
+    _surahToPageMap = {};
+    for (final surah in _surahs!) {
+      _surahToPageMap![surah.id] = surah.page;
+    }
   }
 
   Future<void> _loadSurahMetadata() async {
@@ -730,26 +808,6 @@ class SurahService {
     } catch (e) {
       print('Error loading surah metadata: $e');
     }
-  }
-
-  Map<int, int> _buildSurahToPageMapping(Map<int, MushafPage> allPagesData) {
-    final surahToPage = <int, int>{};
-
-    for (int page = 1; page <= 604; page++) {
-      final pageData = allPagesData[page];
-      if (pageData != null) {
-        for (final ayah in pageData.ayahs) {
-          final surahId = ayah.surah;
-          final ayahNumber = ayah.ayah;
-
-          if (ayahNumber == 1 && !surahToPage.containsKey(surahId)) {
-            surahToPage[surahId] = page;
-          }
-        }
-      }
-    }
-
-    return surahToPage;
   }
 
   List<Surah>? get surahs => _surahs;
@@ -777,6 +835,43 @@ class SurahService {
     }
     return null;
   }
+
+  /// Get the surah that appears on the given page
+  /// If multiple surahs appear on the page, returns the first one
+  Surah? getSurahForPage(int pageNumber) {
+    if (_surahs == null) return null;
+
+    // First, check if this is the start page of any surah
+    for (final surah in _surahs!) {
+      if (surah.page == pageNumber) {
+        return surah;
+      }
+    }
+
+    // If not a start page, find the surah that contains this page
+    // by looking at the next surah's start page
+    Surah? result;
+    for (int i = 0; i < _surahs!.length; i++) {
+      final currentSurah = _surahs![i];
+
+      // If this is the last surah, it extends to the end of the Quran
+      if (i == _surahs!.length - 1) {
+        if (pageNumber >= currentSurah.page) {
+          result = currentSurah;
+          break;
+        }
+      } else {
+        // Check if page is between current surah start and next surah start
+        final nextSurah = _surahs![i + 1];
+        if (pageNumber >= currentSurah.page && pageNumber < nextSurah.page) {
+          result = currentSurah;
+          break;
+        }
+      }
+    }
+
+    return result;
+  }
 }
 
 // ===================== QURAN SERVICE (MAIN) =====================
@@ -787,6 +882,7 @@ class QuranService {
   QuranService._internal();
 
   final SurahService _surahService = SurahService();
+  final TranslationService _translationService = TranslationService();
   final Map<int, MushafPage> _allPagesData = {};
   final Set<int> _loadedPages = {};
 
@@ -798,6 +894,7 @@ class QuranService {
     await DatabaseService.initialize();
     await FontService.loadSurahNameFont();
     await _surahService.initialize();
+    await _translationService.initialize();
 
     _isInitialized = true;
   }
@@ -825,6 +922,16 @@ class QuranService {
     }
 
     try {
+      // Check if databases are still available
+      if (DatabaseService._wordsDb == null ||
+          DatabaseService._layoutDb == null) {
+        print('Database not available for page $pageNumber');
+        return null;
+      }
+
+      // Ensure font is loaded for this specific page first
+      await _ensureFontLoadedForPage(pageNumber);
+
       final mushafPage = await PageBuilder.buildPage(
         pageNumber: pageNumber,
         wordsDb: DatabaseService.wordsDb,
@@ -842,6 +949,21 @@ class QuranService {
     }
   }
 
+  Future<void> _ensureFontLoadedForPage(int pageNumber) async {
+    if (!FontService.isFontLoaded(pageNumber)) {
+      try {
+        final fontLoader = FontLoader('QPCPageFont$pageNumber');
+        final fontPath = FontService.getFontPath(pageNumber);
+        final fontData = await rootBundle.load(fontPath);
+        fontLoader.addFont(Future.value(fontData));
+        await fontLoader.load();
+        FontService._loadedFonts.add(pageNumber);
+      } catch (e) {
+        print('Font loading failed for page $pageNumber: $e');
+      }
+    }
+  }
+
   Future<void> preloadPagesAroundCurrent(int currentPage) async {
     const preloadRadius = 3;
     final pagesToLoad = <int>{};
@@ -853,9 +975,13 @@ class QuranService {
       }
     }
 
-    for (final page in pagesToLoad) {
-      await _loadPage(page);
-      await Future.delayed(const Duration(milliseconds: 5));
+    // Load pages in parallel for better performance
+    if (pagesToLoad.isNotEmpty) {
+      try {
+        await Future.wait(pagesToLoad.map((page) => _loadPage(page)));
+      } catch (e) {
+        print('Error in parallel page loading: $e');
+      }
     }
   }
 
@@ -864,6 +990,7 @@ class QuranService {
   }
 
   SurahService get surahService => _surahService;
+  TranslationService get translationService => _translationService;
   Map<int, MushafPage> get allPagesData => _allPagesData;
   bool get isInitialized => _isInitialized;
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'mushaf_widgets.dart';
+import 'home_screen.dart';
 
 void main() {
   runApp(const MuslimlyApp());
@@ -12,12 +11,15 @@ class MuslimlyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Muslimly Mushaf',
+      title: 'Mushaf',
       theme: ThemeData(
         primarySwatch: Colors.green,
         scaffoldBackgroundColor: const Color(0xFFF5F1E8),
       ),
-      home: const MushafPageViewer(),
+      home: const HomeScreen(),
     );
   }
 }
+
+
+

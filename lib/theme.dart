@@ -47,11 +47,13 @@ class QuranTheme {
   static Color getAppBarColor(QuranThemeMode theme) {
     switch (theme) {
       case QuranThemeMode.normal:
-        return const Color(0xFFFAFAFA); // Match background
+        return const Color(
+            0xFFF0F0F0); // Slightly darker than background for visibility
       case QuranThemeMode.reading:
-        return const Color(0xFFF5F1E8); // Match background
+        return const Color(
+            0xFFE8E0D0); // Slightly darker than background for visibility
       case QuranThemeMode.dark:
-        return const Color(0xFF1A1A1A); // Slightly lighter than background
+        return const Color(0xFF2A2A2A); // Slightly lighter than background
     }
   }
 

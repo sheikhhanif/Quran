@@ -119,24 +119,18 @@ class _SurahBannerState extends State<SurahBanner> {
             fit: BoxFit.fitWidth,
             alignment: Alignment.center,
             child: glyph != null
-                ? ColorFiltered(
-                    colorFilter: ColorFilter.mode(
-                      textColor,
-                      BlendMode.srcIn,
-                    ),
-                    child: Text(
-                      glyph,
-                      maxLines: 1,
-                      textAlign: TextAlign.center,
-                      textDirection: TextDirection.rtl,
-                      style: TextStyle(
-                        fontFamily: 'SurahHeaderFont',
-                        fontSize: isTablet ? 96 : 72,
-                        height: 1.0,
-                        letterSpacing: 0.0,
-                        color: textColor,
-                        fontWeight: FontWeight.w600,
-                      ),
+                ? Text(
+                    glyph,
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                    textDirection: TextDirection.rtl,
+                    style: TextStyle(
+                      fontFamily: 'SurahHeaderFont',
+                      fontSize: isTablet ? 96 : 72,
+                      height: 1.0,
+                      letterSpacing: 0.0,
+                      color: textColor,
+                      fontWeight: FontWeight.w600,
                     ),
                   )
                 : Text(
@@ -196,21 +190,16 @@ class _SurahBannerState extends State<SurahBanner> {
           maxWidth: availableWidth,
         ),
         alignment: Alignment.center,
-        child: ColorFiltered(
-          colorFilter: ColorFilter.mode(
-            textColor,
-            BlendMode.srcIn,
-          ),
-          child: UiKitView(
-            viewType: 'SurahHeaderView',
-            layoutDirection: TextDirection.rtl,
-            creationParams: {
-              'text': glyph,
-              'theme': currentTheme.name,
-              'maxWidth': availableWidth,
-            },
-            creationParamsCodec: const StandardMessageCodec(),
-          ),
+        child: UiKitView(
+          viewType: 'SurahHeaderView',
+          layoutDirection: TextDirection.rtl,
+          creationParams: {
+            'text': glyph,
+            'theme': currentTheme.name,
+            'textColor': textColor.value,
+            'maxWidth': availableWidth,
+          },
+          creationParamsCodec: const StandardMessageCodec(),
         ),
       );
     }

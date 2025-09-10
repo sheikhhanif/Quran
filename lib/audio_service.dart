@@ -242,15 +242,25 @@ class AudioService {
         _audioPlayer.onPlayerStateChanged.listen((state) {
       switch (state) {
         case PlayerState.playing:
-          _stateController.add(AudioPlaybackState.playing);
+          if (!_stateController.isClosed) {
+            _stateController.add(AudioPlaybackState.playing);
+          }
           break;
         case PlayerState.paused:
-          _stateController.add(AudioPlaybackState.paused);
+          if (!_stateController.isClosed) {
+            _stateController.add(AudioPlaybackState.paused);
+          }
           break;
         case PlayerState.stopped:
-          _stateController.add(AudioPlaybackState.stopped);
-          _highlightController.add(null);
-          _currentAyahController.add(null);
+          if (!_stateController.isClosed) {
+            _stateController.add(AudioPlaybackState.stopped);
+          }
+          if (!_highlightController.isClosed) {
+            _highlightController.add(null);
+          }
+          if (!_currentAyahController.isClosed) {
+            _currentAyahController.add(null);
+          }
           break;
         case PlayerState.completed:
           _onAudioCompleted();
@@ -261,7 +271,9 @@ class AudioService {
     });
 
     _positionSubscription = _audioPlayer.onPositionChanged.listen((position) {
-      _positionController.add(position);
+      if (!_positionController.isClosed) {
+        _positionController.add(position);
+      }
       _updateWordHighlight(position);
     });
   }
@@ -310,13 +322,19 @@ class AudioService {
     }
 
     try {
-      _stateController.add(AudioPlaybackState.loading);
+      if (!_stateController.isClosed) {
+        _stateController.add(AudioPlaybackState.loading);
+      }
       _currentAudioData = audioData;
       _currentAyah = ayah;
-      _currentAyahController.add(ayah);
+      if (!_currentAyahController.isClosed) {
+        _currentAyahController.add(ayah);
+      }
 
       _lastHighlightedWordId = null;
-      _highlightController.add(null);
+      if (!_highlightController.isClosed) {
+        _highlightController.add(null);
+      }
 
       String audioPath;
       try {
@@ -341,9 +359,15 @@ class AudioService {
     if (_currentAyahIndex < (_pageAyahs?.length ?? 0)) {
       await _playCurrentAyah();
     } else {
-      _stateController.add(AudioPlaybackState.stopped);
-      _highlightController.add(null);
-      _currentAyahController.add(null);
+      if (!_stateController.isClosed) {
+        _stateController.add(AudioPlaybackState.stopped);
+      }
+      if (!_highlightController.isClosed) {
+        _highlightController.add(null);
+      }
+      if (!_currentAyahController.isClosed) {
+        _currentAyahController.add(null);
+      }
       _pageAyahs = null;
     }
   }
@@ -358,8 +382,12 @@ class AudioService {
 
   Future<void> stop() async {
     await _audioPlayer.stop();
-    _highlightController.add(null);
-    _currentAyahController.add(null);
+    if (!_highlightController.isClosed) {
+      _highlightController.add(null);
+    }
+    if (!_currentAyahController.isClosed) {
+      _currentAyahController.add(null);
+    }
     _pageAyahs = null;
     _currentAyahIndex = 0;
   }
@@ -444,11 +472,15 @@ class AudioService {
     }
 
     if (newWordId != null && newWordId != _lastHighlightedWordId) {
-      _highlightController.add(newWordId);
-      _lastHighlightedWordId = newWordId;
+      if (!_highlightController.isClosed) {
+        _highlightController.add(newWordId);
+        _lastHighlightedWordId = newWordId;
+      }
     } else if (newWordId == null && _lastHighlightedWordId != null) {
-      _highlightController.add(null);
-      _lastHighlightedWordId = null;
+      if (!_highlightController.isClosed) {
+        _highlightController.add(null);
+        _lastHighlightedWordId = null;
+      }
     }
   }
 
