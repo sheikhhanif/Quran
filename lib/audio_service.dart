@@ -210,6 +210,7 @@ class AudioService {
   final AudioPlayer _audioPlayer = AudioPlayer();
   final AudioCacheService _cacheService = AudioCacheService();
   Map<String, AudioData>? _allAudioData;
+  bool _isDisposed = false;
 
   StreamSubscription<Duration>? _positionSubscription;
   StreamSubscription<PlayerState>? _playerStateSubscription;
@@ -299,6 +300,11 @@ class AudioService {
   }
 
   Future<void> playPageAyahs(List<PageAyah> ayahs) async {
+    if (_isDisposed) {
+      print('AudioService is disposed, cannot play ayahs');
+      return;
+    }
+
     if (ayahs.isEmpty) return;
 
     _pageAyahs = ayahs;
@@ -307,6 +313,12 @@ class AudioService {
   }
 
   Future<void> _playCurrentAyah() async {
+    // Safety check: Don't proceed if disposed
+    if (_isDisposed) {
+      print('AudioService is disposed, skipping playback');
+      return;
+    }
+
     if (_pageAyahs == null || _currentAyahIndex >= _pageAyahs!.length) {
       await stop();
       return;
@@ -322,6 +334,12 @@ class AudioService {
     }
 
     try {
+      // Check again before audio operations
+      if (_isDisposed) {
+        print('AudioService disposed during playback setup');
+        return;
+      }
+
       if (!_stateController.isClosed) {
         _stateController.add(AudioPlaybackState.loading);
       }
@@ -340,15 +358,32 @@ class AudioService {
       try {
         audioPath =
             await _cacheService.downloadAndCacheAudio(audioData.audioUrl);
+
+        // Final check before playing
+        if (_isDisposed) {
+          print('AudioService disposed before playing audio');
+          return;
+        }
+
         await _audioPlayer.play(DeviceFileSource(audioPath));
       } catch (cacheError) {
         print('Cache error, falling back to URL: $cacheError');
+
+        // Check again before URL fallback
+        if (_isDisposed) {
+          print('AudioService disposed before URL fallback');
+          return;
+        }
+
         await _audioPlayer.play(UrlSource(audioData.audioUrl));
       }
     } catch (e) {
       print('Error playing ayah ${ayah.surah}:${ayah.ayah} - $e');
-      _currentAyahIndex++;
-      await _playCurrentAyah();
+      // Only continue if not disposed
+      if (!_isDisposed) {
+        _currentAyahIndex++;
+        await _playCurrentAyah();
+      }
     }
   }
 
@@ -373,15 +408,31 @@ class AudioService {
   }
 
   Future<void> pause() async {
-    await _audioPlayer.pause();
+    if (_isDisposed) return;
+    try {
+      await _audioPlayer.pause();
+    } catch (e) {
+      print('Error pausing audio: $e');
+    }
   }
 
   Future<void> resume() async {
-    await _audioPlayer.resume();
+    if (_isDisposed) return;
+    try {
+      await _audioPlayer.resume();
+    } catch (e) {
+      print('Error resuming audio: $e');
+    }
   }
 
   Future<void> stop() async {
-    await _audioPlayer.stop();
+    if (_isDisposed) return;
+    try {
+      await _audioPlayer.stop();
+    } catch (e) {
+      print('Error stopping audio: $e');
+    }
+
     if (!_highlightController.isClosed) {
       _highlightController.add(null);
     }
@@ -393,6 +444,8 @@ class AudioService {
   }
 
   Future<void> seekToAyah(int ayahIndex) async {
+    if (_isDisposed) return;
+
     if (_pageAyahs == null ||
         ayahIndex < 0 ||
         ayahIndex >= _pageAyahs!.length) {
@@ -493,13 +546,39 @@ class AudioService {
     return allWords;
   }
 
+  void reset() {
+    // Reset state without disposing the service
+    try {
+      _audioPlayer.stop();
+      if (!_highlightController.isClosed) {
+        _highlightController.add(null);
+      }
+      if (!_currentAyahController.isClosed) {
+        _currentAyahController.add(null);
+      }
+      _pageAyahs = null;
+      _currentAyahIndex = 0;
+      _currentAudioData = null;
+      _currentAyah = null;
+      _lastHighlightedWordId = null;
+    } catch (e) {
+      print('Error during AudioService reset: $e');
+    }
+  }
+
   void dispose() {
-    _positionSubscription?.cancel();
-    _playerStateSubscription?.cancel();
-    _positionController.close();
-    _stateController.close();
-    _highlightController.close();
-    _currentAyahController.close();
-    _audioPlayer.dispose();
+    _isDisposed = true;
+
+    try {
+      _positionSubscription?.cancel();
+      _playerStateSubscription?.cancel();
+      _positionController.close();
+      _stateController.close();
+      _highlightController.close();
+      _currentAyahController.close();
+      _audioPlayer.dispose();
+    } catch (e) {
+      print('Error during AudioService disposal: $e');
+    }
   }
 }
