@@ -27,15 +27,8 @@ flutter:
   uses-material-design: true
   assets:
     - assets/quran/layout/qpc-v4-15-lines.db
-    - assets/quran/layout/qpc-hafs-15-lines.db
-    - assets/quran/scripts/qpc-v2.db
     - assets/quran/scripts/qpc-hafs.db
-    - assets/quran/fonts/qpc-v2-font/
     - assets/quran/fonts/uth.ttf
-    - assets/quran/fonts/hafs.ttf
-    - assets/quran/fonts/me.ttf
-    - assets/quran/fonts/kat.otf
     - assets/quran/fonts/surah-name-v2.ttf
     - assets/quran/svg/
     - assets/quran/svg/surah_name/
-    - assets/quran/audio/ayah-recitation-mahmoud-khalil-al-husary-mujawwad-hafs-956.json
