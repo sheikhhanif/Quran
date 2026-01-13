@@ -1,0 +1,126 @@
+The Meson build system
+Version: 1.10.0
+Source dir: /Users/sheikhhanif/Quran/android/harfbuzz
+Build dir: /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64
+Build type: cross build
+Project name: harfbuzz
+Project version: 12.3.0
+C compiler for the host machine: /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang (clang 17.0.2 "Android (10552028, +pgo, +bolt, +lto, -mlgo, based on r487747d) clang version 17.0.2 (https://android.googlesource.com/toolchain/llvm-project d9f89f4d16663d5012e5c09495f3b30ece3d2362)")
+C linker for the host machine: /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang ld.lld 17.0.2
+C++ compiler for the host machine: /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ (clang 17.0.2 "Android (10552028, +pgo, +bolt, +lto, -mlgo, based on r487747d) clang version 17.0.2 (https://android.googlesource.com/toolchain/llvm-project d9f89f4d16663d5012e5c09495f3b30ece3d2362)")
+C++ linker for the host machine: /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ ld.lld 17.0.2
+C compiler for the build machine: cc (clang 16.0.0 "Apple clang version 16.0.0 (clang-1600.0.26.6)")
+C linker for the build machine: cc ld64 1115.7.3
+C++ compiler for the build machine: c++ (clang 16.0.0 "Apple clang version 16.0.0 (clang-1600.0.26.6)")
+C++ linker for the build machine: c++ ld64 1115.7.3
+Build machine cpu family: aarch64
+Build machine cpu: aarch64
+Host machine cpu family: arm64
+Host machine cpu: armv8-a
+Target machine cpu family: arm64
+Target machine cpu: armv8-a
+Compiler for C++ supports link arguments -Bsymbolic-functions: YES 
+Compiler for C++ supports arguments -fno-exceptions: YES 
+Compiler for C++ supports arguments -fno-rtti: YES 
+Compiler for C++ supports arguments -fno-threadsafe-statics: YES 
+Compiler for C++ supports arguments -fvisibility-inlines-hidden: YES 
+Library m found: YES
+Dependency freetype2 skipped: feature freetype disabled
+Dependency glib-2.0 skipped: feature glib disabled
+Dependency gobject-2.0 skipped: feature gobject disabled
+Dependency graphite2 skipped: feature graphite2 disabled
+Dependency graphite2 skipped: feature graphite disabled
+Library iwasm skipped: feature wasm disabled
+Dependency icu-uc skipped: feature icu disabled
+Found pkg-config: NO
+Found CMake: NO
+Run-time dependency chafa found: NO (tried pkgconfig and cmake)
+Run-time dependency threads found: YES
+Has header "unistd.h" : YES 
+Has header "sys/mman.h" : YES 
+Has header "stdbool.h" : YES 
+Has header "xlocale.h" : YES 
+Checking for function "atexit" : YES 
+Checking for function "mprotect" : YES 
+Checking for function "sysconf" : YES 
+Checking for function "getpagesize" : YES 
+Checking for function "mmap" : YES 
+Checking for function "isatty" : YES 
+Checking for function "uselocale" : YES 
+Checking for function "newlocale" : YES 
+Checking for function "sincos" : YES 
+Checking for function "sincosf" : YES 
+Program gen-hb-version.py found: YES (/Users/sheikhhanif/Quran/android/harfbuzz/src/gen-hb-version.py)
+Configuring hb-version.h with command
+Program ragel found: NO
+../../harfbuzz/src/meson.build:452: WARNING: You have to install ragel if you are going to develop HarfBuzz itself
+Program gen-harfbuzzcc.py found: YES (/Users/sheikhhanif/Quran/android/harfbuzz/src/gen-harfbuzzcc.py)
+Configuring hb-features.h using configuration
+Configuring hb-supported-features.h using configuration
+Program gen-def.py found: YES (/Users/sheikhhanif/Quran/android/harfbuzz/src/gen-def.py)
+Program gen-harfbuzzcc.py found: YES (/Users/sheikhhanif/Quran/android/harfbuzz/src/gen-harfbuzzcc.py)
+Found pkg-config: NO
+Configuring harfbuzz-config.cmake using configuration
+Configuring config.h using configuration
+Build targets in project: 8
+
+harfbuzz 12.3.0
+
+  Directories
+    prefix                    : /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/install
+    bindir                    : bin
+    libdir                    : lib
+    includedir                : include
+    datadir                   : share
+    cmakepackagedir           : lib/cmake
+
+  Unicode callbacks (you want at least one)
+    Builtin                   : YES
+    Glib                      : NO
+    ICU                       : NO
+
+  Font callbacks (the more the merrier)
+    Builtin                   : YES
+    FreeType                  : NO
+    Fontations                : NO
+
+  Dependencies used for command-line utilities
+    Cairo                     : NO
+    Chafa                     : NO
+
+  Additional shapers
+    Graphite2                 : NO
+    WebAssembly (experimental): NO
+
+  Platform / other shapers (not normally needed)
+    CoreText                  : NO
+    DirectWrite               : NO
+    GDI/Uniscribe             : NO
+    HarfRust                  : NO
+    kbts                      : NO
+
+  Other features
+    Utilities                 : YES
+    Documentation             : NO
+    GObject bindings          : NO
+    Cairo integration         : NO
+    Introspection             : NO
+    Experimental APIs         : NO
+
+  Testing
+    Tests                     : NO
+    Benchmark                 : NO
+
+  User defined options
+    Cross files               : /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/android-cross.txt
+    cairo                     : disabled
+    default_library           : static
+    docs                      : disabled
+    freetype                  : disabled
+    glib                      : disabled
+    gobject                   : disabled
+    icu                       : disabled
+    prefix                    : /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/install
+    tests                     : disabled
+
+Found ninja-1.11.1.git.kitware.jobserver-1 at /opt/homebrew/bin/ninja

@@ -1,0 +1,3194 @@
+Build started at 2026-01-13T10:23:26.725868
+Main binary: /opt/homebrew/opt/python@3.10/bin/python3.10
+Build Options: -Ddefault_library=static -Dtests=disabled -Ddocs=disabled -Dicu=disabled -Dglib=disabled -Dgobject=disabled -Dfreetype=disabled -Dcairo=disabled -Dprefix=/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/install --cross-file=/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/android-cross.txt
+Python system: Darwin
+The Meson build system
+Version: 1.10.0
+Source dir: /Users/sheikhhanif/Quran/android/harfbuzz
+Build dir: /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64
+Build type: cross build
+Project name: harfbuzz
+Project version: 12.3.0
+-----------
+Detecting compiler via: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang --version` -> 0
+stdout:
+Android (10552028, +pgo, +bolt, +lto, -mlgo, based on r487747d) clang version 17.0.2 (https://android.googlesource.com/toolchain/llvm-project d9f89f4d16663d5012e5c09495f3b30ece3d2362)
+Target: aarch64-unknown-linux-android21
+Thread model: posix
+InstalledDir: /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin
+-----------
+Running command: -x c -E -dM -
+-----
+-----------
+Detecting linker via: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang -Wl,--version -march=armv8-a` -> 0
+stdout:
+LLD 17.0.2 (compatible with GNU linkers)
+-----------
+-----------
+Detecting LLD linker via: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang -Wl,-v -march=armv8-a` -> 1
+stdout:
+LLD 17.0.2 (compatible with GNU linkers)
+-----------
+stderr:
+ld.lld: error: undefined symbol: main
+>>> referenced by crtbegin.c
+>>>               /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/../sysroot/usr/lib/aarch64-linux-android/21/crtbegin_dynamic.o:(_start_main)
+>>> referenced by crtbegin.c
+>>>               /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/../sysroot/usr/lib/aarch64-linux-android/21/crtbegin_dynamic.o:(_start_main)
+clang-17: error: linker command failed with exit code 1 (use -v to see invocation)
+-----------
+Sanity testing C compiler: /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang
+Is cross compiler: True.
+Sanity check compiler command line: /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang sanitycheckc.c -o sanitycheckc_cross.exe -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -c
+Sanity check compile stdout:
+
+-----
+Sanity check compile stderr:
+
+-----
+C compiler for the host machine: /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang (clang 17.0.2 "Android (10552028, +pgo, +bolt, +lto, -mlgo, based on r487747d) clang version 17.0.2 (https://android.googlesource.com/toolchain/llvm-project d9f89f4d16663d5012e5c09495f3b30ece3d2362)")
+C linker for the host machine: /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang ld.lld 17.0.2
+-----------
+Detecting archiver via: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-ar --version` -> 0
+stdout:
+LLVM (http://llvm.org/):
+  LLVM version 17.0.2
+  Optimized build.
+-----------
+-----------
+Detecting compiler via: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ --version` -> 0
+stdout:
+Android (10552028, +pgo, +bolt, +lto, -mlgo, based on r487747d) clang version 17.0.2 (https://android.googlesource.com/toolchain/llvm-project d9f89f4d16663d5012e5c09495f3b30ece3d2362)
+Target: aarch64-unknown-linux-android21
+Thread model: posix
+InstalledDir: /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin
+-----------
+Running command: -x c++ -E -dM -
+-----
+-----------
+Detecting linker via: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Wl,--version -march=armv8-a` -> 0
+stdout:
+LLD 17.0.2 (compatible with GNU linkers)
+-----------
+-----------
+Detecting LLD linker via: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Wl,-v -march=armv8-a` -> 1
+stdout:
+LLD 17.0.2 (compatible with GNU linkers)
+-----------
+stderr:
+ld.lld: error: undefined symbol: main
+>>> referenced by crtbegin.c
+>>>               /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/../sysroot/usr/lib/aarch64-linux-android/21/crtbegin_dynamic.o:(_start_main)
+>>> referenced by crtbegin.c
+>>>               /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/../sysroot/usr/lib/aarch64-linux-android/21/crtbegin_dynamic.o:(_start_main)
+clang-17: error: linker command failed with exit code 1 (use -v to see invocation)
+-----------
+Sanity testing C++ compiler: /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++
+Is cross compiler: True.
+Sanity check compiler command line: /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ sanitycheckcpp.cc -o sanitycheckcpp_cross.exe -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -c
+Sanity check compile stdout:
+
+-----
+Sanity check compile stderr:
+
+-----
+C++ compiler for the host machine: /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ (clang 17.0.2 "Android (10552028, +pgo, +bolt, +lto, -mlgo, based on r487747d) clang version 17.0.2 (https://android.googlesource.com/toolchain/llvm-project d9f89f4d16663d5012e5c09495f3b30ece3d2362)")
+C++ linker for the host machine: /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ ld.lld 17.0.2
+-----------
+Detecting compiler via: `cc --version` -> 0
+stdout:
+Apple clang version 16.0.0 (clang-1600.0.26.6)
+Target: arm64-apple-darwin24.3.0
+Thread model: posix
+InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+-----------
+Running command: -x c -E -dM -
+-----
+-----------
+Detecting linker via: `cc -Wl,--version` -> 1
+stderr:
+ld: unknown options: --version 
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+-----------
+-----------
+Detecting Apple linker via: `cc -Wl,-v` -> 0
+stderr:
+@(#)PROGRAM:ld PROJECT:ld-1115.7.3
+BUILD 23:52:02 Dec  5 2024
+configured to support archs: armv6 armv7 armv7s arm64 arm64e arm64_32 i386 x86_64 x86_64h armv6m armv7k armv7m armv7em
+will use ld-classic for: armv6 armv7 armv7s i386 armv6m armv7k armv7m armv7em
+LTO support using: LLVM version 16.0.0 (static support for 29, runtime is 29)
+TAPI support using: Apple TAPI version 16.0.0 (tapi-1600.0.11.9)
+-----------
+Sanity testing C compiler: cc
+Is cross compiler: False.
+Sanity check compiler command line: cc sanitycheckc.c -o sanitycheckc.exe
+Sanity check compile stdout:
+
+-----
+Sanity check compile stderr:
+
+-----
+Running test binary command:  /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/sanitycheckc.exe
+-----------
+Sanity check: `/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/sanitycheckc.exe` -> 0
+C compiler for the build machine: cc (clang 16.0.0 "Apple clang version 16.0.0 (clang-1600.0.26.6)")
+C linker for the build machine: cc ld64 1115.7.3
+-----------
+Detecting archiver via: `llvm-ar-16 --version` -> [Errno 2] No such file or directory: 'llvm-ar-16'
+-----------
+Detecting archiver via: `llvm-ar --version` -> [Errno 2] No such file or directory: 'llvm-ar'
+-----------
+Detecting archiver via: `ar --version` -> 1
+stderr:
+usage:  ar -d [-TLsv] archive file ...
+	ar -m [-TLsv] archive file ...
+	ar -m [-abiTLsv] position archive file ...
+	ar -p [-TLsv] archive [file ...]
+	ar -q [-cTLsv] archive file ...
+	ar -r [-cuTLsv] archive file ...
+	ar -r [-abciuTLsv] position archive file ...
+	ar -t [-TLsv] archive [file ...]
+	ar -x [-ouTLsv] archive [file ...]
+-----------
+-----------
+Detecting compiler via: `c++ --version` -> 0
+stdout:
+Apple clang version 16.0.0 (clang-1600.0.26.6)
+Target: arm64-apple-darwin24.3.0
+Thread model: posix
+InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+-----------
+Running command: -x c++ -E -dM -
+-----
+-----------
+Detecting linker via: `c++ -Wl,--version` -> 1
+stderr:
+ld: unknown options: --version 
+clang++: error: linker command failed with exit code 1 (use -v to see invocation)
+-----------
+-----------
+Detecting Apple linker via: `c++ -Wl,-v` -> 0
+stderr:
+@(#)PROGRAM:ld PROJECT:ld-1115.7.3
+BUILD 23:52:02 Dec  5 2024
+configured to support archs: armv6 armv7 armv7s arm64 arm64e arm64_32 i386 x86_64 x86_64h armv6m armv7k armv7m armv7em
+will use ld-classic for: armv6 armv7 armv7s i386 armv6m armv7k armv7m armv7em
+LTO support using: LLVM version 16.0.0 (static support for 29, runtime is 29)
+TAPI support using: Apple TAPI version 16.0.0 (tapi-1600.0.11.9)
+-----------
+Sanity testing C++ compiler: c++
+Is cross compiler: False.
+Sanity check compiler command line: c++ sanitycheckcpp.cc -o sanitycheckcpp.exe
+Sanity check compile stdout:
+
+-----
+Sanity check compile stderr:
+
+-----
+Running test binary command:  /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/sanitycheckcpp.exe
+-----------
+Sanity check: `/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/sanitycheckcpp.exe` -> 0
+C++ compiler for the build machine: c++ (clang 16.0.0 "Apple clang version 16.0.0 (clang-1600.0.26.6)")
+C++ linker for the build machine: c++ ld64 1115.7.3
+Build machine cpu family: aarch64
+Build machine cpu: aarch64
+Host machine cpu family: arm64
+Host machine cpu: armv8-a
+Target machine cpu family: arm64
+Target machine cpu: armv8-a
+Running compile:
+Working directory:  /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmptxge0qal
+Code:
+int main(void) { return 0; }
+
+-----------
+Command line: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmptxge0qal/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmptxge0qal/output.exe -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Wl,--fatal-warnings -Bsymbolic-functions` -> 0
+Compiler for C++ supports link arguments -Bsymbolic-functions: YES 
+Running compile:
+Working directory:  /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpuskxt2my
+Code:
+extern int i;
+int i;
+
+-----------
+Command line: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpuskxt2my/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpuskxt2my/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument -fno-exceptions` -> 0
+Compiler for C++ supports arguments -fno-exceptions: YES 
+Running compile:
+Working directory:  /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmprjuo9a6x
+Code:
+extern int i;
+int i;
+
+-----------
+Command line: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmprjuo9a6x/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmprjuo9a6x/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument -fno-rtti` -> 0
+Compiler for C++ supports arguments -fno-rtti: YES 
+Running compile:
+Working directory:  /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpo8swwbv5
+Code:
+extern int i;
+int i;
+
+-----------
+Command line: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpo8swwbv5/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpo8swwbv5/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument -fno-threadsafe-statics` -> 0
+Compiler for C++ supports arguments -fno-threadsafe-statics: YES 
+Running compile:
+Working directory:  /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpz0hr9h9q
+Code:
+extern int i;
+int i;
+
+-----------
+Command line: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpz0hr9h9q/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpz0hr9h9q/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument -fvisibility-inlines-hidden` -> 0
+Compiler for C++ supports arguments -fvisibility-inlines-hidden: YES 
+Running compile:
+Working directory:  /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpjs1up_mt
+Code:
+int main(void) { return 0; }
+
+-----------
+Command line: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpjs1up_mt/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpjs1up_mt/output.exe -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -lm -Wl,--allow-shlib-undefined` -> 0
+Library m found: YES
+Dependency freetype2 skipped: feature freetype disabled
+Dependency glib-2.0 skipped: feature glib disabled
+Dependency gobject-2.0 skipped: feature gobject disabled
+Dependency graphite2 skipped: feature graphite2 disabled
+Dependency graphite2 skipped: feature graphite disabled
+Library iwasm skipped: feature wasm disabled
+Dependency icu-uc skipped: feature icu disabled
+Pkg-config binary missing from cross or native file, or env var undefined.
+Default target is not allowed for cross use
+Found pkg-config: NO
+Pkg-config for machine host machine not found. Giving up.
+CMake binary for host machine is not cached
+CMake binary missing from cross or native file, or env var undefined.
+Default target is not allowed for cross use
+Found CMake: NO
+CMake binary for machine host machine not found. Giving up.
+Run-time dependency chafa found: NO (tried pkgconfig and cmake)
+Run-time dependency threads found: YES
+Running compile:
+Working directory:  /var/folders/d1/tr0gqq_17sjfkfpv2rkvjhm00000gn/T/tmpwj3blkmd
+Code:
+int i = static_cast<int>(0);
+-----------
+Command line: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /var/folders/d1/tr0gqq_17sjfkfpv2rkvjhm00000gn/T/tmpwj3blkmd/testfile.cpp -o /var/folders/d1/tr0gqq_17sjfkfpv2rkvjhm00000gn/T/tmpwj3blkmd/output.obj -D_FILE_OFFSET_BITS=64 -c -std=c++11` -> 0
+Compiler accepts -std=c++11: YES
+Running compile:
+Working directory:  /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpb9lrn1kg
+Code:
+
+        #ifdef __has_include
+         #if !__has_include("unistd.h")
+          #error "Header 'unistd.h' could not be found"
+         #endif
+        #else
+         #include <unistd.h>
+        #endif
+-----------
+Command line: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpb9lrn1kg/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration -fno-exceptions -std=c++11` -> 0
+Has header "unistd.h" : YES 
+Running compile:
+Working directory:  /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmp7ndm7tdd
+Code:
+
+        #ifdef __has_include
+         #if !__has_include("sys/mman.h")
+          #error "Header 'sys/mman.h' could not be found"
+         #endif
+        #else
+         #include <sys/mman.h>
+        #endif
+-----------
+Command line: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmp7ndm7tdd/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration -fno-exceptions -std=c++11` -> 0
+Has header "sys/mman.h" : YES 
+Running compile:
+Working directory:  /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpbdz00i46
+Code:
+
+        #ifdef __has_include
+         #if !__has_include("stdbool.h")
+          #error "Header 'stdbool.h' could not be found"
+         #endif
+        #else
+         #include <stdbool.h>
+        #endif
+-----------
+Command line: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpbdz00i46/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration -fno-exceptions -std=c++11` -> 0
+Has header "stdbool.h" : YES 
+Running compile:
+Working directory:  /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmp_5ag4n7o
+Code:
+
+        #ifdef __has_include
+         #if !__has_include("xlocale.h")
+          #error "Header 'xlocale.h' could not be found"
+         #endif
+        #else
+         #include <xlocale.h>
+        #endif
+-----------
+Command line: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmp_5ag4n7o/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration -fno-exceptions -std=c++11` -> 0
+Has header "xlocale.h" : YES 
+Running compile:
+Working directory:  /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpy_3i15ux
+Code:
+#include <stdlib.h>
+#include <limits.h>
+
+        #if defined __stub_atexit || defined __stub___atexit
+        fail fail fail this function is not going to work
+        #endif
+        
+int main(void) {
+            void *a = (void*) &atexit;
+            long long b = (long long) a;
+            return (int) b;
+        }
+-----------
+Command line: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpy_3i15ux/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpy_3i15ux/output.exe -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -fno-exceptions -std=c++11` -> 0
+Checking for function "atexit" : YES 
+Running compile:
+Working directory:  /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcv_ftbmv
+Code:
+#include <sys/mman.h>
+#include <limits.h>
+
+        #if defined __stub_mprotect || defined __stub___mprotect
+        fail fail fail this function is not going to work
+        #endif
+        
+int main(void) {
+            void *a = (void*) &mprotect;
+            long long b = (long long) a;
+            return (int) b;
+        }
+-----------
+Command line: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcv_ftbmv/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcv_ftbmv/output.exe -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -fno-exceptions -std=c++11` -> 0
+Checking for function "mprotect" : YES 
+Running compile:
+Working directory:  /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpguvsov_r
+Code:
+#include <unistd.h>
+#include <limits.h>
+
+        #if defined __stub_sysconf || defined __stub___sysconf
+        fail fail fail this function is not going to work
+        #endif
+        
+int main(void) {
+            void *a = (void*) &sysconf;
+            long long b = (long long) a;
+            return (int) b;
+        }
+-----------
+Command line: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpguvsov_r/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpguvsov_r/output.exe -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -fno-exceptions -std=c++11` -> 0
+Checking for function "sysconf" : YES 
+Running compile:
+Working directory:  /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmptu5kgv4b
+Code:
+#include <unistd.h>
+#include <limits.h>
+
+        #if defined __stub_getpagesize || defined __stub___getpagesize
+        fail fail fail this function is not going to work
+        #endif
+        
+int main(void) {
+            void *a = (void*) &getpagesize;
+            long long b = (long long) a;
+            return (int) b;
+        }
+-----------
+Command line: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmptu5kgv4b/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmptu5kgv4b/output.exe -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -fno-exceptions -std=c++11` -> 0
+Checking for function "getpagesize" : YES 
+Running compile:
+Working directory:  /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpx8kajh56
+Code:
+#include <sys/mman.h>
+#include <limits.h>
+
+        #if defined __stub_mmap || defined __stub___mmap
+        fail fail fail this function is not going to work
+        #endif
+        
+int main(void) {
+            void *a = (void*) &mmap;
+            long long b = (long long) a;
+            return (int) b;
+        }
+-----------
+Command line: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpx8kajh56/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpx8kajh56/output.exe -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -fno-exceptions -std=c++11` -> 0
+Checking for function "mmap" : YES 
+Running compile:
+Working directory:  /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmp3j6cjdi7
+Code:
+#include <unistd.h>
+#include <limits.h>
+
+        #if defined __stub_isatty || defined __stub___isatty
+        fail fail fail this function is not going to work
+        #endif
+        
+int main(void) {
+            void *a = (void*) &isatty;
+            long long b = (long long) a;
+            return (int) b;
+        }
+-----------
+Command line: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmp3j6cjdi7/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmp3j6cjdi7/output.exe -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -fno-exceptions -std=c++11` -> 0
+Checking for function "isatty" : YES 
+Running compile:
+Working directory:  /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpftucv0xo
+Code:
+#include <locale.h>
+#include <limits.h>
+
+        #if defined __stub_uselocale || defined __stub___uselocale
+        fail fail fail this function is not going to work
+        #endif
+        
+int main(void) {
+            void *a = (void*) &uselocale;
+            long long b = (long long) a;
+            return (int) b;
+        }
+-----------
+Command line: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpftucv0xo/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpftucv0xo/output.exe -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -fno-exceptions -std=c++11` -> 0
+Checking for function "uselocale" : YES 
+Running compile:
+Working directory:  /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmp8p3rj7kt
+Code:
+#include <locale.h>
+#include <limits.h>
+
+        #if defined __stub_newlocale || defined __stub___newlocale
+        fail fail fail this function is not going to work
+        #endif
+        
+int main(void) {
+            void *a = (void*) &newlocale;
+            long long b = (long long) a;
+            return (int) b;
+        }
+-----------
+Command line: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmp8p3rj7kt/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmp8p3rj7kt/output.exe -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -fno-exceptions -std=c++11` -> 0
+Checking for function "newlocale" : YES 
+Running compile:
+Working directory:  /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmp07p1j2it
+Code:
+#define _GNU_SOURCE
+#include <math.h>
+#include <limits.h>
+
+        #if defined __stub_sincos || defined __stub___sincos
+        fail fail fail this function is not going to work
+        #endif
+        
+int main(void) {
+            void *a = (void*) &sincos;
+            long long b = (long long) a;
+            return (int) b;
+        }
+-----------
+Command line: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmp07p1j2it/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmp07p1j2it/output.exe -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -fno-exceptions -std=c++11` -> 0
+stderr:
+/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmp07p1j2it/testfile.cpp:1:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+#define _GNU_SOURCE
+        ^
+<built-in>:408:9: note: previous definition is here
+#define _GNU_SOURCE 1
+        ^
+1 warning generated.
+-----------
+Checking for function "sincos" : YES 
+Running compile:
+Working directory:  /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpkk5vyohr
+Code:
+#define _GNU_SOURCE
+#include <math.h>
+#include <limits.h>
+
+        #if defined __stub_sincosf || defined __stub___sincosf
+        fail fail fail this function is not going to work
+        #endif
+        
+int main(void) {
+            void *a = (void*) &sincosf;
+            long long b = (long long) a;
+            return (int) b;
+        }
+-----------
+Command line: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpkk5vyohr/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpkk5vyohr/output.exe -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -fno-exceptions -std=c++11` -> 0
+stderr:
+/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpkk5vyohr/testfile.cpp:1:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+#define _GNU_SOURCE
+        ^
+<built-in>:408:9: note: previous definition is here
+#define _GNU_SOURCE 1
+        ^
+1 warning generated.
+-----------
+Checking for function "sincosf" : YES 
+Program gen-hb-version.py found: YES (/Users/sheikhhanif/Quran/android/harfbuzz/src/gen-hb-version.py)
+Configuring hb-version.h with command
+Running command: /Users/sheikhhanif/Quran/android/harfbuzz/src/gen-hb-version.py 12.3.0 /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/src/hb-version.h /Users/sheikhhanif/Quran/android/harfbuzz/src/hb-version.h.in
+--- stdout ---
+
+--- stderr ---
+
+
+Program ragel found: NO
+../../harfbuzz/src/meson.build:452: WARNING: You have to install ragel if you are going to develop HarfBuzz itself
+Program gen-harfbuzzcc.py found: YES (/Users/sheikhhanif/Quran/android/harfbuzz/src/gen-harfbuzzcc.py)
+Configuring hb-features.h using configuration
+Configuring hb-supported-features.h using configuration
+Program gen-def.py found: YES (/Users/sheikhhanif/Quran/android/harfbuzz/src/gen-def.py)
+Program gen-harfbuzzcc.py found: YES (/Users/sheikhhanif/Quran/android/harfbuzz/src/gen-harfbuzzcc.py)
+Pkg-config binary missing from cross or native file, or env var undefined.
+Default target is not allowed for cross use
+Found pkg-config: NO
+Configuring harfbuzz-config.cmake using configuration
+Configuring config.h using configuration
+Build targets in project: 8
+
+harfbuzz 12.3.0
+
+  Directories
+    prefix                    : /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/install
+    bindir                    : bin
+    libdir                    : lib
+    includedir                : include
+    datadir                   : share
+    cmakepackagedir           : lib/cmake
+
+  Unicode callbacks (you want at least one)
+    Builtin                   : YES
+    Glib                      : NO
+    ICU                       : NO
+
+  Font callbacks (the more the merrier)
+    Builtin                   : YES
+    FreeType                  : NO
+    Fontations                : NO
+
+  Dependencies used for command-line utilities
+    Cairo                     : NO
+    Chafa                     : NO
+
+  Additional shapers
+    Graphite2                 : NO
+    WebAssembly (experimental): NO
+
+  Platform / other shapers (not normally needed)
+    CoreText                  : NO
+    DirectWrite               : NO
+    GDI/Uniscribe             : NO
+    HarfRust                  : NO
+    kbts                      : NO
+
+  Other features
+    Utilities                 : YES
+    Documentation             : NO
+    GObject bindings          : NO
+    Cairo integration         : NO
+    Introspection             : NO
+    Experimental APIs         : NO
+
+  Testing
+    Tests                     : NO
+    Benchmark                 : NO
+
+  User defined options
+    Cross files               : /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/android-cross.txt
+    cairo                     : disabled
+    default_library           : static
+    docs                      : disabled
+    freetype                  : disabled
+    glib                      : disabled
+    gobject                   : disabled
+    icu                       : disabled
+    prefix                    : /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/install
+    tests                     : disabled
+
+Found ninja-1.11.1.git.kitware.jobserver-1 at /opt/homebrew/bin/ninja
+Running compile:
+Working directory:  /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx
+Code:
+
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+-----------
+Command line: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration` -> 0
+Running compile:
+Working directory:  /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu
+Code:
+
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+-----------
+Command line: `/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument` -> 0
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpr23pe1nx/testfile.cpp -E -P -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -P -O0 -fpermissive -Werror=implicit-function-declaration 
+
+Code:
+ 
+        #ifdef __has_include
+         #if !__has_include("version")
+          #error "Header 'version' could not be found"
+         #endif
+        #else
+         #include <version>
+        #endif
+Cached compiler stdout:
+ 
+
+Cached compiler stderr:
+ 
+Using cached compile:
+Cached command line:  /Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/testfile.cpp -o /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/tmpcihca6nu/output.obj -c -march=armv8-a -fPIC -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=implicit-function-declaration -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument 
+
+Code:
+ 
+        #include <version>
+        int main(void) {
+            /* If it's not defined as a macro, try to use as a symbol */
+            #ifndef _LIBCPP_VERSION
+                _LIBCPP_VERSION;
+            #endif
+            return 0;
+        }
+Cached compiler stdout:
+ 
+Cached compiler stderr:
+ 
+Failed to guess install tag for /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/install/lib/cmake/harfbuzz/harfbuzz-config.cmake
+!meson_ci!/ci_include "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/build.ninja"
+Failed to guess install tag for /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/install/lib/cmake/harfbuzz/harfbuzz-config.cmake

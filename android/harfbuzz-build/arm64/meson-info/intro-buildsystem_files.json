@@ -1,0 +1,10 @@
+[
+  "/Users/sheikhhanif/Quran/android/harfbuzz/meson.build",
+  "/Users/sheikhhanif/Quran/android/harfbuzz/meson_options.txt",
+  "/Users/sheikhhanif/Quran/android/harfbuzz/src/meson.build",
+  "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-version.h.in",
+  "/Users/sheikhhanif/Quran/android/harfbuzz/src/gen-hb-version.py",
+  "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-features.h.in",
+  "/Users/sheikhhanif/Quran/android/harfbuzz/src/harfbuzz-config.cmake.in",
+  "/Users/sheikhhanif/Quran/android/harfbuzz/util/meson.build"
+]

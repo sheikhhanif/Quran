@@ -1,0 +1,14 @@
+[options]
+default_library = static
+tests = disabled
+docs = disabled
+icu = disabled
+glib = disabled
+gobject = disabled
+freetype = disabled
+cairo = disabled
+prefix = /Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/install
+
+[properties]
+cross_file = ['/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/android-cross.txt']
+

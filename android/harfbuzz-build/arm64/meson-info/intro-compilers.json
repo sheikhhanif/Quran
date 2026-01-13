@@ -1,0 +1,104 @@
+{
+  "host": {
+    "c": {
+      "id": "clang",
+      "exelist": [
+        "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang"
+      ],
+      "linker_exelist": [
+        "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang"
+      ],
+      "file_suffixes": [
+        "c"
+      ],
+      "default_suffix": "c",
+      "version": "17.0.2",
+      "full_version": "Android (10552028, +pgo, +bolt, +lto, -mlgo, based on r487747d) clang version 17.0.2 (https://android.googlesource.com/toolchain/llvm-project d9f89f4d16663d5012e5c09495f3b30ece3d2362)",
+      "linker_id": "ld.lld"
+    },
+    "cpp": {
+      "id": "clang",
+      "exelist": [
+        "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++"
+      ],
+      "linker_exelist": [
+        "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++"
+      ],
+      "file_suffixes": [
+        "cpp",
+        "cppm",
+        "cc",
+        "cp",
+        "cxx",
+        "c++",
+        "hh",
+        "hp",
+        "hpp",
+        "ipp",
+        "hxx",
+        "h++",
+        "ino",
+        "ixx",
+        "CPP",
+        "C",
+        "HPP",
+        "H"
+      ],
+      "default_suffix": "cpp",
+      "version": "17.0.2",
+      "full_version": "Android (10552028, +pgo, +bolt, +lto, -mlgo, based on r487747d) clang version 17.0.2 (https://android.googlesource.com/toolchain/llvm-project d9f89f4d16663d5012e5c09495f3b30ece3d2362)",
+      "linker_id": "ld.lld"
+    }
+  },
+  "build": {
+    "c": {
+      "id": "clang",
+      "exelist": [
+        "cc"
+      ],
+      "linker_exelist": [
+        "cc"
+      ],
+      "file_suffixes": [
+        "c"
+      ],
+      "default_suffix": "c",
+      "version": "16.0.0",
+      "full_version": "Apple clang version 16.0.0 (clang-1600.0.26.6)",
+      "linker_id": "ld64"
+    },
+    "cpp": {
+      "id": "clang",
+      "exelist": [
+        "c++"
+      ],
+      "linker_exelist": [
+        "c++"
+      ],
+      "file_suffixes": [
+        "cpp",
+        "cppm",
+        "cc",
+        "cp",
+        "cxx",
+        "c++",
+        "hh",
+        "hp",
+        "hpp",
+        "ipp",
+        "hxx",
+        "h++",
+        "ino",
+        "ixx",
+        "CPP",
+        "C",
+        "HPP",
+        "H"
+      ],
+      "default_suffix": "cpp",
+      "version": "16.0.0",
+      "full_version": "Apple clang version 16.0.0 (clang-1600.0.26.6)",
+      "linker_id": "ld64"
+    }
+  }
+}

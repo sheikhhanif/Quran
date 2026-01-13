@@ -1,0 +1,214 @@
+{
+  "targets": {
+    "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/src/libharfbuzz.a": {
+      "destination": "{libdir_static}/libharfbuzz.a",
+      "tag": "devel",
+      "subproject": null,
+      "install_rpath": null,
+      "build_rpaths": []
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/src/libharfbuzz-subset.a": {
+      "destination": "{libdir_static}/libharfbuzz-subset.a",
+      "tag": "devel",
+      "subproject": null,
+      "install_rpath": null,
+      "build_rpaths": []
+    }
+  },
+  "configure": {
+    "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/src/hb-version.h": {
+      "destination": "{includedir}/harfbuzz/hb-version.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/src/hb-features.h": {
+      "destination": "{includedir}/harfbuzz/hb-features.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/src/harfbuzz-config.cmake": {
+      "destination": "{libdir}/cmake/harfbuzz/harfbuzz-config.cmake",
+      "tag": null,
+      "subproject": null
+    }
+  },
+  "data": {
+    "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/harfbuzz.pc": {
+      "destination": "{libdir}/pkgconfig/harfbuzz.pc",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/meson-private/harfbuzz-subset.pc": {
+      "destination": "{libdir}/pkgconfig/harfbuzz-subset.pc",
+      "tag": "devel",
+      "subproject": null
+    }
+  },
+  "headers": {
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-aat-layout.h": {
+      "destination": "{includedir}/harfbuzz/hb-aat-layout.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-aat.h": {
+      "destination": "{includedir}/harfbuzz/hb-aat.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-blob.h": {
+      "destination": "{includedir}/harfbuzz/hb-blob.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-buffer.h": {
+      "destination": "{includedir}/harfbuzz/hb-buffer.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-common.h": {
+      "destination": "{includedir}/harfbuzz/hb-common.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-cplusplus.hh": {
+      "destination": "{includedir}/harfbuzz/hb-cplusplus.hh",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-deprecated.h": {
+      "destination": "{includedir}/harfbuzz/hb-deprecated.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-draw.h": {
+      "destination": "{includedir}/harfbuzz/hb-draw.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-paint.h": {
+      "destination": "{includedir}/harfbuzz/hb-paint.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-face.h": {
+      "destination": "{includedir}/harfbuzz/hb-face.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-font.h": {
+      "destination": "{includedir}/harfbuzz/hb-font.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-map.h": {
+      "destination": "{includedir}/harfbuzz/hb-map.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-ot-color.h": {
+      "destination": "{includedir}/harfbuzz/hb-ot-color.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-ot-deprecated.h": {
+      "destination": "{includedir}/harfbuzz/hb-ot-deprecated.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-ot-font.h": {
+      "destination": "{includedir}/harfbuzz/hb-ot-font.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-ot-layout.h": {
+      "destination": "{includedir}/harfbuzz/hb-ot-layout.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-ot-math.h": {
+      "destination": "{includedir}/harfbuzz/hb-ot-math.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-ot-meta.h": {
+      "destination": "{includedir}/harfbuzz/hb-ot-meta.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-ot-metrics.h": {
+      "destination": "{includedir}/harfbuzz/hb-ot-metrics.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-ot-name.h": {
+      "destination": "{includedir}/harfbuzz/hb-ot-name.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-ot-shape.h": {
+      "destination": "{includedir}/harfbuzz/hb-ot-shape.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-ot-var.h": {
+      "destination": "{includedir}/harfbuzz/hb-ot-var.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-ot.h": {
+      "destination": "{includedir}/harfbuzz/hb-ot.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-script-list.h": {
+      "destination": "{includedir}/harfbuzz/hb-script-list.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-set.h": {
+      "destination": "{includedir}/harfbuzz/hb-set.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-shape-plan.h": {
+      "destination": "{includedir}/harfbuzz/hb-shape-plan.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-shape.h": {
+      "destination": "{includedir}/harfbuzz/hb-shape.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-style.h": {
+      "destination": "{includedir}/harfbuzz/hb-style.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-unicode.h": {
+      "destination": "{includedir}/harfbuzz/hb-unicode.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb.h": {
+      "destination": "{includedir}/harfbuzz/hb.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/src/hb-version.h": {
+      "destination": "{includedir}/harfbuzz/hb-version.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-subset.h": {
+      "destination": "{includedir}/harfbuzz/hb-subset.h",
+      "tag": "devel",
+      "subproject": null
+    },
+    "/Users/sheikhhanif/Quran/android/harfbuzz/src/hb-subset-serialize.h": {
+      "destination": "{includedir}/harfbuzz/hb-subset-serialize.h",
+      "tag": "devel",
+      "subproject": null
+    }
+  }
+}

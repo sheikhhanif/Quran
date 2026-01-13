@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/Users/sheikhhanif/Quran/android/app/.cxx/Debug/46391k3r/x86",
+  "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++ --target=i686-none-linux-android21 --sysroot=/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/sysroot -DHB_NO_PRAGMA_GCC_DIAGNOSTIC_ERROR -Dharfbuzz_justify_EXPORTS -I/Users/sheikhhanif/Quran/android/app/src/main/cpp -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -fPIC -std=c++17 -o CMakeFiles/harfbuzz_justify.dir/harfbuzz_justify.cpp.o -c /Users/sheikhhanif/Quran/android/app/src/main/cpp/harfbuzz_justify.cpp",
+  "file": "/Users/sheikhhanif/Quran/android/app/src/main/cpp/harfbuzz_justify.cpp"
+}
+]

@@ -1,0 +1,17 @@
+[binaries]
+c = '/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang'
+cpp = '/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++'
+ar = '/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-ar'
+strip = '/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-strip'
+
+[properties]
+c_args = ['-march=armv8-a', '-fPIC']
+cpp_args = ['-march=armv8-a', '-fPIC']
+c_link_args = ['-march=armv8-a']
+cpp_link_args = ['-march=armv8-a']
+
+[host_machine]
+system = 'android'
+cpu_family = 'arm64'
+cpu = 'armv8-a'
+endian = 'little'

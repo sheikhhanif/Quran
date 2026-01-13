@@ -1,0 +1,38 @@
+{
+  "buildFiles": [
+    "/Users/sheikhhanif/Quran/android/app/src/main/cpp/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/sheikhhanif/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/sheikhhanif/Quran/android/app/.cxx/Debug/46391k3r/arm64-v8a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/sheikhhanif/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/sheikhhanif/Quran/android/app/.cxx/Debug/46391k3r/arm64-v8a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "harfbuzz_justify::@6890427a1f51a3e7e1df": {
+      "toolchain": "toolchain",
+      "abi": "arm64-v8a",
+      "artifactName": "harfbuzz_justify",
+      "output": "/Users/sheikhhanif/Quran/build/app/intermediates/cxx/Debug/46391k3r/obj/arm64-v8a/libharfbuzz_justify.so",
+      "runtimeFiles": []
+    }
+  },
+  "toolchains": {
+    "toolchain": {
+      "cCompilerExecutable": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang.lld",
+      "cppCompilerExecutable": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++.lld"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": [
+    "cpp"
+  ]
+}

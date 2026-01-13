@@ -1,0 +1,9 @@
+prefix=/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64/install
+includedir=${prefix}/include
+libdir=${prefix}/lib
+
+Name: harfbuzz
+Description: HarfBuzz text shaping library
+Version: 12.3.0
+Libs: -L${libdir} -lharfbuzz -pthread -lm
+Cflags: -I${includedir}/harfbuzz -pthread

@@ -1,0 +1,11 @@
+prefix=/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64
+includedir=${prefix}/include
+libdir=${prefix}/lib
+srcdir=/Users/sheikhhanif/Quran/android/harfbuzz
+
+Name: harfbuzz-subset
+Description: HarfBuzz font subsetter
+Version: 12.3.0
+Requires: harfbuzz =  12.3.0
+Libs: -L${prefix}/src -lharfbuzz-subset -lm
+Cflags: -I${prefix} -I${srcdir} -I${prefix}/src -I${srcdir}/src

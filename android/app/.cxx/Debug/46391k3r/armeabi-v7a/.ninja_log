@@ -1,0 +1,23 @@
+# ninja log v5
+2	335	1768270909314301166	CMakeFiles/harfbuzz_justify.dir/harfbuzz_justify.cpp.o	3c1548b74bdd928e
+1	61	1768271068968155583	/Users/sheikhhanif/Quran/build/app/intermediates/cxx/Debug/46391k3r/obj/armeabi-v7a/libharfbuzz_justify.so	f7cfae89504c94c8
+1	274	1768271175012001291	CMakeFiles/harfbuzz_justify.dir/harfbuzz_justify.cpp.o	3c1548b74bdd928e
+274	315	1768271175054633624	/Users/sheikhhanif/Quran/build/app/intermediates/cxx/Debug/46391k3r/obj/armeabi-v7a/libharfbuzz_justify.so	f7cfae89504c94c8
+1	242	1768271220002529124	CMakeFiles/harfbuzz_justify.dir/harfbuzz_justify.cpp.o	3c1548b74bdd928e
+242	284	1768271220045361041	/Users/sheikhhanif/Quran/build/app/intermediates/cxx/Debug/46391k3r/obj/armeabi-v7a/libharfbuzz_justify.so	f7cfae89504c94c8
+1	270	1768271348126782749	CMakeFiles/harfbuzz_justify.dir/harfbuzz_justify.cpp.o	3c1548b74bdd928e
+270	311	1768271348168206291	/Users/sheikhhanif/Quran/build/app/intermediates/cxx/Debug/46391k3r/obj/armeabi-v7a/libharfbuzz_justify.so	f7cfae89504c94c8
+2	247	1768271372597642208	CMakeFiles/harfbuzz_justify.dir/harfbuzz_justify.cpp.o	3c1548b74bdd928e
+247	286	1768271372637842749	/Users/sheikhhanif/Quran/build/app/intermediates/cxx/Debug/46391k3r/obj/armeabi-v7a/libharfbuzz_justify.so	f7cfae89504c94c8
+2	84	1768271471199749749	/Users/sheikhhanif/Quran/build/app/intermediates/cxx/Debug/46391k3r/obj/armeabi-v7a/libharfbuzz_justify.so	f7cfae89504c94c8
+1	271	1768271554405164416	CMakeFiles/harfbuzz_justify.dir/harfbuzz_justify.cpp.o	3c1548b74bdd928e
+271	314	1768271554449840124	/Users/sheikhhanif/Quran/build/app/intermediates/cxx/Debug/46391k3r/obj/armeabi-v7a/libharfbuzz_justify.so	f7cfae89504c94c8
+2	97	1768271635920149499	/Users/sheikhhanif/Quran/build/app/intermediates/cxx/Debug/46391k3r/obj/armeabi-v7a/libharfbuzz_justify.so	f7cfae89504c94c8
+1	280	1768271707269070166	CMakeFiles/harfbuzz_justify.dir/harfbuzz_justify.cpp.o	3c1548b74bdd928e
+280	320	1768271707311227374	/Users/sheikhhanif/Quran/build/app/intermediates/cxx/Debug/46391k3r/obj/armeabi-v7a/libharfbuzz_justify.so	f7cfae89504c94c8
+1	243	1768271725754644124	CMakeFiles/harfbuzz_justify.dir/harfbuzz_justify.cpp.o	3c1548b74bdd928e
+243	283	1768271725795444541	/Users/sheikhhanif/Quran/build/app/intermediates/cxx/Debug/46391k3r/obj/armeabi-v7a/libharfbuzz_justify.so	f7cfae89504c94c8
+1	259	1768271985872418916	CMakeFiles/harfbuzz_justify.dir/harfbuzz_justify.cpp.o	3c1548b74bdd928e
+259	298	1768271985912840916	/Users/sheikhhanif/Quran/build/app/intermediates/cxx/Debug/46391k3r/obj/armeabi-v7a/libharfbuzz_justify.so	f7cfae89504c94c8
+1	263	1768272308928090958	CMakeFiles/harfbuzz_justify.dir/harfbuzz_justify.cpp.o	3c1548b74bdd928e
+263	305	1768272308971270541	/Users/sheikhhanif/Quran/build/app/intermediates/cxx/Debug/46391k3r/obj/armeabi-v7a/libharfbuzz_justify.so	f7cfae89504c94c8

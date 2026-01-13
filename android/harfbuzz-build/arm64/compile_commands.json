@@ -1,0 +1,458 @@
+[
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-aat-layout.cc.o -MF src/libharfbuzz.a.p/hb-aat-layout.cc.o.d -o src/libharfbuzz.a.p/hb-aat-layout.cc.o -c ../../harfbuzz/src/hb-aat-layout.cc",
+    "file": "../../harfbuzz/src/hb-aat-layout.cc",
+    "output": "src/libharfbuzz.a.p/hb-aat-layout.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-aat-map.cc.o -MF src/libharfbuzz.a.p/hb-aat-map.cc.o.d -o src/libharfbuzz.a.p/hb-aat-map.cc.o -c ../../harfbuzz/src/hb-aat-map.cc",
+    "file": "../../harfbuzz/src/hb-aat-map.cc",
+    "output": "src/libharfbuzz.a.p/hb-aat-map.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-blob.cc.o -MF src/libharfbuzz.a.p/hb-blob.cc.o.d -o src/libharfbuzz.a.p/hb-blob.cc.o -c ../../harfbuzz/src/hb-blob.cc",
+    "file": "../../harfbuzz/src/hb-blob.cc",
+    "output": "src/libharfbuzz.a.p/hb-blob.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-buffer-serialize.cc.o -MF src/libharfbuzz.a.p/hb-buffer-serialize.cc.o.d -o src/libharfbuzz.a.p/hb-buffer-serialize.cc.o -c ../../harfbuzz/src/hb-buffer-serialize.cc",
+    "file": "../../harfbuzz/src/hb-buffer-serialize.cc",
+    "output": "src/libharfbuzz.a.p/hb-buffer-serialize.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-buffer-verify.cc.o -MF src/libharfbuzz.a.p/hb-buffer-verify.cc.o.d -o src/libharfbuzz.a.p/hb-buffer-verify.cc.o -c ../../harfbuzz/src/hb-buffer-verify.cc",
+    "file": "../../harfbuzz/src/hb-buffer-verify.cc",
+    "output": "src/libharfbuzz.a.p/hb-buffer-verify.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-buffer.cc.o -MF src/libharfbuzz.a.p/hb-buffer.cc.o.d -o src/libharfbuzz.a.p/hb-buffer.cc.o -c ../../harfbuzz/src/hb-buffer.cc",
+    "file": "../../harfbuzz/src/hb-buffer.cc",
+    "output": "src/libharfbuzz.a.p/hb-buffer.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-common.cc.o -MF src/libharfbuzz.a.p/hb-common.cc.o.d -o src/libharfbuzz.a.p/hb-common.cc.o -c ../../harfbuzz/src/hb-common.cc",
+    "file": "../../harfbuzz/src/hb-common.cc",
+    "output": "src/libharfbuzz.a.p/hb-common.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-draw.cc.o -MF src/libharfbuzz.a.p/hb-draw.cc.o.d -o src/libharfbuzz.a.p/hb-draw.cc.o -c ../../harfbuzz/src/hb-draw.cc",
+    "file": "../../harfbuzz/src/hb-draw.cc",
+    "output": "src/libharfbuzz.a.p/hb-draw.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-paint.cc.o -MF src/libharfbuzz.a.p/hb-paint.cc.o.d -o src/libharfbuzz.a.p/hb-paint.cc.o -c ../../harfbuzz/src/hb-paint.cc",
+    "file": "../../harfbuzz/src/hb-paint.cc",
+    "output": "src/libharfbuzz.a.p/hb-paint.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-paint-bounded.cc.o -MF src/libharfbuzz.a.p/hb-paint-bounded.cc.o.d -o src/libharfbuzz.a.p/hb-paint-bounded.cc.o -c ../../harfbuzz/src/hb-paint-bounded.cc",
+    "file": "../../harfbuzz/src/hb-paint-bounded.cc",
+    "output": "src/libharfbuzz.a.p/hb-paint-bounded.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-paint-extents.cc.o -MF src/libharfbuzz.a.p/hb-paint-extents.cc.o.d -o src/libharfbuzz.a.p/hb-paint-extents.cc.o -c ../../harfbuzz/src/hb-paint-extents.cc",
+    "file": "../../harfbuzz/src/hb-paint-extents.cc",
+    "output": "src/libharfbuzz.a.p/hb-paint-extents.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-face.cc.o -MF src/libharfbuzz.a.p/hb-face.cc.o.d -o src/libharfbuzz.a.p/hb-face.cc.o -c ../../harfbuzz/src/hb-face.cc",
+    "file": "../../harfbuzz/src/hb-face.cc",
+    "output": "src/libharfbuzz.a.p/hb-face.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-face-builder.cc.o -MF src/libharfbuzz.a.p/hb-face-builder.cc.o.d -o src/libharfbuzz.a.p/hb-face-builder.cc.o -c ../../harfbuzz/src/hb-face-builder.cc",
+    "file": "../../harfbuzz/src/hb-face-builder.cc",
+    "output": "src/libharfbuzz.a.p/hb-face-builder.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-fallback-shape.cc.o -MF src/libharfbuzz.a.p/hb-fallback-shape.cc.o.d -o src/libharfbuzz.a.p/hb-fallback-shape.cc.o -c ../../harfbuzz/src/hb-fallback-shape.cc",
+    "file": "../../harfbuzz/src/hb-fallback-shape.cc",
+    "output": "src/libharfbuzz.a.p/hb-fallback-shape.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-font.cc.o -MF src/libharfbuzz.a.p/hb-font.cc.o.d -o src/libharfbuzz.a.p/hb-font.cc.o -c ../../harfbuzz/src/hb-font.cc",
+    "file": "../../harfbuzz/src/hb-font.cc",
+    "output": "src/libharfbuzz.a.p/hb-font.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-map.cc.o -MF src/libharfbuzz.a.p/hb-map.cc.o.d -o src/libharfbuzz.a.p/hb-map.cc.o -c ../../harfbuzz/src/hb-map.cc",
+    "file": "../../harfbuzz/src/hb-map.cc",
+    "output": "src/libharfbuzz.a.p/hb-map.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-number.cc.o -MF src/libharfbuzz.a.p/hb-number.cc.o.d -o src/libharfbuzz.a.p/hb-number.cc.o -c ../../harfbuzz/src/hb-number.cc",
+    "file": "../../harfbuzz/src/hb-number.cc",
+    "output": "src/libharfbuzz.a.p/hb-number.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-cff1-table.cc.o -MF src/libharfbuzz.a.p/hb-ot-cff1-table.cc.o.d -o src/libharfbuzz.a.p/hb-ot-cff1-table.cc.o -c ../../harfbuzz/src/hb-ot-cff1-table.cc",
+    "file": "../../harfbuzz/src/hb-ot-cff1-table.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-cff1-table.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-cff2-table.cc.o -MF src/libharfbuzz.a.p/hb-ot-cff2-table.cc.o.d -o src/libharfbuzz.a.p/hb-ot-cff2-table.cc.o -c ../../harfbuzz/src/hb-ot-cff2-table.cc",
+    "file": "../../harfbuzz/src/hb-ot-cff2-table.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-cff2-table.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-color.cc.o -MF src/libharfbuzz.a.p/hb-ot-color.cc.o.d -o src/libharfbuzz.a.p/hb-ot-color.cc.o -c ../../harfbuzz/src/hb-ot-color.cc",
+    "file": "../../harfbuzz/src/hb-ot-color.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-color.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-face.cc.o -MF src/libharfbuzz.a.p/hb-ot-face.cc.o.d -o src/libharfbuzz.a.p/hb-ot-face.cc.o -c ../../harfbuzz/src/hb-ot-face.cc",
+    "file": "../../harfbuzz/src/hb-ot-face.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-face.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-font.cc.o -MF src/libharfbuzz.a.p/hb-ot-font.cc.o.d -o src/libharfbuzz.a.p/hb-ot-font.cc.o -c ../../harfbuzz/src/hb-ot-font.cc",
+    "file": "../../harfbuzz/src/hb-ot-font.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-font.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-outline.cc.o -MF src/libharfbuzz.a.p/hb-outline.cc.o.d -o src/libharfbuzz.a.p/hb-outline.cc.o -c ../../harfbuzz/src/hb-outline.cc",
+    "file": "../../harfbuzz/src/hb-outline.cc",
+    "output": "src/libharfbuzz.a.p/hb-outline.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/OT_Var_VARC_VARC.cc.o -MF src/libharfbuzz.a.p/OT_Var_VARC_VARC.cc.o.d -o src/libharfbuzz.a.p/OT_Var_VARC_VARC.cc.o -c ../../harfbuzz/src/OT/Var/VARC/VARC.cc",
+    "file": "../../harfbuzz/src/OT/Var/VARC/VARC.cc",
+    "output": "src/libharfbuzz.a.p/OT_Var_VARC_VARC.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-layout.cc.o -MF src/libharfbuzz.a.p/hb-ot-layout.cc.o.d -o src/libharfbuzz.a.p/hb-ot-layout.cc.o -c ../../harfbuzz/src/hb-ot-layout.cc",
+    "file": "../../harfbuzz/src/hb-ot-layout.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-layout.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-map.cc.o -MF src/libharfbuzz.a.p/hb-ot-map.cc.o.d -o src/libharfbuzz.a.p/hb-ot-map.cc.o -c ../../harfbuzz/src/hb-ot-map.cc",
+    "file": "../../harfbuzz/src/hb-ot-map.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-map.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-math.cc.o -MF src/libharfbuzz.a.p/hb-ot-math.cc.o.d -o src/libharfbuzz.a.p/hb-ot-math.cc.o -c ../../harfbuzz/src/hb-ot-math.cc",
+    "file": "../../harfbuzz/src/hb-ot-math.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-math.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-meta.cc.o -MF src/libharfbuzz.a.p/hb-ot-meta.cc.o.d -o src/libharfbuzz.a.p/hb-ot-meta.cc.o -c ../../harfbuzz/src/hb-ot-meta.cc",
+    "file": "../../harfbuzz/src/hb-ot-meta.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-meta.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-metrics.cc.o -MF src/libharfbuzz.a.p/hb-ot-metrics.cc.o.d -o src/libharfbuzz.a.p/hb-ot-metrics.cc.o -c ../../harfbuzz/src/hb-ot-metrics.cc",
+    "file": "../../harfbuzz/src/hb-ot-metrics.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-metrics.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-name.cc.o -MF src/libharfbuzz.a.p/hb-ot-name.cc.o.d -o src/libharfbuzz.a.p/hb-ot-name.cc.o -c ../../harfbuzz/src/hb-ot-name.cc",
+    "file": "../../harfbuzz/src/hb-ot-name.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-name.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-shaper-arabic.cc.o -MF src/libharfbuzz.a.p/hb-ot-shaper-arabic.cc.o.d -o src/libharfbuzz.a.p/hb-ot-shaper-arabic.cc.o -c ../../harfbuzz/src/hb-ot-shaper-arabic.cc",
+    "file": "../../harfbuzz/src/hb-ot-shaper-arabic.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-shaper-arabic.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-shaper-default.cc.o -MF src/libharfbuzz.a.p/hb-ot-shaper-default.cc.o.d -o src/libharfbuzz.a.p/hb-ot-shaper-default.cc.o -c ../../harfbuzz/src/hb-ot-shaper-default.cc",
+    "file": "../../harfbuzz/src/hb-ot-shaper-default.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-shaper-default.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-shaper-hangul.cc.o -MF src/libharfbuzz.a.p/hb-ot-shaper-hangul.cc.o.d -o src/libharfbuzz.a.p/hb-ot-shaper-hangul.cc.o -c ../../harfbuzz/src/hb-ot-shaper-hangul.cc",
+    "file": "../../harfbuzz/src/hb-ot-shaper-hangul.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-shaper-hangul.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-shaper-hebrew.cc.o -MF src/libharfbuzz.a.p/hb-ot-shaper-hebrew.cc.o.d -o src/libharfbuzz.a.p/hb-ot-shaper-hebrew.cc.o -c ../../harfbuzz/src/hb-ot-shaper-hebrew.cc",
+    "file": "../../harfbuzz/src/hb-ot-shaper-hebrew.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-shaper-hebrew.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-shaper-indic-table.cc.o -MF src/libharfbuzz.a.p/hb-ot-shaper-indic-table.cc.o.d -o src/libharfbuzz.a.p/hb-ot-shaper-indic-table.cc.o -c ../../harfbuzz/src/hb-ot-shaper-indic-table.cc",
+    "file": "../../harfbuzz/src/hb-ot-shaper-indic-table.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-shaper-indic-table.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-shaper-indic.cc.o -MF src/libharfbuzz.a.p/hb-ot-shaper-indic.cc.o.d -o src/libharfbuzz.a.p/hb-ot-shaper-indic.cc.o -c ../../harfbuzz/src/hb-ot-shaper-indic.cc",
+    "file": "../../harfbuzz/src/hb-ot-shaper-indic.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-shaper-indic.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-shaper-khmer.cc.o -MF src/libharfbuzz.a.p/hb-ot-shaper-khmer.cc.o.d -o src/libharfbuzz.a.p/hb-ot-shaper-khmer.cc.o -c ../../harfbuzz/src/hb-ot-shaper-khmer.cc",
+    "file": "../../harfbuzz/src/hb-ot-shaper-khmer.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-shaper-khmer.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-shaper-myanmar.cc.o -MF src/libharfbuzz.a.p/hb-ot-shaper-myanmar.cc.o.d -o src/libharfbuzz.a.p/hb-ot-shaper-myanmar.cc.o -c ../../harfbuzz/src/hb-ot-shaper-myanmar.cc",
+    "file": "../../harfbuzz/src/hb-ot-shaper-myanmar.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-shaper-myanmar.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-shaper-syllabic.cc.o -MF src/libharfbuzz.a.p/hb-ot-shaper-syllabic.cc.o.d -o src/libharfbuzz.a.p/hb-ot-shaper-syllabic.cc.o -c ../../harfbuzz/src/hb-ot-shaper-syllabic.cc",
+    "file": "../../harfbuzz/src/hb-ot-shaper-syllabic.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-shaper-syllabic.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-shaper-thai.cc.o -MF src/libharfbuzz.a.p/hb-ot-shaper-thai.cc.o.d -o src/libharfbuzz.a.p/hb-ot-shaper-thai.cc.o -c ../../harfbuzz/src/hb-ot-shaper-thai.cc",
+    "file": "../../harfbuzz/src/hb-ot-shaper-thai.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-shaper-thai.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-shaper-use.cc.o -MF src/libharfbuzz.a.p/hb-ot-shaper-use.cc.o.d -o src/libharfbuzz.a.p/hb-ot-shaper-use.cc.o -c ../../harfbuzz/src/hb-ot-shaper-use.cc",
+    "file": "../../harfbuzz/src/hb-ot-shaper-use.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-shaper-use.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-shaper-vowel-constraints.cc.o -MF src/libharfbuzz.a.p/hb-ot-shaper-vowel-constraints.cc.o.d -o src/libharfbuzz.a.p/hb-ot-shaper-vowel-constraints.cc.o -c ../../harfbuzz/src/hb-ot-shaper-vowel-constraints.cc",
+    "file": "../../harfbuzz/src/hb-ot-shaper-vowel-constraints.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-shaper-vowel-constraints.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-shape-fallback.cc.o -MF src/libharfbuzz.a.p/hb-ot-shape-fallback.cc.o.d -o src/libharfbuzz.a.p/hb-ot-shape-fallback.cc.o -c ../../harfbuzz/src/hb-ot-shape-fallback.cc",
+    "file": "../../harfbuzz/src/hb-ot-shape-fallback.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-shape-fallback.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-shape-normalize.cc.o -MF src/libharfbuzz.a.p/hb-ot-shape-normalize.cc.o.d -o src/libharfbuzz.a.p/hb-ot-shape-normalize.cc.o -c ../../harfbuzz/src/hb-ot-shape-normalize.cc",
+    "file": "../../harfbuzz/src/hb-ot-shape-normalize.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-shape-normalize.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-shape.cc.o -MF src/libharfbuzz.a.p/hb-ot-shape.cc.o.d -o src/libharfbuzz.a.p/hb-ot-shape.cc.o -c ../../harfbuzz/src/hb-ot-shape.cc",
+    "file": "../../harfbuzz/src/hb-ot-shape.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-shape.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-tag.cc.o -MF src/libharfbuzz.a.p/hb-ot-tag.cc.o.d -o src/libharfbuzz.a.p/hb-ot-tag.cc.o -c ../../harfbuzz/src/hb-ot-tag.cc",
+    "file": "../../harfbuzz/src/hb-ot-tag.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-tag.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ot-var.cc.o -MF src/libharfbuzz.a.p/hb-ot-var.cc.o.d -o src/libharfbuzz.a.p/hb-ot-var.cc.o -c ../../harfbuzz/src/hb-ot-var.cc",
+    "file": "../../harfbuzz/src/hb-ot-var.cc",
+    "output": "src/libharfbuzz.a.p/hb-ot-var.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-set.cc.o -MF src/libharfbuzz.a.p/hb-set.cc.o.d -o src/libharfbuzz.a.p/hb-set.cc.o -c ../../harfbuzz/src/hb-set.cc",
+    "file": "../../harfbuzz/src/hb-set.cc",
+    "output": "src/libharfbuzz.a.p/hb-set.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-shape-plan.cc.o -MF src/libharfbuzz.a.p/hb-shape-plan.cc.o.d -o src/libharfbuzz.a.p/hb-shape-plan.cc.o -c ../../harfbuzz/src/hb-shape-plan.cc",
+    "file": "../../harfbuzz/src/hb-shape-plan.cc",
+    "output": "src/libharfbuzz.a.p/hb-shape-plan.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-shape.cc.o -MF src/libharfbuzz.a.p/hb-shape.cc.o.d -o src/libharfbuzz.a.p/hb-shape.cc.o -c ../../harfbuzz/src/hb-shape.cc",
+    "file": "../../harfbuzz/src/hb-shape.cc",
+    "output": "src/libharfbuzz.a.p/hb-shape.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-shaper.cc.o -MF src/libharfbuzz.a.p/hb-shaper.cc.o.d -o src/libharfbuzz.a.p/hb-shaper.cc.o -c ../../harfbuzz/src/hb-shaper.cc",
+    "file": "../../harfbuzz/src/hb-shaper.cc",
+    "output": "src/libharfbuzz.a.p/hb-shaper.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-static.cc.o -MF src/libharfbuzz.a.p/hb-static.cc.o.d -o src/libharfbuzz.a.p/hb-static.cc.o -c ../../harfbuzz/src/hb-static.cc",
+    "file": "../../harfbuzz/src/hb-static.cc",
+    "output": "src/libharfbuzz.a.p/hb-static.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-style.cc.o -MF src/libharfbuzz.a.p/hb-style.cc.o.d -o src/libharfbuzz.a.p/hb-style.cc.o -c ../../harfbuzz/src/hb-style.cc",
+    "file": "../../harfbuzz/src/hb-style.cc",
+    "output": "src/libharfbuzz.a.p/hb-style.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-ucd.cc.o -MF src/libharfbuzz.a.p/hb-ucd.cc.o.d -o src/libharfbuzz.a.p/hb-ucd.cc.o -c ../../harfbuzz/src/hb-ucd.cc",
+    "file": "../../harfbuzz/src/hb-ucd.cc",
+    "output": "src/libharfbuzz.a.p/hb-ucd.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -pthread -MD -MQ src/libharfbuzz.a.p/hb-unicode.cc.o -MF src/libharfbuzz.a.p/hb-unicode.cc.o.d -o src/libharfbuzz.a.p/hb-unicode.cc.o -c ../../harfbuzz/src/hb-unicode.cc",
+    "file": "../../harfbuzz/src/hb-unicode.cc",
+    "output": "src/libharfbuzz.a.p/hb-unicode.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz-subset.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -MD -MQ src/libharfbuzz-subset.a.p/hb-number.cc.o -MF src/libharfbuzz-subset.a.p/hb-number.cc.o.d -o src/libharfbuzz-subset.a.p/hb-number.cc.o -c ../../harfbuzz/src/hb-number.cc",
+    "file": "../../harfbuzz/src/hb-number.cc",
+    "output": "src/libharfbuzz-subset.a.p/hb-number.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz-subset.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -MD -MQ src/libharfbuzz-subset.a.p/hb-ot-cff1-table.cc.o -MF src/libharfbuzz-subset.a.p/hb-ot-cff1-table.cc.o.d -o src/libharfbuzz-subset.a.p/hb-ot-cff1-table.cc.o -c ../../harfbuzz/src/hb-ot-cff1-table.cc",
+    "file": "../../harfbuzz/src/hb-ot-cff1-table.cc",
+    "output": "src/libharfbuzz-subset.a.p/hb-ot-cff1-table.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz-subset.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -MD -MQ src/libharfbuzz-subset.a.p/hb-ot-cff2-table.cc.o -MF src/libharfbuzz-subset.a.p/hb-ot-cff2-table.cc.o.d -o src/libharfbuzz-subset.a.p/hb-ot-cff2-table.cc.o -c ../../harfbuzz/src/hb-ot-cff2-table.cc",
+    "file": "../../harfbuzz/src/hb-ot-cff2-table.cc",
+    "output": "src/libharfbuzz-subset.a.p/hb-ot-cff2-table.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz-subset.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -MD -MQ src/libharfbuzz-subset.a.p/hb-static.cc.o -MF src/libharfbuzz-subset.a.p/hb-static.cc.o.d -o src/libharfbuzz-subset.a.p/hb-static.cc.o -c ../../harfbuzz/src/hb-static.cc",
+    "file": "../../harfbuzz/src/hb-static.cc",
+    "output": "src/libharfbuzz-subset.a.p/hb-static.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz-subset.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -MD -MQ src/libharfbuzz-subset.a.p/hb-subset-cff-common.cc.o -MF src/libharfbuzz-subset.a.p/hb-subset-cff-common.cc.o.d -o src/libharfbuzz-subset.a.p/hb-subset-cff-common.cc.o -c ../../harfbuzz/src/hb-subset-cff-common.cc",
+    "file": "../../harfbuzz/src/hb-subset-cff-common.cc",
+    "output": "src/libharfbuzz-subset.a.p/hb-subset-cff-common.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz-subset.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -MD -MQ src/libharfbuzz-subset.a.p/hb-subset-cff1.cc.o -MF src/libharfbuzz-subset.a.p/hb-subset-cff1.cc.o.d -o src/libharfbuzz-subset.a.p/hb-subset-cff1.cc.o -c ../../harfbuzz/src/hb-subset-cff1.cc",
+    "file": "../../harfbuzz/src/hb-subset-cff1.cc",
+    "output": "src/libharfbuzz-subset.a.p/hb-subset-cff1.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz-subset.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -MD -MQ src/libharfbuzz-subset.a.p/hb-subset-cff2.cc.o -MF src/libharfbuzz-subset.a.p/hb-subset-cff2.cc.o.d -o src/libharfbuzz-subset.a.p/hb-subset-cff2.cc.o -c ../../harfbuzz/src/hb-subset-cff2.cc",
+    "file": "../../harfbuzz/src/hb-subset-cff2.cc",
+    "output": "src/libharfbuzz-subset.a.p/hb-subset-cff2.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz-subset.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -MD -MQ src/libharfbuzz-subset.a.p/hb-subset-input.cc.o -MF src/libharfbuzz-subset.a.p/hb-subset-input.cc.o.d -o src/libharfbuzz-subset.a.p/hb-subset-input.cc.o -c ../../harfbuzz/src/hb-subset-input.cc",
+    "file": "../../harfbuzz/src/hb-subset-input.cc",
+    "output": "src/libharfbuzz-subset.a.p/hb-subset-input.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz-subset.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -MD -MQ src/libharfbuzz-subset.a.p/hb-subset-instancer-iup.cc.o -MF src/libharfbuzz-subset.a.p/hb-subset-instancer-iup.cc.o.d -o src/libharfbuzz-subset.a.p/hb-subset-instancer-iup.cc.o -c ../../harfbuzz/src/hb-subset-instancer-iup.cc",
+    "file": "../../harfbuzz/src/hb-subset-instancer-iup.cc",
+    "output": "src/libharfbuzz-subset.a.p/hb-subset-instancer-iup.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz-subset.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -MD -MQ src/libharfbuzz-subset.a.p/hb-subset-instancer-solver.cc.o -MF src/libharfbuzz-subset.a.p/hb-subset-instancer-solver.cc.o.d -o src/libharfbuzz-subset.a.p/hb-subset-instancer-solver.cc.o -c ../../harfbuzz/src/hb-subset-instancer-solver.cc",
+    "file": "../../harfbuzz/src/hb-subset-instancer-solver.cc",
+    "output": "src/libharfbuzz-subset.a.p/hb-subset-instancer-solver.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz-subset.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -MD -MQ src/libharfbuzz-subset.a.p/hb-subset-plan.cc.o -MF src/libharfbuzz-subset.a.p/hb-subset-plan.cc.o.d -o src/libharfbuzz-subset.a.p/hb-subset-plan.cc.o -c ../../harfbuzz/src/hb-subset-plan.cc",
+    "file": "../../harfbuzz/src/hb-subset-plan.cc",
+    "output": "src/libharfbuzz-subset.a.p/hb-subset-plan.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz-subset.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -MD -MQ src/libharfbuzz-subset.a.p/hb-subset-plan-layout.cc.o -MF src/libharfbuzz-subset.a.p/hb-subset-plan-layout.cc.o.d -o src/libharfbuzz-subset.a.p/hb-subset-plan-layout.cc.o -c ../../harfbuzz/src/hb-subset-plan-layout.cc",
+    "file": "../../harfbuzz/src/hb-subset-plan-layout.cc",
+    "output": "src/libharfbuzz-subset.a.p/hb-subset-plan-layout.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz-subset.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -MD -MQ src/libharfbuzz-subset.a.p/hb-subset-plan-var.cc.o -MF src/libharfbuzz-subset.a.p/hb-subset-plan-var.cc.o.d -o src/libharfbuzz-subset.a.p/hb-subset-plan-var.cc.o -c ../../harfbuzz/src/hb-subset-plan-var.cc",
+    "file": "../../harfbuzz/src/hb-subset-plan-var.cc",
+    "output": "src/libharfbuzz-subset.a.p/hb-subset-plan-var.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz-subset.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -MD -MQ src/libharfbuzz-subset.a.p/hb-subset-serialize.cc.o -MF src/libharfbuzz-subset.a.p/hb-subset-serialize.cc.o.d -o src/libharfbuzz-subset.a.p/hb-subset-serialize.cc.o -c ../../harfbuzz/src/hb-subset-serialize.cc",
+    "file": "../../harfbuzz/src/hb-subset-serialize.cc",
+    "output": "src/libharfbuzz-subset.a.p/hb-subset-serialize.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz-subset.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -MD -MQ src/libharfbuzz-subset.a.p/hb-subset-table-layout.cc.o -MF src/libharfbuzz-subset.a.p/hb-subset-table-layout.cc.o.d -o src/libharfbuzz-subset.a.p/hb-subset-table-layout.cc.o -c ../../harfbuzz/src/hb-subset-table-layout.cc",
+    "file": "../../harfbuzz/src/hb-subset-table-layout.cc",
+    "output": "src/libharfbuzz-subset.a.p/hb-subset-table-layout.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz-subset.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -MD -MQ src/libharfbuzz-subset.a.p/hb-subset-table-var.cc.o -MF src/libharfbuzz-subset.a.p/hb-subset-table-var.cc.o.d -o src/libharfbuzz-subset.a.p/hb-subset-table-var.cc.o -c ../../harfbuzz/src/hb-subset-table-var.cc",
+    "file": "../../harfbuzz/src/hb-subset-table-var.cc",
+    "output": "src/libharfbuzz-subset.a.p/hb-subset-table-var.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz-subset.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -MD -MQ src/libharfbuzz-subset.a.p/hb-subset-table-cff.cc.o -MF src/libharfbuzz-subset.a.p/hb-subset-table-cff.cc.o.d -o src/libharfbuzz-subset.a.p/hb-subset-table-cff.cc.o -c ../../harfbuzz/src/hb-subset-table-cff.cc",
+    "file": "../../harfbuzz/src/hb-subset-table-cff.cc",
+    "output": "src/libharfbuzz-subset.a.p/hb-subset-table-cff.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz-subset.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -MD -MQ src/libharfbuzz-subset.a.p/hb-subset-table-color.cc.o -MF src/libharfbuzz-subset.a.p/hb-subset-table-color.cc.o.d -o src/libharfbuzz-subset.a.p/hb-subset-table-color.cc.o -c ../../harfbuzz/src/hb-subset-table-color.cc",
+    "file": "../../harfbuzz/src/hb-subset-table-color.cc",
+    "output": "src/libharfbuzz-subset.a.p/hb-subset-table-color.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz-subset.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -MD -MQ src/libharfbuzz-subset.a.p/hb-subset-table-other.cc.o -MF src/libharfbuzz-subset.a.p/hb-subset-table-other.cc.o.d -o src/libharfbuzz-subset.a.p/hb-subset-table-other.cc.o -c ../../harfbuzz/src/hb-subset-table-other.cc",
+    "file": "../../harfbuzz/src/hb-subset-table-other.cc",
+    "output": "src/libharfbuzz-subset.a.p/hb-subset-table-other.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz-subset.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -MD -MQ src/libharfbuzz-subset.a.p/graph_gsubgpos-context.cc.o -MF src/libharfbuzz-subset.a.p/graph_gsubgpos-context.cc.o.d -o src/libharfbuzz-subset.a.p/graph_gsubgpos-context.cc.o -c ../../harfbuzz/src/graph/gsubgpos-context.cc",
+    "file": "../../harfbuzz/src/graph/gsubgpos-context.cc",
+    "output": "src/libharfbuzz-subset.a.p/graph_gsubgpos-context.cc.o"
+  },
+  {
+    "directory": "/Users/sheikhhanif/Quran/android/harfbuzz-build/arm64",
+    "command": "/Users/sheikhhanif/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ -Isrc/libharfbuzz-subset.a.p -Isrc -I../../harfbuzz/src -I. -I../../harfbuzz -fdiagnostics-color=always -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_FAST -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -fno-exceptions -std=c++11 -O2 -g -fno-exceptions -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -DHAVE_CONFIG_H -march=armv8-a -fPIC -fPIC -MD -MQ src/libharfbuzz-subset.a.p/hb-subset.cc.o -MF src/libharfbuzz-subset.a.p/hb-subset.cc.o.d -o src/libharfbuzz-subset.a.p/hb-subset.cc.o -c ../../harfbuzz/src/hb-subset.cc",
+    "file": "../../harfbuzz/src/hb-subset.cc",
+    "output": "src/libharfbuzz-subset.a.p/hb-subset.cc.o"
+  }
+]

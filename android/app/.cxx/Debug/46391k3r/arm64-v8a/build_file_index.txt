@@ -1,0 +1,1 @@
+/Users/sheikhhanif/Quran/android/app/src/main/cpp/CMakeLists.txt
