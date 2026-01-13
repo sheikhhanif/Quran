@@ -613,27 +613,49 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F1E8),
       appBar: AppBar(
-        title: Column(
-          children: [
-            Text('Mushaf - Page $_currentPage'),
-            if (_isPreloading)
-              Container(
-                margin: const EdgeInsets.only(top: 4),
+        title: Text('Mushaf - Page $_currentPage'),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF8B7355),
+        foregroundColor: Colors.white,
+        automaticallyImplyLeading: false,
+        bottom: _isPreloading
+            ? PreferredSize(
+                preferredSize: const Size.fromHeight(4),
                 child: LinearProgressIndicator(
                   value: _preloadProgress,
                   backgroundColor: Colors.white30,
                   valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
                   minHeight: 2,
                 ),
-              ),
-          ],
-        ),
-        centerTitle: true,
+              )
+            : null,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFF8B7355),
-        foregroundColor: Colors.white,
-        toolbarHeight:
-            _isPreloading ? (isTablet ? 90 : 76) : (isTablet ? 70 : 56),
-        automaticallyImplyLeading: false,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white70,
+        type: BottomNavigationBarType.fixed,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.book),
+            label: 'Mushaf',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Search',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bookmark),
+            label: 'Bookmarks',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+        ],
+        onTap: (index) {
+          // Placeholder for navigation
+        },
       ),
       body: _isInitializing
           ? Center(
@@ -704,9 +726,16 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
 
     final screenSize = MediaQuery.of(context).size;
     final isTablet = screenSize.width > 600;
-    final appBarHeight = isTablet ? 70.0 : 56.0;
+    final appBarHeight = kToolbarHeight + (_isPreloading ? 4.0 : 0.0);
     final statusBarHeight = MediaQuery.of(context).padding.top;
-    final availableHeight = screenSize.height - appBarHeight - statusBarHeight;
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+    // Reserve standard bottom navigation bar space (56.0) plus system inset
+    const double bottomNavBarHeight = 56.0;
+    final availableHeight = screenSize.height -
+        appBarHeight -
+        statusBarHeight -
+        bottomInset -
+        bottomNavBarHeight;
 
     return Container(
       width: double.infinity,
@@ -714,7 +743,10 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       decoration: const BoxDecoration(
         color: Color(0xFFFFFFFF),
       ),
-      padding: EdgeInsets.all(isTablet ? 16.0 : 12.0),
+      padding: EdgeInsets.symmetric(
+        horizontal: isTablet ? 24.0 : 16.0,
+        vertical: isTablet ? 16.0 : 12.0,
+      ),
       child: LayoutBuilder(
         builder: (context, constraints) {
           final screenSize = MediaQuery.of(context).size;
@@ -870,7 +902,8 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
 
     final String fontFamily = 'QPCPageFont$page';
     final double targetWidth = maxWidth - 16.0;
-    const thinSpace = '\u2009';
+    // Use hair space (U+200A) – one of the thinnest spaces
+    const thinSpace = '\u200A';
 
     bool fitsAll(double size) {
       for (final line in mushafPage.lines) {
@@ -957,8 +990,8 @@ class UniformTextPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     if (text.isEmpty || words.isEmpty) return;
 
-    // Join words with thin space (U+2009)
-    const thinSpace = '\u2009';
+    // Join words with hair space (U+200A) – very thin gap between words
+    const thinSpace = '\u200A';
     final String lineText = words.join(thinSpace);
 
     final result = _renderText(lineText);
@@ -1040,7 +1073,7 @@ class UniformTextPainter extends CustomPainter {
   String _addExtraThinSpaces(String text, int extraSpacesCount) {
     if (extraSpacesCount == 0 || words.length < 2) return text;
 
-    const thinSpace = '\u2009';
+    const thinSpace = '\u200A';
 
     // Calculate how many spaces to add between each word pair
     // We have (words.length - 1) gaps between words
