@@ -38,8 +38,8 @@ class MushafDataService {
     // Digital Khatt layout database (15 lines per page)
     final layoutDbPath = p.join(databasesPath, 'digital-khatt-15-lines.db');
     if (!await File(layoutDbPath).exists()) {
-      final layoutData =
-          await rootBundle.load('assets/quran/layout/digital-khatt-15-lines.db');
+      final layoutData = await rootBundle
+          .load('assets/quran/layout/digital-khatt-15-lines.db');
       final layoutBytes = layoutData.buffer
           .asUint8List(layoutData.offsetInBytes, layoutData.lengthInBytes);
       await File(layoutDbPath).writeAsBytes(layoutBytes, flush: true);
@@ -109,7 +109,9 @@ class MushafDataService {
   }) async {
     int loadedCount = _loadedPages.length;
 
-    for (int batchStart = 1; batchStart <= TOTAL_PAGES; batchStart += BATCH_SIZE) {
+    for (int batchStart = 1;
+        batchStart <= TOTAL_PAGES;
+        batchStart += BATCH_SIZE) {
       final batchEnd = (batchStart + BATCH_SIZE - 1).clamp(1, TOTAL_PAGES);
       final batch = <Future<void>>[];
 

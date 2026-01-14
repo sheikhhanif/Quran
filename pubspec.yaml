@@ -35,4 +35,4 @@ flutter:
   fonts:
     - family: MushafMadina
       fonts:
-        - asset: assets/quran/fonts/madina.otf
+        - asset: assets/quran/fonts/dk2.otf

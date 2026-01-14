@@ -108,37 +108,37 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       bottomNavigationBar: const MushafBottomNavigationBar(),
       body: _isInitializing
           ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(
-                    strokeWidth: isTablet ? 6 : 4,
-                  ),
-                  SizedBox(height: isTablet ? 24 : 16),
-                  Text(
-                    _loadingMessage,
-                    style: TextStyle(
-                        fontSize: isTablet ? 18 : 16,
-                        color: const Color(0xFFD2B48C)),
-                  ),
-                ],
-              ),
-            )
-          : Column(
-              children: [
-                Expanded(
-                  child: PageView.builder(
-                    controller: _pageController,
-                    itemCount: 604,
-                    onPageChanged: _onPageChanged,
-                    itemBuilder: (context, index) {
-                      final page = index + 1;
-                      return _buildMushafPage(page);
-                    },
-                  ),
-                ),
-              ],
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(
+              strokeWidth: isTablet ? 6 : 4,
             ),
+            SizedBox(height: isTablet ? 24 : 16),
+            Text(
+              _loadingMessage,
+              style: TextStyle(
+                  fontSize: isTablet ? 18 : 16,
+                  color: const Color(0xFFD2B48C)),
+            ),
+          ],
+        ),
+      )
+          : Column(
+        children: [
+          Expanded(
+            child: PageView.builder(
+              controller: _pageController,
+              itemCount: 604,
+              onPageChanged: _onPageChanged,
+              itemBuilder: (context, index) {
+                final page = index + 1;
+                return _buildMushafPage(page);
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -225,7 +225,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
           builder: (context) {
             if (line.lineType == 'surah_name') {
               final surahNumber =
-                  int.tryParse(line.text.replaceAll('SURAH_BANNER_', ''));
+              int.tryParse(line.text.replaceAll('SURAH_BANNER_', ''));
               if (surahNumber != null) {
                 return GestureDetector(
                   child: SurahBanner(
@@ -251,7 +251,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
           builder: (context) {
             if (line.lineType == 'surah_name') {
               final surahNumber =
-                  int.tryParse(line.text.replaceAll('SURAH_BANNER_', ''));
+              int.tryParse(line.text.replaceAll('SURAH_BANNER_', ''));
               if (surahNumber != null) {
                 return GestureDetector(
                   child: SurahBanner(
@@ -271,14 +271,14 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
   }
 
   Widget _buildLineWithKashida(
-    SimpleMushafLine line,
-    int page,
-    MushafPage mushafPage,
-    double maxWidth,
-    bool isTablet,
-    bool isLandscape,
-    Size screenSize,
-  ) {
+      SimpleMushafLine line,
+      int page,
+      MushafPage mushafPage,
+      double maxWidth,
+      bool isTablet,
+      bool isLandscape,
+      Size screenSize,
+      ) {
     // Use single shared Mushaf font family (not per-page fonts)
     final String fontFamily = 'MushafMadina';
     final double targetWidth =
@@ -301,7 +301,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 4.0), // Reduced from 8.0
       child: CustomPaint(
-        //size: Size(targetWidth, uniformFontSize * 2.2),
+        size: Size(targetWidth, uniformFontSize * 2.2),
         painter: MushafLinePainter(
           words: finalWords,
           fontSize: uniformFontSize,
@@ -370,7 +370,7 @@ class MushafLinePainter extends CustomPainter {
     // Digital Khatt V2: Base gap for natural word spacing
     // Digital Khatt V2 uses natural word spacing with geometric justification
     this.baseGap =
-        4.0, // Baseline gap for Digital Khatt V2 (optimized for madina.otf font)
+    4.0, // Baseline gap for Digital Khatt V2 (optimized for madina.otf font)
   });
 
   @override
@@ -408,22 +408,59 @@ class MushafLinePainter extends CustomPainter {
     // 3. Calculate gap size to fill targetWidth exactly
     // Formula: targetWidth = totalWordsWidth + (numGaps * gapSize)
     // Therefore: gapSize = (targetWidth - totalWordsWidth) / numGaps
-    // Digital Khatt V2: Ensure minimum gap to prevent character overlapping
     double gapSize = 0.0;
+    double adjustedFontSize = fontSize;
+    TextStyle adjustedTextStyle = textStyle;
+    List<double> adjustedWordWidths = wordWidths;
+    double adjustedTotalWordsWidth = totalWordsWidth;
+
     if (numGaps > 0) {
       final double totalGapSpace = targetWidth - totalWordsWidth;
       gapSize = totalGapSpace / numGaps;
 
       // Digital Khatt V2: Enforce minimum gap to prevent overlapping
-      // The font's kerning (dk2.otf) handles internal character spacing,
-      // but we need minimum word separation to prevent visual overlap
-      final double minGap =
-          3.0; // Minimum gap for Digital Khatt V2 (prevents overlap)
+      final double minGap = 3.0;
 
       if (gapSize < minGap) {
-        // If calculated gap is too small, use minimum
-        // This may cause slight overflow, but prevents character overlap
         gapSize = minGap;
+      }
+
+      // Check if total width would exceed targetWidth
+      final double totalLineWidth = totalWordsWidth + (numGaps * gapSize);
+
+      if (totalLineWidth > targetWidth) {
+        // Try reducing gap first
+        gapSize = (targetWidth - totalWordsWidth) / numGaps;
+
+        // If gap becomes too small (less than 3px), reduce font size instead
+        if (gapSize < 3.0) {
+          // Calculate required font size reduction
+          final double maxAllowedWidth = targetWidth - (numGaps * 3.0);
+          final double scaleFactor = maxAllowedWidth / totalWordsWidth;
+          adjustedFontSize = fontSize * scaleFactor;
+
+          // Re-measure with adjusted font size
+          adjustedTextStyle = TextStyle(
+            fontFamily: fontFamily,
+            fontSize: adjustedFontSize,
+            color: textColor,
+            letterSpacing: 0.0,
+            wordSpacing: 0.0,
+          );
+
+          adjustedWordWidths = [];
+          for (final word in words) {
+            final tp = _measure(word, adjustedTextStyle);
+            adjustedWordWidths.add(tp.width);
+          }
+          adjustedTotalWordsWidth = adjustedWordWidths.fold(0.0, (a, b) => a + b);
+
+          // Recalculate gap with new measurements
+          gapSize = (targetWidth - adjustedTotalWordsWidth) / numGaps;
+          if (gapSize < 0) gapSize = 0;
+        } else if (gapSize < 0) {
+          gapSize = 0;
+        }
       }
     }
 
@@ -433,7 +470,7 @@ class MushafLinePainter extends CustomPainter {
     double currentX = targetWidth; // Start at right edge
 
     for (int i = 0; i < numWords; i++) {
-      final wordWidth = wordWidths[i];
+      final wordWidth = adjustedWordWidths[i];
 
       // Position word: move left by its width
       currentX -= wordWidth;
@@ -446,38 +483,23 @@ class MushafLinePainter extends CustomPainter {
     }
 
     // 5. Calculate proper vertical positioning
-    // TextPainter.paint(offset) positions the baseline at the offset.y
-    // We need to center the text visually, accounting for ascent and descent
     double y = 0.0;
     if (words.isNotEmpty) {
-      final sampleTp = _measure(words.first, textStyle);
+      final sampleTp = _measure(words.first, adjustedTextStyle);
       final double textHeight = sampleTp.height;
-      // Calculate where to position the baseline to center the text
-      // The text extends from (baseline - ascent) to (baseline + descent)
-      // We want: (baseline - ascent) at top, (baseline + descent) at bottom
-      // So: baseline = (size.height - textHeight) / 2 + ascent
-      // But TextPainter.height already accounts for the full text bounds
-      // So we can simply center: baseline = (size.height - textHeight) / 2 + (textHeight / 2)
-      // Actually, TextPainter.height is the full height, so:
-      // Position baseline at: (size.height - textHeight) / 2 + ascent
-      // But we don't have direct access to ascent, so we use:
-      // Position at center minus half the text height, then add a small offset for baseline
-      // TextPainter.paint() positions the baseline at offset.y
-      // To center the text, we position the baseline at the center
-      // then adjust upward by half the text height
       y = size.height / 2 - textHeight / 2;
     } else {
-      y = (size.height - fontSize) / 2;
+      y = (size.height - adjustedFontSize) / 2;
     }
 
     for (int i = 0; i < numWords; i++) {
       final word = words[i];
-      final wordWidth = wordWidths[i];
+      final wordWidth = adjustedWordWidths[i];
       final paintX = wordPositions[i];
 
       // Paint word if it fits within bounds (clipping handles overflow)
       if (paintX + wordWidth >= 0 && paintX <= targetWidth) {
-        _paintWord(canvas, word, Offset(paintX, y), textStyle);
+        _paintWord(canvas, word, Offset(paintX, y), adjustedTextStyle);
       }
     }
 
@@ -485,30 +507,23 @@ class MushafLinePainter extends CustomPainter {
   }
 
   TextPainter _measure(String text, TextStyle style) {
-    // Digital Khatt V2: Measure with proper font features enabled
-    // TextPainter automatically handles OpenType kerning from dk2.otf
     final tp = TextPainter(
       text: TextSpan(text: text, style: style),
       textDirection: TextDirection.rtl,
-      textAlign: TextAlign.right, // RTL alignment
+      textAlign: TextAlign.right,
       maxLines: 1,
     );
-    // Use unlimited width to get natural word width with proper kerning
-    // This ensures accurate measurement including font's built-in kerning
     tp.layout(maxWidth: double.infinity);
     return tp;
   }
 
   void _paintWord(Canvas canvas, String text, Offset offset, TextStyle style) {
-    // Digital Khatt V2: Paint with proper font features
-    // TextPainter applies OpenType kerning automatically from dk2.otf
     final tp = TextPainter(
       text: TextSpan(text: text, style: style),
       textDirection: TextDirection.rtl,
-      textAlign: TextAlign.right, // RTL alignment
+      textAlign: TextAlign.right,
       maxLines: 1,
     );
-    // Use unlimited width to get natural word width with proper kerning
     tp.layout(maxWidth: double.infinity);
     tp.paint(canvas, offset);
   }
