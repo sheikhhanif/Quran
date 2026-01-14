@@ -26,9 +26,13 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/quran/layout/qpc-v4-15-lines.db
-    - assets/quran/scripts/qpc-hafs.db
-    - assets/quran/fonts/uth.ttf
+    - assets/quran/layout/digital-khatt-15-lines.db
+    - assets/quran/scripts/digital-khatt-v2.db
     - assets/quran/fonts/surah-name-v2.ttf
     - assets/quran/svg/
     - assets/quran/svg/surah_name/
+
+  fonts:
+    - family: MushafMadina
+      fonts:
+        - asset: assets/quran/fonts/madina.otf

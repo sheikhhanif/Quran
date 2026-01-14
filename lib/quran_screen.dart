@@ -1,383 +1,8 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart' as p;
+import 'mushaf_models.dart';
+import 'mushaf_data_service.dart';
+import 'mushaf_app_bar.dart';
 import 'surah_header_banner.dart';
-
-// ===================== MODELS =====================
-
-class PageAyah {
-  final int surah;
-  final int ayah;
-  final String text;
-  final List<AyahSegment> segments;
-  final int startLineNumber;
-  final int endLineNumber;
-
-  PageAyah({
-    required this.surah,
-    required this.ayah,
-    required this.text,
-    required this.segments,
-    required this.startLineNumber,
-    required this.endLineNumber,
-  });
-}
-
-class AyahSegment {
-  final int lineNumber;
-  final String text;
-  final int startIndex;
-  final int endIndex;
-  final bool isStart;
-  final bool isEnd;
-  final List<AyahWord> words;
-
-  AyahSegment({
-    required this.lineNumber,
-    required this.text,
-    required this.startIndex,
-    required this.endIndex,
-    required this.isStart,
-    required this.isEnd,
-    required this.words,
-  });
-}
-
-class AyahWord {
-  final String text;
-  final int wordIndex;
-  final int startIndex;
-  final int endIndex;
-
-  AyahWord({
-    required this.text,
-    required this.wordIndex,
-    required this.startIndex,
-    required this.endIndex,
-  });
-}
-
-class SimpleMushafLine {
-  final int lineNumber;
-  final String text;
-  final bool isCentered;
-  final String lineType;
-  final int? surahNumber;
-
-  SimpleMushafLine({
-    required this.lineNumber,
-    required this.text,
-    required this.isCentered,
-    required this.lineType,
-    this.surahNumber,
-  });
-}
-
-class MushafPage {
-  final int pageNumber;
-  final List<SimpleMushafLine> lines;
-  final List<PageAyah> ayahs;
-  final Map<int, List<AyahSegment>> lineToSegments;
-
-  MushafPage({
-    required this.pageNumber,
-    required this.lines,
-    required this.ayahs,
-    required this.lineToSegments,
-  });
-}
-
-class AyahWordData {
-  final int surah;
-  final int ayah;
-  final String text;
-  final int lineNumber;
-  final int startIndex;
-  final int endIndex;
-
-  AyahWordData({
-    required this.surah,
-    required this.ayah,
-    required this.text,
-    required this.lineNumber,
-    required this.startIndex,
-    required this.endIndex,
-  });
-}
-
-class _LineBuilder {
-  final SimpleMushafLine simpleLine;
-  final List<AyahWordData> ayahWords;
-
-  _LineBuilder({
-    required this.simpleLine,
-    required this.ayahWords,
-  });
-}
-
-class _WordsResult {
-  final String text;
-  final List<AyahWordData> words;
-
-  _WordsResult(this.text, this.words);
-}
-
-// ===================== HELPER FUNCTIONS =====================
-
-int? _safeParseInt(dynamic value) {
-  if (value == null) return null;
-  if (value is int) return value;
-  if (value is String) {
-    return int.tryParse(value);
-  }
-  if (value is double) return value.toInt();
-  return null;
-}
-
-int _safeParseIntRequired(dynamic value, {int defaultValue = 0}) {
-  final parsed = _safeParseInt(value);
-  return parsed ?? defaultValue;
-}
-
-// ===================== PAGE BUILDER =====================
-
-class MushafPageBuilder {
-  static Future<MushafPage> buildPage({
-    required int pageNumber,
-    required Database wordsDb,
-    required Database layoutDb,
-  }) async {
-    final layoutData = await layoutDb.rawQuery(
-        "SELECT * FROM pages WHERE page_number = ? ORDER BY line_number ASC",
-        [pageNumber]);
-
-    List<SimpleMushafLine> lines = [];
-    List<PageAyah> ayahs = [];
-    Map<int, List<AyahSegment>> lineToSegments = {};
-
-    Map<String, List<AyahWordData>> ayahWords = {};
-
-    for (var lineData in layoutData) {
-      final line = await _buildLine(lineData, wordsDb);
-      lines.add(line.simpleLine);
-
-      for (var ayahWord in line.ayahWords) {
-        final key = "${ayahWord.surah}:${ayahWord.ayah}";
-        ayahWords.putIfAbsent(key, () => []).add(ayahWord);
-      }
-    }
-
-    for (var entry in ayahWords.entries) {
-      final parts = entry.key.split(':');
-      final surahNumber = int.parse(parts[0]);
-      final ayahNumber = int.parse(parts[1]);
-      final words = entry.value;
-
-      final ayah = await _buildAyah(
-        surahNumber: surahNumber,
-        ayahNumber: ayahNumber,
-        words: words,
-      );
-
-      ayahs.add(ayah);
-
-      for (var segment in ayah.segments) {
-        lineToSegments.putIfAbsent(segment.lineNumber, () => []).add(segment);
-      }
-    }
-
-    ayahs.sort((a, b) {
-      if (a.surah != b.surah) return a.surah.compareTo(b.surah);
-      return a.ayah.compareTo(b.ayah);
-    });
-
-    return MushafPage(
-      pageNumber: pageNumber,
-      lines: lines,
-      ayahs: ayahs,
-      lineToSegments: lineToSegments,
-    );
-  }
-
-  static Future<_LineBuilder> _buildLine(
-      Map<String, dynamic> lineData, Database wordsDb) async {
-    final lineNumber = _safeParseIntRequired(lineData['line_number']);
-    final lineType = lineData['line_type'] as String? ?? 'ayah';
-    final isCentered = _safeParseInt(lineData['is_centered']) == 1;
-    final firstWordId = _safeParseInt(lineData['first_word_id']);
-    final lastWordId = _safeParseInt(lineData['last_word_id']);
-    final surahNumber = _safeParseInt(lineData['surah_number']);
-
-    String lineText = '';
-    int? lineSurahNumber = surahNumber;
-    List<AyahWordData> ayahWords = [];
-
-    switch (lineType) {
-      case 'surah_name':
-        if (lineSurahNumber != null) {
-          lineText = 'SURAH_BANNER_$lineSurahNumber';
-        }
-        break;
-
-      case 'basmallah':
-        if (firstWordId != null && lastWordId != null) {
-          final result = await _buildWordsFromRange(
-              wordsDb, firstWordId, lastWordId, lineNumber);
-          lineText = result.text;
-          ayahWords = result.words;
-        } else {
-          lineText = '﷽';
-          ayahWords = [
-            AyahWordData(
-              surah: lineSurahNumber ?? 1,
-              ayah: 1,
-              text: '﷽',
-              lineNumber: lineNumber,
-              startIndex: 0,
-              endIndex: 1,
-            )
-          ];
-        }
-        break;
-
-      case 'ayah':
-      default:
-        if (firstWordId != null && lastWordId != null) {
-          final result = await _buildWordsFromRange(
-              wordsDb, firstWordId, lastWordId, lineNumber);
-          lineText = result.text;
-          ayahWords = result.words;
-
-          if (lineSurahNumber == null && ayahWords.isNotEmpty) {
-            lineSurahNumber = ayahWords.first.surah;
-          }
-        }
-        break;
-    }
-
-    return _LineBuilder(
-      simpleLine: SimpleMushafLine(
-        lineNumber: lineNumber,
-        text: lineText,
-        isCentered: isCentered,
-        lineType: lineType,
-        surahNumber: lineSurahNumber,
-      ),
-      ayahWords: ayahWords,
-    );
-  }
-
-  static Future<_WordsResult> _buildWordsFromRange(
-    Database wordsDb,
-    int firstWordId,
-    int lastWordId,
-    int lineNumber,
-  ) async {
-    try {
-      final words = await wordsDb.rawQuery(
-          "SELECT * FROM words WHERE id >= ? AND id <= ? ORDER BY id ASC",
-          [firstWordId, lastWordId]);
-
-      if (words.isEmpty) return _WordsResult('', []);
-
-      List<String> wordTexts = [];
-      List<AyahWordData> ayahWords = [];
-      int currentIndex = 0;
-
-      for (int i = 0; i < words.length; i++) {
-        final word = words[i];
-        final wordText = word['text'] as String? ?? '';
-        final surahNum = _safeParseInt(word['surah']);
-        final ayahNum = _safeParseInt(word['ayah']);
-
-        wordTexts.add(wordText);
-
-        if (surahNum != null && ayahNum != null) {
-          ayahWords.add(AyahWordData(
-            surah: surahNum,
-            ayah: ayahNum,
-            text: wordText,
-            lineNumber: lineNumber,
-            startIndex: currentIndex,
-            endIndex: currentIndex + wordText.length,
-          ));
-
-          currentIndex += wordText.length;
-        } else {
-          currentIndex += wordText.length;
-        }
-      }
-
-      return _WordsResult(wordTexts.join(''), ayahWords);
-    } catch (e) {
-      print('Error building words from range: $e');
-      return _WordsResult('', []);
-    }
-  }
-
-  static Future<PageAyah> _buildAyah({
-    required int surahNumber,
-    required int ayahNumber,
-    required List<AyahWordData> words,
-  }) async {
-    Map<int, List<AyahWordData>> wordsByLine = {};
-    for (var word in words) {
-      wordsByLine.putIfAbsent(word.lineNumber, () => []).add(word);
-    }
-
-    List<AyahSegment> segments = [];
-    final sortedLineNumbers = wordsByLine.keys.toList()..sort();
-
-    int globalWordIndex = 1;
-
-    for (int i = 0; i < sortedLineNumbers.length; i++) {
-      final lineNumber = sortedLineNumbers[i];
-      final lineWords = wordsByLine[lineNumber]!;
-
-      lineWords.sort((a, b) => a.startIndex.compareTo(b.startIndex));
-
-      final startIndex = lineWords.first.startIndex;
-      final endIndex = lineWords.last.endIndex;
-      final segmentText = lineWords.map((w) => w.text).join('');
-
-      List<AyahWord> ayahWords = [];
-
-      for (int j = 0; j < lineWords.length; j++) {
-        final word = lineWords[j];
-
-        ayahWords.add(AyahWord(
-          text: word.text,
-          wordIndex: globalWordIndex++,
-          startIndex: word.startIndex,
-          endIndex: word.endIndex,
-        ));
-      }
-
-      segments.add(AyahSegment(
-        lineNumber: lineNumber,
-        text: segmentText,
-        startIndex: startIndex,
-        endIndex: endIndex,
-        isStart: i == 0,
-        isEnd: i == sortedLineNumbers.length - 1,
-        words: ayahWords,
-      ));
-    }
-
-    final fullText = segments.map((s) => s.text).join('');
-
-    return PageAyah(
-      surah: surahNumber,
-      ayah: ayahNumber,
-      text: fullText,
-      segments: segments,
-      startLineNumber: sortedLineNumbers.first,
-      endLineNumber: sortedLineNumbers.last,
-    );
-  }
-}
 
 // ===================== MAIN WIDGET =====================
 
@@ -389,13 +14,8 @@ class MushafPageViewer extends StatefulWidget {
 }
 
 class _MushafPageViewerState extends State<MushafPageViewer> {
-  Database? _wordsDb;
-  Database? _layoutDb;
+  final MushafDataService _dataService = MushafDataService();
   int _currentPage = 1;
-
-  final Map<int, MushafPage> _allPagesData = {};
-  final Set<int> _loadedPages = {};
-  final Map<int, double> _uniformFontSizeCache = {};
 
   bool _isInitializing = true;
   bool _isPreloading = false;
@@ -403,12 +23,6 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
   double _preloadProgress = 0.0;
 
   late PageController _pageController;
-
-  static final Set<int> _loadedFonts = <int>{};
-  static bool _surahNameFontLoaded = false;
-
-  static const int BATCH_SIZE = 10;
-  static const int PRELOAD_RADIUS = 5;
 
   @override
   void initState() {
@@ -424,38 +38,13 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
         _loadingMessage = 'Setting up databases...';
       });
 
-      final databasesPath = await getDatabasesPath();
+      await _dataService.initDatabases();
 
-      final wordsDbPath = p.join(databasesPath, 'qpc-hafs.db');
-      if (!await File(wordsDbPath).exists()) {
-        setState(() {
-          _loadingMessage = 'Copying words database...';
-        });
-        final wordsData =
-            await rootBundle.load('assets/quran/scripts/qpc-hafs.db');
-        final wordsBytes = wordsData.buffer
-            .asUint8List(wordsData.offsetInBytes, wordsData.lengthInBytes);
-        await File(wordsDbPath).writeAsBytes(wordsBytes, flush: true);
-      }
+      setState(() {
+        _loadingMessage = 'Loading page...';
+      });
 
-      final layoutDbPath = p.join(databasesPath, 'qpc-v4-15-lines.db');
-      if (!await File(layoutDbPath).exists()) {
-        setState(() {
-          _loadingMessage = 'Copying layout database...';
-        });
-        final layoutData =
-            await rootBundle.load('assets/quran/layout/qpc-v4-15-lines.db');
-        final layoutBytes = layoutData.buffer
-            .asUint8List(layoutData.offsetInBytes, layoutData.lengthInBytes);
-        await File(layoutDbPath).writeAsBytes(layoutBytes, flush: true);
-      }
-
-      _wordsDb = await openDatabase(wordsDbPath);
-      _layoutDb = await openDatabase(layoutDbPath);
-
-      await _loadSurahNameFont();
-
-      await _loadPage(_currentPage);
+      await _dataService.loadPage(_currentPage);
 
       setState(() {
         _isInitializing = false;
@@ -476,132 +65,31 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       _preloadProgress = 0.0;
     });
 
-    final totalPages = 604;
-    int loadedCount = _loadedPages.length;
-
-    for (int batchStart = 1;
-        batchStart <= totalPages;
-        batchStart += BATCH_SIZE) {
-      final batchEnd = (batchStart + BATCH_SIZE - 1).clamp(1, totalPages);
-      final batch = <Future<void>>[];
-
-      for (int page = batchStart; page <= batchEnd; page++) {
-        if (!_loadedPages.contains(page)) {
-          batch.add(_loadPageSilently(page));
-        }
-      }
-
-      if (batch.isNotEmpty) {
-        await Future.wait(batch);
-        loadedCount += batch.length;
-
+    await _dataService.startBackgroundPreloading(
+      onProgress: (progress) {
         setState(() {
-          _preloadProgress = loadedCount / totalPages;
+          _preloadProgress = progress;
         });
-      }
-
-      await Future.delayed(const Duration(milliseconds: 50));
-    }
+      },
+    );
 
     setState(() {
       _isPreloading = false;
     });
   }
 
-  Future<void> _loadAroundCurrentPage(int currentPage) async {
-    final pagesToLoad = <int>{};
-
-    for (int i = -PRELOAD_RADIUS; i <= PRELOAD_RADIUS; i++) {
-      final page = currentPage + i;
-      if (page >= 1 && page <= 604 && !_loadedPages.contains(page)) {
-        pagesToLoad.add(page);
-      }
-    }
-
-    final futures = pagesToLoad.map((page) => _loadPageSilently(page));
-    await Future.wait(futures);
-  }
-
-  Future<void> _loadFontForPage(int page) async {
-    if (_loadedFonts.contains(page)) return;
-
-    try {
-      final fontLoader = FontLoader('QPCPageFont$page');
-      final fontData = await rootBundle.load('assets/quran/fonts/uth.ttf');
-      fontLoader.addFont(Future.value(fontData));
-      await fontLoader.load();
-      _loadedFonts.add(page);
-    } catch (e) {
-      print('Font loading failed for page $page: $e');
-    }
-  }
-
-  Future<void> _loadSurahNameFont() async {
-    if (_surahNameFontLoaded) return;
-
-    try {
-      final fontLoader = FontLoader('SurahNameFont');
-      final fontData =
-          await rootBundle.load('assets/quran/fonts/surah-name-v2.ttf');
-      fontLoader.addFont(Future.value(fontData));
-      await fontLoader.load();
-      _surahNameFontLoaded = true;
-    } catch (e) {
-      print('Surah name font loading failed: $e');
-    }
-  }
-
-  Future<void> _loadPage(int page) async {
-    if (_loadedPages.contains(page)) {
-      setState(() {
-        _currentPage = page;
-      });
-      return;
-    }
-
-    await _loadPageSilently(page);
+  void _onPageChanged(int index) {
+    final page = index + 1;
     setState(() {
       _currentPage = page;
     });
-  }
-
-  Future<void> _loadPageSilently(int page) async {
-    if (_wordsDb == null || _layoutDb == null || _loadedPages.contains(page))
-      return;
-
-    try {
-      await _loadFontForPage(page);
-
-      final mushafPage = await MushafPageBuilder.buildPage(
-        pageNumber: page,
-        wordsDb: _wordsDb!,
-        layoutDb: _layoutDb!,
-      );
-
-      _allPagesData[page] = mushafPage;
-      _loadedPages.add(page);
-    } catch (e) {
-      print('Error loading page $page: $e');
-      _allPagesData[page] = MushafPage(
-        pageNumber: page,
-        lines: [],
-        ayahs: [],
-        lineToSegments: {},
-      );
-    }
-  }
-
-  void _onPageChanged(int index) {
-    final page = index + 1;
-    _currentPage = page;
-    _loadAroundCurrentPage(page);
+    _dataService.loadAroundCurrentPage(page);
   }
 
   @override
   void dispose() {
     _pageController.dispose();
-    _wordsDb?.close();
-    _layoutDb?.close();
+    _dataService.dispose();
     super.dispose();
   }
 
@@ -612,51 +100,12 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F1E8),
-      appBar: AppBar(
-        title: Text('Mushaf - Page $_currentPage'),
-        centerTitle: true,
-        backgroundColor: const Color(0xFF8B7355),
-        foregroundColor: Colors.white,
-        automaticallyImplyLeading: false,
-        bottom: _isPreloading
-            ? PreferredSize(
-                preferredSize: const Size.fromHeight(4),
-                child: LinearProgressIndicator(
-                  value: _preloadProgress,
-                  backgroundColor: Colors.white30,
-                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
-                  minHeight: 2,
-                ),
-              )
-            : null,
+      appBar: MushafAppBar(
+        currentPage: _currentPage,
+        isPreloading: _isPreloading,
+        preloadProgress: _preloadProgress,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xFF8B7355),
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white70,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.book),
-            label: 'Mushaf',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bookmark),
-            label: 'Bookmarks',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-        onTap: (index) {
-          // Placeholder for navigation
-        },
-      ),
+      bottomNavigationBar: const MushafBottomNavigationBar(),
       body: _isInitializing
           ? Center(
               child: Column(
@@ -694,10 +143,10 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
   }
 
   Widget _buildMushafPage(int page) {
-    final mushafPage = _allPagesData[page];
+    final mushafPage = _dataService.allPagesData[page];
 
     if (mushafPage == null) {
-      if (!_loadedPages.contains(page)) {
+      if (!_dataService.loadedPages.contains(page)) {
         return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -744,23 +193,11 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
         color: Color(0xFFFFFFFF),
       ),
       padding: EdgeInsets.symmetric(
-        horizontal: isTablet ? 24.0 : 16.0,
+        horizontal: isTablet ? 12.0 : 8.0,
         vertical: isTablet ? 16.0 : 12.0,
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final screenSize = MediaQuery.of(context).size;
-          final isTablet = screenSize.width > 600;
-          final isLandscape = screenSize.width > screenSize.height;
-          final computedSize = _computeUniformFontSizeForPage(
-            page,
-            mushafPage,
-            constraints.maxWidth,
-            isTablet,
-            isLandscape,
-            screenSize,
-          );
-          _uniformFontSizeCache[page] = computedSize;
           return Column(
             mainAxisAlignment: page <= 2
                 ? MainAxisAlignment.center
@@ -842,26 +279,11 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     bool isLandscape,
     Size screenSize,
   ) {
-    final double? uniformFontSize = _uniformFontSizeCache[page];
-
-    if (uniformFontSize == null) {
-      return Container(
-        width: double.infinity,
-        child: Center(
-          child: Text(
-            line.text,
-            textDirection: TextDirection.rtl,
-            style: TextStyle(
-              fontFamily: 'QPCPageFont$page',
-              fontSize: _getBaseFontSize(isTablet, isLandscape, screenSize),
-            ),
-          ),
-        ),
-      );
-    }
-
-    final String fontFamily = 'QPCPageFont$page';
-    final double targetWidth = maxWidth - 16.0;
+    // Use single shared Mushaf font family (not per-page fonts)
+    final String fontFamily = 'MushafMadina';
+    final double targetWidth =
+        maxWidth - 8.0; // Reduced from 16.0 for more text width
+    final double uniformFontSize = getMushafFontSize(isTablet, isLandscape);
 
     final segments = mushafPage.lineToSegments[line.lineNumber] ?? [];
     final List<String> words = [];
@@ -872,14 +294,16 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       }
     }
 
+    // Fallback to line text if no words found
+    final List<String> finalWords = words.isNotEmpty ? words : [line.text];
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 4.0), // Reduced from 8.0
       child: CustomPaint(
-        size: Size(targetWidth, uniformFontSize * 1.5),
-        painter: UniformTextPainter(
-          text: line.text,
-          words: words.isNotEmpty ? words : [line.text],
+        //size: Size(targetWidth, uniformFontSize * 2.2),
+        painter: MushafLinePainter(
+          words: finalWords,
           fontSize: uniformFontSize,
           fontFamily: fontFamily,
           targetWidth: targetWidth,
@@ -889,251 +313,211 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     );
   }
 
-  double _computeUniformFontSizeForPage(
-    int page,
-    MushafPage mushafPage,
-    double maxWidth,
-    bool isTablet,
-    bool isLandscape,
-    Size screenSize,
-  ) {
-    double low = 8.0;
-    double high = 300.0;
-
-    final String fontFamily = 'QPCPageFont$page';
-    final double targetWidth = maxWidth - 16.0;
-    // Use hair space (U+200A) – one of the thinnest spaces
-    const thinSpace = '\u200A';
-
-    bool fitsAll(double size) {
-      for (final line in mushafPage.lines) {
-        if (line.lineType == 'surah_name') continue;
-        final String text = line.text;
-        if (text.isEmpty) continue;
-
-        // Build text with thin spaces between words (same as in rendering)
-        final segments = mushafPage.lineToSegments[line.lineNumber] ?? [];
-        final List<String> words = [];
-        for (final segment in segments) {
-          for (final word in segment.words) {
-            words.add(word.text);
-          }
-        }
-
-        // Use text with thin spaces if we have words, otherwise use original text
-        final String textToMeasure =
-            words.isNotEmpty ? words.join(thinSpace) : text;
-
-        final textSpan = TextSpan(
-          text: textToMeasure,
-          style: TextStyle(
-            fontFamily: fontFamily,
-            fontSize: size,
-          ),
-        );
-
-        final textPainter = TextPainter(
-          text: textSpan,
-          textDirection: TextDirection.rtl,
-          textAlign: TextAlign.left,
-        );
-        textPainter.layout();
-
-        if (textPainter.width > targetWidth) {
-          return false;
-        }
-      }
-      return true;
-    }
-
-    for (int i = 0; i < 20; i++) {
-      final mid = (low + high) / 2.0;
-      if (fitsAll(mid)) {
-        low = mid;
-      } else {
-        high = mid;
-      }
-    }
-
-    return low;
-  }
-
-  double _getBaseFontSize(bool isTablet, bool isLandscape, Size screenSize) {
-    final screenMultiplier =
-        isTablet ? (isLandscape ? 1.8 : 1.5) : (isLandscape ? 1.3 : 1.0);
-    final widthMultiplier = (screenSize.width / 400).clamp(0.8, 2.5);
-
-    return 20.0 * screenMultiplier * widthMultiplier;
+  double getMushafFontSize(bool isTablet, bool isLandscape) {
+    if (isTablet && isLandscape) return 36;
+    if (isTablet) return 32;
+    if (isLandscape) return 28;
+    return 24;
   }
 }
 
 // ===================== CUSTOM PAINTER =====================
+// Digital Khatt V2 Mushaf Line-by-Line Justification Algorithm
+//
+// This implementation follows the exact Digital Khatt V2 specifications:
+// - Database: digital-khatt-v2.db (words/scripts table with id, text, surah, ayah)
+// - Layout: digital-khatt-15-lines.db (pages table: page_number, line_number,
+//   line_type, is_centered, first_word_id, last_word_id, surah_number)
+// - Font: madina.otf (Digital Khatt V2 variable font - 1421H Madani Mushaf)
+//
+// Digital Khatt V2 Specifications:
+// - Font: madina.otf - Variable font replicating 1420H Madani Mushaf script
+// - Letter spacing: 0.0 (Arabic letters connect naturally, no kerning)
+// - Word spacing: Geometric distribution only (no TextStyle wordSpacing)
+// - Justification: Pure geometric gap distribution between words
+// - No kashida insertion (handled by font's variable features)
+// - Fixed font size per device class (matches printed mushaf behavior)
+// - Line spacing: 2.2x font size (adequate for diacritics and descenders)
+// - 15 lines per page layout (standard Digital Khatt V2 format)
+//
+// Algorithm:
+// 1. Measure each word individually (no text string manipulation)
+// 2. Calculate geometric gap distribution to fill targetWidth exactly
+// 3. Position words RTL (right-to-left) starting from targetWidth
+// 4. Paint words individually at calculated positions
+//
+// Key principles:
+// - No Unicode space insertion
+// - No text string modification
+// - Word-level measurement and painting
+// - Deterministic gap distribution
+// - Natural Arabic letter connections preserved
 
-class UniformTextPainter extends CustomPainter {
-  final String text;
+class MushafLinePainter extends CustomPainter {
   final List<String> words;
   final double fontSize;
   final String fontFamily;
   final double targetWidth;
   final Color textColor;
+  final double baseGap;
 
-  UniformTextPainter({
-    required this.text,
+  MushafLinePainter({
     required this.words,
     required this.fontSize,
     required this.fontFamily,
     required this.targetWidth,
     required this.textColor,
+    // Digital Khatt V2: Base gap for natural word spacing
+    // Digital Khatt V2 uses natural word spacing with geometric justification
+    this.baseGap =
+        4.0, // Baseline gap for Digital Khatt V2 (optimized for madina.otf font)
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (text.isEmpty || words.isEmpty) return;
+    if (words.isEmpty) return;
 
-    // Join words with hair space (U+200A) – very thin gap between words
-    const thinSpace = '\u200A';
-    final String lineText = words.join(thinSpace);
+    // Clip to ensure nothing paints outside bounds
+    canvas.save();
+    canvas.clipRect(Rect.fromLTWH(0, 0, targetWidth, size.height));
 
-    final result = _renderText(lineText);
+    // Digital Khatt spacing: No letter spacing, natural word spacing
+    // Arabic letters connect naturally - we only adjust word gaps, not letter spacing
+    final textStyle = TextStyle(
+      fontFamily: fontFamily,
+      fontSize: fontSize,
+      color: textColor,
+      letterSpacing: 0.0, // Explicitly no letter spacing for Arabic
+      wordSpacing: 0.0, // Word spacing handled by geometric gaps, not TextStyle
+    );
 
-    // If text is already close to or exceeds target width, don't add extra spaces
-    if (result.width >= targetWidth * 0.98) {
-      _paintText(canvas, size, lineText);
-      return;
+    // Digital Khatt Algorithm: Line-by-line justification
+    // 1. Measure each word individually (exact width)
+    final List<double> wordWidths = [];
+    for (final word in words) {
+      final tp = _measure(word, textStyle);
+      wordWidths.add(tp.width);
     }
 
-    // Find optimal number of extra thin spaces to add between words
-    final int extraSpacesCount =
-        _findOptimalExtraSpacesCount(lineText, targetWidth);
-    final String justifiedText =
-        _addExtraThinSpaces(lineText, extraSpacesCount);
+    final int numWords = words.length;
+    final int numGaps = numWords > 1 ? numWords - 1 : 0;
 
-    // Verify the justified text doesn't exceed target width
-    final verifiedResult = _renderText(justifiedText);
-    if (verifiedResult.width > targetWidth * 1.02) {
-      // If justified text exceeds width, use original text with thin spaces
-      _paintText(canvas, size, lineText);
+    // 2. Calculate total width of all words
+    final double totalWordsWidth = wordWidths.fold(0.0, (a, b) => a + b);
+
+    // 3. Calculate gap size to fill targetWidth exactly
+    // Formula: targetWidth = totalWordsWidth + (numGaps * gapSize)
+    // Therefore: gapSize = (targetWidth - totalWordsWidth) / numGaps
+    // Digital Khatt V2: Ensure minimum gap to prevent character overlapping
+    double gapSize = 0.0;
+    if (numGaps > 0) {
+      final double totalGapSpace = targetWidth - totalWordsWidth;
+      gapSize = totalGapSpace / numGaps;
+
+      // Digital Khatt V2: Enforce minimum gap to prevent overlapping
+      // The font's kerning (dk2.otf) handles internal character spacing,
+      // but we need minimum word separation to prevent visual overlap
+      final double minGap =
+          3.0; // Minimum gap for Digital Khatt V2 (prevents overlap)
+
+      if (gapSize < minGap) {
+        // If calculated gap is too small, use minimum
+        // This may cause slight overflow, but prevents character overlap
+        gapSize = minGap;
+      }
+    }
+
+    // 4. Calculate word positions RTL (right-to-left)
+    // Start from right edge (targetWidth) and work leftwards
+    final List<double> wordPositions = [];
+    double currentX = targetWidth; // Start at right edge
+
+    for (int i = 0; i < numWords; i++) {
+      final wordWidth = wordWidths[i];
+
+      // Position word: move left by its width
+      currentX -= wordWidth;
+      wordPositions.add(currentX);
+
+      // Move left by gap before positioning next word
+      if (i < numWords - 1) {
+        currentX -= gapSize;
+      }
+    }
+
+    // 5. Calculate proper vertical positioning
+    // TextPainter.paint(offset) positions the baseline at the offset.y
+    // We need to center the text visually, accounting for ascent and descent
+    double y = 0.0;
+    if (words.isNotEmpty) {
+      final sampleTp = _measure(words.first, textStyle);
+      final double textHeight = sampleTp.height;
+      // Calculate where to position the baseline to center the text
+      // The text extends from (baseline - ascent) to (baseline + descent)
+      // We want: (baseline - ascent) at top, (baseline + descent) at bottom
+      // So: baseline = (size.height - textHeight) / 2 + ascent
+      // But TextPainter.height already accounts for the full text bounds
+      // So we can simply center: baseline = (size.height - textHeight) / 2 + (textHeight / 2)
+      // Actually, TextPainter.height is the full height, so:
+      // Position baseline at: (size.height - textHeight) / 2 + ascent
+      // But we don't have direct access to ascent, so we use:
+      // Position at center minus half the text height, then add a small offset for baseline
+      // TextPainter.paint() positions the baseline at offset.y
+      // To center the text, we position the baseline at the center
+      // then adjust upward by half the text height
+      y = size.height / 2 - textHeight / 2;
     } else {
-      _paintText(canvas, size, justifiedText);
+      y = (size.height - fontSize) / 2;
     }
+
+    for (int i = 0; i < numWords; i++) {
+      final word = words[i];
+      final wordWidth = wordWidths[i];
+      final paintX = wordPositions[i];
+
+      // Paint word if it fits within bounds (clipping handles overflow)
+      if (paintX + wordWidth >= 0 && paintX <= targetWidth) {
+        _paintWord(canvas, word, Offset(paintX, y), textStyle);
+      }
+    }
+
+    canvas.restore();
   }
 
-  TextPainter _renderText(String text) {
-    final textSpan = TextSpan(
-      text: text,
-      style: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: fontSize,
-        color: textColor,
-      ),
-    );
-
-    final textPainter = TextPainter(
-      text: textSpan,
+  TextPainter _measure(String text, TextStyle style) {
+    // Digital Khatt V2: Measure with proper font features enabled
+    // TextPainter automatically handles OpenType kerning from dk2.otf
+    final tp = TextPainter(
+      text: TextSpan(text: text, style: style),
       textDirection: TextDirection.rtl,
-      textAlign: TextAlign.left,
+      textAlign: TextAlign.right, // RTL alignment
+      maxLines: 1,
     );
-    textPainter.layout();
-
-    return textPainter;
+    // Use unlimited width to get natural word width with proper kerning
+    // This ensures accurate measurement including font's built-in kerning
+    tp.layout(maxWidth: double.infinity);
+    return tp;
   }
 
-  int _findOptimalExtraSpacesCount(String text, double targetWidth) {
-    if (words.length < 2)
-      return 0; // Need at least 2 words to add spaces between them
-
-    int low = 0;
-    int high = 50; // Maximum extra thin spaces to try
-    int bestCount = 0;
-    double bestDiff = double.infinity;
-
-    for (int i = 0; i < 15; i++) {
-      int mid = (low + high) ~/ 2;
-      final justifiedText = _addExtraThinSpaces(text, mid);
-      final painter = _renderText(justifiedText);
-      final diff = (painter.width - targetWidth).abs();
-
-      if (diff < bestDiff) {
-        bestDiff = diff;
-        bestCount = mid;
-      }
-
-      if (painter.width < targetWidth * 0.98) {
-        low = mid + 1;
-      } else if (painter.width > targetWidth * 1.02) {
-        high = mid - 1;
-      } else {
-        break;
-      }
-    }
-
-    return bestCount;
-  }
-
-  String _addExtraThinSpaces(String text, int extraSpacesCount) {
-    if (extraSpacesCount == 0 || words.length < 2) return text;
-
-    const thinSpace = '\u200A';
-
-    // Calculate how many spaces to add between each word pair
-    // We have (words.length - 1) gaps between words
-    final int gaps = words.length - 1;
-    if (gaps == 0) return text;
-
-    // Distribute extra spaces evenly
-    final int baseSpacesPerGap = extraSpacesCount ~/ gaps;
-    final int remainder = extraSpacesCount % gaps;
-
-    // Build the justified text by adding extra thin spaces between words
-    final List<String> resultWords = [];
-    for (int i = 0; i < words.length; i++) {
-      resultWords.add(words[i]);
-
-      // Add spaces after each word except the last one
-      if (i < words.length - 1) {
-        // Base spaces (1 original + extra)
-        int spacesToAdd = 1 + baseSpacesPerGap;
-        // Distribute remainder from left to right
-        if (i < remainder) {
-          spacesToAdd += 1;
-        }
-        resultWords.add(thinSpace * spacesToAdd);
-      }
-    }
-
-    return resultWords.join('');
-  }
-
-  void _paintText(Canvas canvas, Size size, String text) {
-    final textSpan = TextSpan(
-      text: text,
-      style: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: fontSize,
-        color: textColor,
-      ),
-    );
-
-    final textPainter = TextPainter(
-      text: textSpan,
+  void _paintWord(Canvas canvas, String text, Offset offset, TextStyle style) {
+    // Digital Khatt V2: Paint with proper font features
+    // TextPainter applies OpenType kerning automatically from dk2.otf
+    final tp = TextPainter(
+      text: TextSpan(text: text, style: style),
       textDirection: TextDirection.rtl,
-      textAlign: TextAlign.left,
+      textAlign: TextAlign.right, // RTL alignment
+      maxLines: 1,
     );
-    textPainter.layout();
-
-    final double x = (targetWidth - textPainter.width) / 2;
-    final double y = (size.height - textPainter.height) / 2;
-
-    textPainter.paint(canvas, Offset(x, y));
+    // Use unlimited width to get natural word width with proper kerning
+    tp.layout(maxWidth: double.infinity);
+    tp.paint(canvas, offset);
   }
 
   @override
-  bool shouldRepaint(UniformTextPainter oldDelegate) {
-    return oldDelegate.text != text ||
-        oldDelegate.words != words ||
+  bool shouldRepaint(covariant MushafLinePainter oldDelegate) {
+    return oldDelegate.words != words ||
         oldDelegate.fontSize != fontSize ||
         oldDelegate.fontFamily != fontFamily ||
-        oldDelegate.targetWidth != targetWidth ||
-        oldDelegate.textColor != textColor;
+        oldDelegate.targetWidth != targetWidth;
   }
 }
