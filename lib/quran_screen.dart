@@ -407,35 +407,17 @@ class MushafLinePainter extends CustomPainter {
     TextStyle adjustedTextStyle = textStyle;
     List<double> adjustedWordWidths = wordWidths;
     double adjustedTotalWordsWidth = totalWordsWidth;
-    double horizontalScale = 1.0; // For compression/extension via scaling
+    double horizontalScale = 1.0; // For compression via scaling
 
     if (numGaps > 0) {
       final double totalGapSpace = targetWidth - totalWordsWidth;
       gapSize = totalGapSpace / numGaps;
 
-      // Define comfortable gap range
+      // Ensure minimum gap to prevent overlapping
       final double minGap = 3.0;
-      final double maxGap = 15.0; // Max gap before we stretch words
 
       if (gapSize < minGap) {
         gapSize = minGap;
-      }
-
-      // If gap is too large, stretch words to reduce it
-      if (gapSize > maxGap) {
-        gapSize = maxGap;
-
-        // Calculate horizontal scale factor for stretching
-        final double availableForWords = targetWidth - (numGaps * gapSize);
-        horizontalScale = availableForWords / totalWordsWidth;
-
-        // Recalculate with scaled widths
-        adjustedWordWidths = wordWidths.map((w) => w * horizontalScale).toList();
-        adjustedTotalWordsWidth = adjustedWordWidths.fold(0.0, (a, b) => a + b);
-
-        // Recalculate final gap
-        gapSize = (targetWidth - adjustedTotalWordsWidth) / numGaps;
-        if (gapSize < 0) gapSize = 0;
       }
 
       // Check if total width would exceed targetWidth
@@ -445,11 +427,11 @@ class MushafLinePainter extends CustomPainter {
         // Reduce gap to fit within bounds
         gapSize = (targetWidth - adjustedTotalWordsWidth) / numGaps;
 
-        // If gap becomes less than minimum, compress using horizontal scaling
+        // If gap becomes less than minimum, use horizontal scaling (Tarteel's approach)
         if (gapSize < minGap) {
           gapSize = minGap;
 
-          // Calculate horizontal scale factor for compression
+          // Calculate horizontal scale factor needed
           final double requiredWidth = targetWidth - (numGaps * gapSize);
           horizontalScale = requiredWidth / adjustedTotalWordsWidth;
 
@@ -498,8 +480,8 @@ class MushafLinePainter extends CustomPainter {
 
       // Paint word if it fits within bounds (clipping handles overflow)
       if (paintX + wordWidth >= 0 && paintX <= targetWidth) {
-        if (horizontalScale != 1.0) {
-          // Apply horizontal scaling for compression or extension
+        if (horizontalScale < 1.0) {
+          // Apply horizontal scaling for compression (Tarteel's approach)
           _paintWordWithScale(canvas, word, Offset(paintX, y), adjustedTextStyle, horizontalScale);
         } else {
           _paintWord(canvas, word, Offset(paintX, y), adjustedTextStyle);
