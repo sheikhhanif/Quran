@@ -31,14 +31,14 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     _initDatabases();
   }
 
-  Future<void> _initDatabases({RendererType? renderer}) async {
+  Future<void> _initDatabases() async {
     try {
       setState(() {
         _isInitializing = true;
         _loadingMessage = 'Setting up databases...';
       });
 
-      await _dataService.initDatabases(renderer: renderer);
+      await _dataService.initDatabases();
 
       setState(() {
         _loadingMessage = 'Loading page...';
@@ -50,35 +50,6 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
         _isInitializing = false;
       });
 
-      _startBackgroundPreloading();
-    } catch (e) {
-      setState(() {
-        _isInitializing = false;
-        _loadingMessage = 'Error: $e';
-      });
-    }
-  }
-
-  Future<void> _switchRenderer(RendererType newRenderer) async {
-    try {
-      setState(() {
-        _isInitializing = true;
-        _loadingMessage = 'Switching renderer...';
-      });
-
-      await _dataService.switchRenderer(newRenderer);
-
-      setState(() {
-        _loadingMessage = 'Loading page...';
-      });
-
-      await _dataService.loadPage(_currentPage);
-
-      setState(() {
-        _isInitializing = false;
-      });
-
-      // Restart preloading with new renderer
       _startBackgroundPreloading();
     } catch (e) {
       setState(() {
@@ -126,7 +97,6 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final isTablet = screenSize.width > 600;
-    final isLandscape = screenSize.width > screenSize.height;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F1E8),
@@ -134,8 +104,6 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
         currentPage: _currentPage,
         isPreloading: _isPreloading,
         preloadProgress: _preloadProgress,
-        currentRenderer: _dataService.currentRenderer,
-        onRendererChanged: _switchRenderer,
       ),
       bottomNavigationBar: const MushafBottomNavigationBar(),
       body: _isInitializing
@@ -165,7 +133,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
               onPageChanged: _onPageChanged,
               itemBuilder: (context, index) {
                 final page = index + 1;
-                return _buildMushafPage(page, isLandscape);
+                return _buildMushafPage(page);
               },
             ),
           ),
@@ -174,7 +142,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     );
   }
 
-  Widget _buildMushafPage(int page, bool isLandscape) {
+  Widget _buildMushafPage(int page) {
     final mushafPage = _dataService.allPagesData[page];
 
     if (mushafPage == null) {
@@ -218,153 +186,86 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
         bottomInset -
         bottomNavBarHeight;
 
-    // Adjust margins based on device and orientation
-    // Landscape and iPad: larger margins for better spacing
-    // Normal phone portrait: smaller margins to maximize content
-    double horizontalMargin;
-    double verticalMargin;
-    
-    if (isLandscape || isTablet) {
-      // Landscape or iPad: use larger margins
-      horizontalMargin = isTablet ? 28.0 : 24.0;
-      verticalMargin = isTablet ? 28.0 : 24.0;
-    } else {
-      // Normal phone portrait: reduced margins to maximize content
-      horizontalMargin = 12.0;
-      verticalMargin = 12.0;
-    }
-    
-    // Calculate available space for content after margins
-    final contentHeight = availableHeight - (verticalMargin * 2);
-    final contentWidth = screenSize.width - (horizontalMargin * 2);
-
-    // Calculate font size to maintain consistent white space across orientations
-    // Scales font to fill available space while keeping margins consistent
-    // Account for line height (2.2x) when calculating
-    final int lineCount = mushafPage.lines.length;
-    final double optimalFontSize = _calculateFontSizeFromCanvas(
-      contentHeight: contentHeight,
-      contentWidth: contentWidth,
-      lineCount: lineCount,
-      isTablet: isTablet,
-      isLandscape: isLandscape,
-    );
-
-    final pageContent = Container(
+    return Container(
       width: double.infinity,
-      margin: EdgeInsets.symmetric(
-        horizontal: horizontalMargin,
-        vertical: verticalMargin,
-      ),
+      height: availableHeight,
       decoration: const BoxDecoration(
         color: Color(0xFFFFFFFF),
       ),
       padding: EdgeInsets.symmetric(
-        horizontal: isTablet ? 16.0 : 12.0,
-        vertical: isTablet ? 20.0 : 16.0,
+        horizontal: isTablet ? 12.0 : 8.0,
+        vertical: isTablet ? 16.0 : 12.0,
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
           return Column(
             mainAxisAlignment: page <= 2
                 ? MainAxisAlignment.center
-                : (isLandscape ? MainAxisAlignment.start : MainAxisAlignment.start),
+                : MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: mushafPage.lines
-                .map((line) => _buildLine(
-                      line, 
-                      constraints, 
-                      page, 
-                      mushafPage, 
-                      isLandscape,
-                      optimalFontSize,
-                      contentWidth - (isTablet ? 32.0 : 24.0), // Subtract padding
-                    ))
+                .map((line) => _buildLine(line, constraints, page, mushafPage))
                 .toList(),
           );
         },
       ),
     );
-
-    // In landscape mode, make the page scrollable
-    if (isLandscape) {
-      return SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            minHeight: availableHeight,
-          ),
-          child: pageContent,
-        ),
-      );
-    }
-
-    // In portrait mode, use fixed height
-    return SizedBox(
-      height: availableHeight,
-      child: pageContent,
-    );
   }
 
-  Widget _buildLine(
-    SimpleMushafLine line,
-    BoxConstraints constraints,
-    int page,
-    MushafPage mushafPage,
-    bool isLandscape,
-    double fontSize,
-    double contentWidth,
-  ) {
+  Widget _buildLine(SimpleMushafLine line, BoxConstraints constraints, int page,
+      MushafPage mushafPage) {
     final screenSize = MediaQuery.of(context).size;
     final isTablet = screenSize.width > 600;
-
-    final lineWidget = Builder(
-      builder: (context) {
-        if (line.lineType == 'surah_name') {
-          final surahNumber =
-          int.tryParse(line.text.replaceAll('SURAH_BANNER_', ''));
-          if (surahNumber != null) {
-            return GestureDetector(
-              child: SurahBanner(
-                surahNumber: surahNumber,
-                isCentered: line.isCentered,
-              ),
-            );
-          }
-        }
-
-        return _buildLineWithKashida(
-          line,
-          page,
-          mushafPage,
-          contentWidth,
-          fontSize,
-          isTablet,
-          isLandscape,
-        );
-      },
-    );
+    final isLandscape = screenSize.width > screenSize.height;
 
     if (page <= 2) {
       return SizedBox(
         width: double.infinity,
-        child: lineWidget,
+        child: Builder(
+          builder: (context) {
+            if (line.lineType == 'surah_name') {
+              final surahNumber =
+              int.tryParse(line.text.replaceAll('SURAH_BANNER_', ''));
+              if (surahNumber != null) {
+                return GestureDetector(
+                  child: SurahBanner(
+                    surahNumber: surahNumber,
+                    isCentered: line.isCentered,
+                  ),
+                );
+              }
+            }
+
+            return _buildLineWithKashida(line, page, mushafPage,
+                constraints.maxWidth, isTablet, isLandscape, screenSize);
+          },
+        ),
       );
     }
 
-    // In landscape, don't use Expanded (doesn't work in scrollable context)
-    if (isLandscape) {
-      return SizedBox(
-        width: double.infinity,
-        child: lineWidget,
-      );
-    }
-
-    // In portrait, use Expanded for proper spacing
     return Expanded(
       flex: 1,
       child: SizedBox(
         width: double.infinity,
-        child: lineWidget,
+        child: Builder(
+          builder: (context) {
+            if (line.lineType == 'surah_name') {
+              final surahNumber =
+              int.tryParse(line.text.replaceAll('SURAH_BANNER_', ''));
+              if (surahNumber != null) {
+                return GestureDetector(
+                  child: SurahBanner(
+                    surahNumber: surahNumber,
+                    isCentered: line.isCentered,
+                  ),
+                );
+              }
+            }
+
+            return _buildLineWithKashida(line, page, mushafPage,
+                constraints.maxWidth, isTablet, isLandscape, screenSize);
+          },
+        ),
       ),
     );
   }
@@ -374,21 +275,15 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
       int page,
       MushafPage mushafPage,
       double maxWidth,
-      double fontSize,
       bool isTablet,
       bool isLandscape,
+      Size screenSize,
       ) {
-    // Use renderer's font family
-    final rendererType = _dataService.currentRenderer;
-    String fontFamily = rendererType.fontFamily;
-    
-    // For QPC V2, use per-page fonts
-    if (rendererType.hasPerPageFonts) {
-      fontFamily = '${rendererType.fontFamily}_Page$page';
-    }
-    
-    final double targetWidth = maxWidth;
-    final double uniformFontSize = fontSize;
+    // Use single shared Mushaf font family (not per-page fonts)
+    final String fontFamily = 'MushafMadina';
+    final double targetWidth =
+        maxWidth - 8.0; // Reduced from 16.0 for more text width
+    final double uniformFontSize = getMushafFontSize(isTablet, isLandscape);
 
     final segments = mushafPage.lineToSegments[line.lineNumber] ?? [];
     final List<String> words = [];
@@ -404,7 +299,7 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+      padding: const EdgeInsets.symmetric(horizontal: 4.0), // Reduced from 8.0
       child: CustomPaint(
         size: Size(targetWidth, uniformFontSize * 2.2),
         painter: MushafLinePainter(
@@ -418,61 +313,6 @@ class _MushafPageViewerState extends State<MushafPageViewer> {
     );
   }
 
-  /// Calculate font size to maintain consistent white space across orientations
-  /// Accounts for line height (2.2x) constraint to ensure all lines fit
-  double _calculateFontSizeFromCanvas({
-    required double contentHeight,
-    required double contentWidth,
-    required int lineCount,
-    required bool isTablet,
-    required bool isLandscape,
-  }) {
-    const double lineSpacingMultiplier = 2.2; // Line height is 2.2x font size
-    
-    // Base font size for portrait mode (reference)
-    final double basePortraitFontSize = getMushafFontSize(isTablet, false);
-    
-    // Reference width for portrait (used for width scaling in landscape)
-    // Use smaller reference to make scaling more aggressive and reduce white space
-    // Mobile portrait is typically 360-414px wide, landscape is 640-900px+ wide
-    final double referencePortraitWidth = isTablet ? 600.0 : 300.0;
-    
-    double scaleFactor;
-    
-    if (isLandscape) {
-      // In landscape: scale aggressively based on width to fill horizontal space
-      // Use smaller reference width to make scaling more aggressive
-      final double widthScale = contentWidth / referencePortraitWidth;
-      scaleFactor = widthScale;
-      
-      // Make it even more aggressive - add 10% boost to really fill the space
-      scaleFactor = scaleFactor * 1.1;
-      
-      // Ensure minimum scale in landscape (at least 1.0x to maintain or increase from portrait)
-      if (scaleFactor < 1.0) {
-        scaleFactor = 1.0;
-      }
-    } else {
-      // In portrait: scale based on height, accounting for line height
-      // Make it more aggressive to reduce white space
-      final double maxFontSizeByHeight = contentHeight / (lineCount * lineSpacingMultiplier);
-      scaleFactor = maxFontSizeByHeight / basePortraitFontSize;
-      
-      // Add 5% boost in portrait too to reduce white space
-      scaleFactor = scaleFactor * 1.05;
-    }
-    
-    // Scale the font size proportionally
-    double scaledFontSize = basePortraitFontSize * scaleFactor;
-    
-    // Clamp to reasonable bounds (min 18px, max 60px to allow larger scaling)
-    scaledFontSize = scaledFontSize.clamp(18.0, 60.0);
-    
-    // Round to nearest 0.5 for cleaner rendering
-    return (scaledFontSize * 2).round() / 2.0;
-  }
-
-  /// Get base font size for device type (fallback)
   double getMushafFontSize(bool isTablet, bool isLandscape) {
     if (isTablet && isLandscape) return 36;
     if (isTablet) return 32;
