@@ -367,10 +367,7 @@ class MushafLinePainter extends CustomPainter {
     required this.fontFamily,
     required this.targetWidth,
     required this.textColor,
-    // Digital Khatt V2: Base gap for natural word spacing
-    // Digital Khatt V2 uses natural word spacing with geometric justification
-    this.baseGap =
-    4.0, // Baseline gap for Digital Khatt V2 (optimized for madina.otf font)
+    this.baseGap = 4.0,
   });
 
   @override
@@ -406,66 +403,68 @@ class MushafLinePainter extends CustomPainter {
     final double totalWordsWidth = wordWidths.fold(0.0, (a, b) => a + b);
 
     // 3. Calculate gap size to fill targetWidth exactly
-    // Formula: targetWidth = totalWordsWidth + (numGaps * gapSize)
-    // Therefore: gapSize = (targetWidth - totalWordsWidth) / numGaps
     double gapSize = 0.0;
-    double adjustedFontSize = fontSize;
     TextStyle adjustedTextStyle = textStyle;
     List<double> adjustedWordWidths = wordWidths;
     double adjustedTotalWordsWidth = totalWordsWidth;
+    double horizontalScale = 1.0; // For compression/extension via scaling
 
     if (numGaps > 0) {
       final double totalGapSpace = targetWidth - totalWordsWidth;
       gapSize = totalGapSpace / numGaps;
 
-      // Digital Khatt V2: Enforce minimum gap to prevent overlapping
+      // Define comfortable gap range
       final double minGap = 3.0;
+      final double maxGap = 15.0; // Max gap before we stretch words
 
       if (gapSize < minGap) {
         gapSize = minGap;
       }
 
+      // If gap is too large, stretch words to reduce it
+      if (gapSize > maxGap) {
+        gapSize = maxGap;
+
+        // Calculate horizontal scale factor for stretching
+        final double availableForWords = targetWidth - (numGaps * gapSize);
+        horizontalScale = availableForWords / totalWordsWidth;
+
+        // Recalculate with scaled widths
+        adjustedWordWidths = wordWidths.map((w) => w * horizontalScale).toList();
+        adjustedTotalWordsWidth = adjustedWordWidths.fold(0.0, (a, b) => a + b);
+
+        // Recalculate final gap
+        gapSize = (targetWidth - adjustedTotalWordsWidth) / numGaps;
+        if (gapSize < 0) gapSize = 0;
+      }
+
       // Check if total width would exceed targetWidth
-      final double totalLineWidth = totalWordsWidth + (numGaps * gapSize);
+      final double totalLineWidth = adjustedTotalWordsWidth + (numGaps * gapSize);
 
       if (totalLineWidth > targetWidth) {
-        // Try reducing gap first
-        gapSize = (targetWidth - totalWordsWidth) / numGaps;
+        // Reduce gap to fit within bounds
+        gapSize = (targetWidth - adjustedTotalWordsWidth) / numGaps;
 
-        // If gap becomes too small (less than 3px), reduce font size instead
-        if (gapSize < 3.0) {
-          // Calculate required font size reduction
-          final double maxAllowedWidth = targetWidth - (numGaps * 3.0);
-          final double scaleFactor = maxAllowedWidth / totalWordsWidth;
-          adjustedFontSize = fontSize * scaleFactor;
+        // If gap becomes less than minimum, compress using horizontal scaling
+        if (gapSize < minGap) {
+          gapSize = minGap;
 
-          // Re-measure with adjusted font size
-          adjustedTextStyle = TextStyle(
-            fontFamily: fontFamily,
-            fontSize: adjustedFontSize,
-            color: textColor,
-            letterSpacing: 0.0,
-            wordSpacing: 0.0,
-          );
+          // Calculate horizontal scale factor for compression
+          final double requiredWidth = targetWidth - (numGaps * gapSize);
+          horizontalScale = requiredWidth / adjustedTotalWordsWidth;
 
-          adjustedWordWidths = [];
-          for (final word in words) {
-            final tp = _measure(word, adjustedTextStyle);
-            adjustedWordWidths.add(tp.width);
-          }
+          // Recalculate with scaled widths
+          adjustedWordWidths = wordWidths.map((w) => w * horizontalScale).toList();
           adjustedTotalWordsWidth = adjustedWordWidths.fold(0.0, (a, b) => a + b);
 
-          // Recalculate gap with new measurements
+          // Recalculate final gap
           gapSize = (targetWidth - adjustedTotalWordsWidth) / numGaps;
           if (gapSize < 0) gapSize = 0;
-        } else if (gapSize < 0) {
-          gapSize = 0;
         }
       }
     }
 
     // 4. Calculate word positions RTL (right-to-left)
-    // Start from right edge (targetWidth) and work leftwards
     final List<double> wordPositions = [];
     double currentX = targetWidth; // Start at right edge
 
@@ -489,7 +488,7 @@ class MushafLinePainter extends CustomPainter {
       final double textHeight = sampleTp.height;
       y = size.height / 2 - textHeight / 2;
     } else {
-      y = (size.height - adjustedFontSize) / 2;
+      y = (size.height - fontSize) / 2;
     }
 
     for (int i = 0; i < numWords; i++) {
@@ -499,7 +498,12 @@ class MushafLinePainter extends CustomPainter {
 
       // Paint word if it fits within bounds (clipping handles overflow)
       if (paintX + wordWidth >= 0 && paintX <= targetWidth) {
-        _paintWord(canvas, word, Offset(paintX, y), adjustedTextStyle);
+        if (horizontalScale != 1.0) {
+          // Apply horizontal scaling for compression or extension
+          _paintWordWithScale(canvas, word, Offset(paintX, y), adjustedTextStyle, horizontalScale);
+        } else {
+          _paintWord(canvas, word, Offset(paintX, y), adjustedTextStyle);
+        }
       }
     }
 
@@ -526,6 +530,25 @@ class MushafLinePainter extends CustomPainter {
     );
     tp.layout(maxWidth: double.infinity);
     tp.paint(canvas, offset);
+  }
+
+  void _paintWordWithScale(Canvas canvas, String text, Offset offset, TextStyle style, double scaleX) {
+    canvas.save();
+    // Apply horizontal scaling from the offset point
+    canvas.translate(offset.dx, offset.dy);
+    canvas.scale(scaleX, 1.0);
+    canvas.translate(-offset.dx, -offset.dy);
+
+    final tp = TextPainter(
+      text: TextSpan(text: text, style: style),
+      textDirection: TextDirection.rtl,
+      textAlign: TextAlign.right,
+      maxLines: 1,
+    );
+    tp.layout(maxWidth: double.infinity);
+    tp.paint(canvas, offset);
+
+    canvas.restore();
   }
 
   @override
