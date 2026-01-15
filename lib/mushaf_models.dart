@@ -1,5 +1,72 @@
 // ===================== MODELS =====================
 
+enum RendererType {
+  digitalKhatt,
+  qpcUthmani,
+  qpcV2,
+}
+
+extension RendererTypeExtension on RendererType {
+  String get name {
+    switch (this) {
+      case RendererType.digitalKhatt:
+        return 'Digital Khatt';
+      case RendererType.qpcUthmani:
+        return 'QPC Uthmani';
+      case RendererType.qpcV2:
+        return 'QPC V2';
+    }
+  }
+
+  String get wordsDbAsset {
+    switch (this) {
+      case RendererType.digitalKhatt:
+        return 'assets/quran/renderer/digital_khatt/digital-khatt-v2.db';
+      case RendererType.qpcUthmani:
+        return 'assets/quran/renderer/qpc_uthmani/qpc-hafs.db';
+      case RendererType.qpcV2:
+        return 'assets/quran/renderer/qpc_v2/qpc-v2.db';
+    }
+  }
+
+  String get layoutDbAsset {
+    switch (this) {
+      case RendererType.digitalKhatt:
+        return 'assets/quran/renderer/digital_khatt/digital-khatt-15-lines.db';
+      case RendererType.qpcUthmani:
+        return 'assets/quran/renderer/qpc_uthmani/qpc-v4-15-lines.db';
+      case RendererType.qpcV2:
+        return 'assets/quran/renderer/qpc_v2/qpc-v2-15-lines.db';
+    }
+  }
+
+  String get fontFamily {
+    switch (this) {
+      case RendererType.digitalKhatt:
+        return 'MushafDigitalKhatt';
+      case RendererType.qpcUthmani:
+        return 'MushafQPCUthmani';
+      case RendererType.qpcV2:
+        return 'MushafQPCV2';
+    }
+  }
+
+  String get fontAsset {
+    switch (this) {
+      case RendererType.digitalKhatt:
+        return 'assets/quran/renderer/digital_khatt/font_v2.otf';
+      case RendererType.qpcUthmani:
+        return 'assets/quran/renderer/qpc_uthmani/font.ttf';
+      case RendererType.qpcV2:
+        // QPC V2 uses per-page fonts, return base path
+        return 'assets/quran/renderer/qpc_v2/qpc-v2-font/';
+    }
+  }
+
+  bool get hasPerPageFonts => this == RendererType.qpcV2;
+  bool get usesWordsDb => true; // All renderers now use separate words DB
+}
+
 class PageAyah {
   final int surah;
   final int ayah;

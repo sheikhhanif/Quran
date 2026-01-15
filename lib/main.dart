@@ -2,8 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'quran_screen.dart';
 
-
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Enable all orientations (portrait and landscape)
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
   runApp(const MuslimlyApp());
 }
 
@@ -22,4 +29,3 @@ class MuslimlyApp extends StatelessWidget {
     );
   }
 }
-

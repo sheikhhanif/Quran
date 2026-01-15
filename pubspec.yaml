@@ -26,13 +26,35 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/quran/layout/digital-khatt-15-lines.db
-    - assets/quran/scripts/digital-khatt-v2.db
-    - assets/quran/fonts/surah-name-v2.ttf
+    # Renderer assets - Digital Khatt
+    - assets/quran/renderer/digital_khatt/digital-khatt-15-lines.db
+    - assets/quran/renderer/digital_khatt/digital-khatt-v2.db
+    - assets/quran/renderer/digital_khatt/font_v2.otf
+    # Renderer assets - QPC Uthmani
+    - assets/quran/renderer/qpc_uthmani/qpc-hafs.db
+    - assets/quran/renderer/qpc_uthmani/qpc-v4-15-lines.db
+    - assets/quran/renderer/qpc_uthmani/font.ttf
+    # Renderer assets - QPC V2
+    - assets/quran/renderer/qpc_v2/qpc-v2.db
+    - assets/quran/renderer/qpc_v2/qpc-v2-15-lines.db
+    - assets/quran/renderer/qpc_v2/qpc-v2-font/
+    # SVG assets
     - assets/quran/svg/
     - assets/quran/svg/surah_name/
+    # Audio assets
+    - assets/quran/audio/
 
   fonts:
+    # Digital Khatt font
+    - family: MushafDigitalKhatt
+      fonts:
+        - asset: assets/quran/renderer/digital_khatt/font_v2.otf
+    # QPC Uthmani font
+    - family: MushafQPCUthmani
+      fonts:
+        - asset: assets/quran/renderer/qpc_uthmani/font.ttf
+    # QPC V2 fonts are loaded dynamically per-page at runtime
+    # Legacy font (for backward compatibility)
     - family: MushafMadina
       fonts:
-        - asset: assets/quran/fonts/dk2.otf
+        - asset: assets/quran/renderer/digital_khatt/font_v2.otf

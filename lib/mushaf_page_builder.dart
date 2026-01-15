@@ -53,8 +53,58 @@ class MushafPageBuilder {
 
     Map<String, List<AyahWordData>> ayahWords = {};
 
-    for (var lineData in layoutData) {
-      final line = await _buildLine(lineData, wordsDb);
+    // Collect all word ID ranges for batch querying
+    final List<Map<String, int?>> wordRanges = [];
+
+    for (int i = 0; i < layoutData.length; i++) {
+      final lineData = layoutData[i];
+      final firstWordId = _safeParseInt(lineData['first_word_id']);
+      final lastWordId = _safeParseInt(lineData['last_word_id']);
+      
+      if (firstWordId != null && lastWordId != null) {
+        wordRanges.add({'first': firstWordId, 'last': lastWordId, 'index': i});
+      }
+    }
+
+    // Batch query all words at once if there are ranges
+    Map<int, Map<String, dynamic>>? allWordsMap;
+    if (wordRanges.isNotEmpty) {
+      final minWordId = wordRanges.map((r) => r['first']!).reduce((a, b) => a < b ? a : b);
+      final maxWordId = wordRanges.map((r) => r['last']!).reduce((a, b) => a > b ? a : b);
+      
+      final allWords = await wordsDb.rawQuery(
+          "SELECT * FROM words WHERE id >= ? AND id <= ? ORDER BY id ASC",
+          [minWordId, maxWordId]);
+      
+      // Index words by ID for fast lookup
+      allWordsMap = {};
+      for (var word in allWords) {
+        final id = _safeParseIntRequired(word['id']);
+        allWordsMap[id] = word;
+      }
+    }
+
+    // Build lines using pre-fetched words
+    for (int i = 0; i < layoutData.length; i++) {
+      final lineData = layoutData[i];
+      final firstWordId = _safeParseInt(lineData['first_word_id']);
+      final lastWordId = _safeParseInt(lineData['last_word_id']);
+      
+      _LineBuilder line;
+      if (firstWordId != null && lastWordId != null && allWordsMap != null) {
+        // Extract words for this line from pre-fetched data
+        final lineWords = <Map<String, dynamic>>[];
+        for (int id = firstWordId; id <= lastWordId; id++) {
+          final word = allWordsMap[id];
+          if (word != null) {
+            lineWords.add(word);
+          }
+        }
+        line = await _buildLineFromWords(lineData, lineWords);
+      } else {
+        line = await _buildLine(lineData, wordsDb);
+      }
+      
       lines.add(line.simpleLine);
 
       for (var ayahWord in line.ayahWords) {
@@ -163,6 +213,71 @@ class MushafPageBuilder {
     );
   }
 
+  /// Build line from pre-fetched words (more memory efficient)
+  static Future<_LineBuilder> _buildLineFromWords(
+      Map<String, dynamic> lineData, List<Map<String, dynamic>> words) async {
+    final lineNumber = _safeParseIntRequired(lineData['line_number']);
+    final lineType = lineData['line_type'] as String? ?? 'ayah';
+    final isCentered = _safeParseInt(lineData['is_centered']) == 1;
+    final surahNumber = _safeParseInt(lineData['surah_number']);
+
+    String lineText = '';
+    int? lineSurahNumber = surahNumber;
+    List<AyahWordData> ayahWords = [];
+
+    switch (lineType) {
+      case 'surah_name':
+        if (lineSurahNumber != null) {
+          lineText = 'SURAH_BANNER_$lineSurahNumber';
+        }
+        break;
+
+      case 'basmallah':
+        if (words.isNotEmpty) {
+          final result = _buildWordsFromList(words, lineNumber);
+          lineText = result.text;
+          ayahWords = result.words;
+        } else {
+          lineText = '﷽';
+          ayahWords = [
+            AyahWordData(
+              surah: lineSurahNumber ?? 1,
+              ayah: 1,
+              text: '﷽',
+              lineNumber: lineNumber,
+              startIndex: 0,
+              endIndex: 1,
+            )
+          ];
+        }
+        break;
+
+      case 'ayah':
+      default:
+        if (words.isNotEmpty) {
+          final result = _buildWordsFromList(words, lineNumber);
+          lineText = result.text;
+          ayahWords = result.words;
+
+          if (lineSurahNumber == null && ayahWords.isNotEmpty) {
+            lineSurahNumber = ayahWords.first.surah;
+          }
+        }
+        break;
+    }
+
+    return _LineBuilder(
+      simpleLine: SimpleMushafLine(
+        lineNumber: lineNumber,
+        text: lineText,
+        isCentered: isCentered,
+        lineType: lineType,
+        surahNumber: lineSurahNumber,
+      ),
+      ayahWords: ayahWords,
+    );
+  }
+
   static Future<_WordsResult> _buildWordsFromRange(
     Database wordsDb,
     int firstWordId,
@@ -174,41 +289,49 @@ class MushafPageBuilder {
           "SELECT * FROM words WHERE id >= ? AND id <= ? ORDER BY id ASC",
           [firstWordId, lastWordId]);
 
-      if (words.isEmpty) return _WordsResult('', []);
-
-      List<String> wordTexts = [];
-      List<AyahWordData> ayahWords = [];
-      int currentIndex = 0;
-
-      for (int i = 0; i < words.length; i++) {
-        final word = words[i];
-        final wordText = word['text'] as String? ?? '';
-        final surahNum = _safeParseInt(word['surah']);
-        final ayahNum = _safeParseInt(word['ayah']);
-
-        wordTexts.add(wordText);
-
-        if (surahNum != null && ayahNum != null) {
-          ayahWords.add(AyahWordData(
-            surah: surahNum,
-            ayah: ayahNum,
-            text: wordText,
-            lineNumber: lineNumber,
-            startIndex: currentIndex,
-            endIndex: currentIndex + wordText.length,
-          ));
-
-          currentIndex += wordText.length;
-        } else {
-          currentIndex += wordText.length;
-        }
-      }
-
-      return _WordsResult(wordTexts.join(''), ayahWords);
+      return _buildWordsFromList(words, lineNumber);
     } catch (e) {
       print('Error building words from range: $e');
       return _WordsResult('', []);
     }
+  }
+
+  /// Build words result from a list of word data (reusable for both DB queries and pre-fetched data)
+  static _WordsResult _buildWordsFromList(
+    List<Map<String, dynamic>> words,
+    int lineNumber,
+  ) {
+    if (words.isEmpty) return _WordsResult('', []);
+
+    List<String> wordTexts = [];
+    List<AyahWordData> ayahWords = [];
+    int currentIndex = 0;
+
+    for (int i = 0; i < words.length; i++) {
+      final word = words[i];
+      final wordText = word['text'] as String? ?? '';
+      final surahNum = _safeParseInt(word['surah']);
+      final ayahNum = _safeParseInt(word['ayah']);
+
+      wordTexts.add(wordText);
+
+      if (surahNum != null && ayahNum != null) {
+        ayahWords.add(AyahWordData(
+          surah: surahNum,
+          ayah: ayahNum,
+          text: wordText,
+          lineNumber: lineNumber,
+          startIndex: currentIndex,
+          endIndex: currentIndex + wordText.length,
+        ));
+
+        currentIndex += wordText.length;
+      } else {
+        currentIndex += wordText.length;
+      }
+    }
+
+    return _WordsResult(wordTexts.join(''), ayahWords);
   }
 
   static Future<PageAyah> _buildAyah({
